@@ -33,7 +33,9 @@
   "author": "Jeroen Bos",
   "module": "dist/template.esm.js",
   "devDependencies": {
+    "@types/jsdom": "16.2.13",
     "husky": "7.0.1",
+    "jsdom":  "16.6.0",
     "tsdx": "0.14.1",
     "tslib": "2.3.0",
     "tslint": "6.1.3",
