@@ -8,15 +8,15 @@
             "program": "${workspaceFolder}/node_modules/tsdx/dist/index.js",
             "args": [
                 "test",
+                "--silent=false",
                 "-o",
-                "blah" // matches arg to 'describe', not to 'it'
+                "blah" // matches files, not 'describe', not to 'it'
             ],
-            "console": "externalTerminal",
-            "internalConsoleOptions": "neverOpen",
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",
                 "!**/node_modules/**"
             ],
+            "outputCapture": "std"
         }
     ]
 }
