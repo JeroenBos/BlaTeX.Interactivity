@@ -5,11 +5,11 @@
     "types"
   ],
   "compilerOptions": {
-    "module": "esnext",
+    "module": "es2015",
     "lib": [
       "dom",
-      "esnext",
-      "dom.iterable"
+      "es2015",
+      "dom.iterable",
     ],
     "importHelpers": true,
     // output .d.ts declaration files for consumers
