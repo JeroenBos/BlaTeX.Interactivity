@@ -11,16 +11,14 @@ export class TiedList<T> {
         return this.data;
     }
     add(element: T): void {
-        if (this.data.length == 0) {
+        if (this.data.length === 0) {
             this.data.push(element);
-        }
-        else {
+        } else {
             const comparison = this.comparer(element, this.data[0]);
-            if (comparison == 0) {
+            if (comparison === 0) {
                 this.data.push(element);
-            }
-            else if (comparison > 0) {
-                this.data.length = 0; // empties the list   
+            } else if (comparison > 0) {
+                this.data.length = 0; // empties the list
                 this.data.push(element);
             }
         }

@@ -1,1 +1,1 @@
-export { getCursorIndexByProximity } from './PointToCurserHandleConverter';
+export { getCursorIndexByProximity } from './PointToCursorHandleConverter';

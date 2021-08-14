@@ -8,15 +8,15 @@ describe('JSDOM instanceof demonstration', () => {
     beforeEach(() => {
         jsDomInstance = new JSDOM();
         global.HTMLElement = jsDomInstance.window.HTMLElement;
-    })
+    });
 
     it('passes instanceof check', () => {
         expect(
-            jsDomInstance.window.document.createElement('div') instanceof HTMLElement
-        ).toBe(true)
-    })
-})
-
+            jsDomInstance.window.document.createElement('div') instanceof
+                HTMLElement
+        ).toBe(true);
+    });
+});
 
 function toHTML(html: string): HTMLElement {
     const window = new JSDOM(html).window;
@@ -42,7 +42,7 @@ function toHTML(html: string): HTMLElement {
 
 describe('JSDom Understanding tests', () => {
     it('works', () => {
-        const element = toHTML("<div></div>");
+        const element = toHTML('<div></div>');
         expect(element.hasChildNodes()).toBeFalsy();
     });
 });
