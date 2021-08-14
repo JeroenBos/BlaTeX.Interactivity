@@ -18,7 +18,7 @@ describe('JSDOM instanceof demonstration', () => {
     });
 });
 
-function toHTML(html: string): HTMLElement {
+export function toHTML(html: string): HTMLElement {
     const window = new JSDOM(html).window;
     // make instanceof checks work as expected:
     global.Element = window.Element;
