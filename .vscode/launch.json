@@ -10,13 +10,14 @@
                 "test",
                 "--silent=false",
                 "-o",
-                "jsdom" // matches files, not 'describe', not to 'it'
+                "pointer" // matches files, not 'describe', not to 'it'
             ],
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",
                 "!**/node_modules/**"
             ],
             "outputCapture": "std",
+            "justMyCode": true
         }
     ]
 }
