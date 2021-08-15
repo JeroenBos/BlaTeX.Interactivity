@@ -1,14 +1,14 @@
 import { toHTMLWithRectangles } from './jsdom.understanding.spec';
 import { getCursorIndexByProximity } from '../src/PointToCursorHandleConverter';
 describe('Resolve location to parsetree location', () => {
-    it('Simple <div> without annotations', async () => {
+    it('Simple <div> without annotations yields no location', async () => {
         const element = await toHTMLWithRectangles('<div></div>');
 
         const result = getCursorIndexByProximity(element, { dx: 50, dy: 50 });
 
         expect(result).toBe(undefined);
     });
-    it('Simple <div>', async () => {
+    it('Simple <div> clicking near the left', async () => {
         const element = await toHTMLWithRectangles('<div data-loc="0,1"></div>');
 
         const clickToTheLeft = getCursorIndexByProximity(element, { dx: 50, dy: 50 });
