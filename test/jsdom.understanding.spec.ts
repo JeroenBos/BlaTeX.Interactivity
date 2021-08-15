@@ -38,7 +38,7 @@ export function toHTML(html: string): HTMLElement {
     assert(headElement instanceof HTMLHeadElement);
     assert(bodyElement instanceof HTMLBodyElement);
     assert(bodyElement.childElementCount === 1);
-    const firstElement = bodyElement.childNodes[0];
+    const firstElement = bodyElement.children[0];
 
     assert(firstElement instanceof HTMLElement);
     return firstElement;
@@ -68,10 +68,31 @@ describe('JSDom Understanding tests', () => {
     });
 });
 
-export async function toHTMLWithRectangles(html: string): Promise<HTMLElement> {
-    const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8));
+export async function toHTMLWithRectanglesWithKatex(html: string): Promise<HTMLElement> {
+    return toHTMLWithRectangles(html, true);
+}
+export async function toHTMLWithRectangles(html: string, includeKaTeX: boolean = false): Promise<HTMLElement> {
+    const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8)) + '/';
     fs.mkdirSync(dir, { recursive: true });
     const path = Path.join(dir, 'Index.html');
+    let links: string = '';
+    if (includeKaTeX) {
+        const katexDir = Path.resolve('./node_modules/katex/dist/') + '/';
+        assert(fs.existsSync(katexDir), 'katex not found. Run `yarn install`?');
+
+        for (const file of ['katex.css/']) {
+            fs.copyFileSync(katexDir + file, dir + file);
+        }
+        links = `<link href="katex.css" rel="stylesheet" />`;
+    }
+    html = `<!DOCTYPE html>
+    <html>
+        <head>
+            ${links}
+        </head>
+        <body>${html}</body>
+    </html>`;
+
     fs.appendFileSync(path, html);
 
     const rectanges = await computeLayout(path);
@@ -102,15 +123,16 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     let subprocess: SpawnSyncReturns<Buffer>;
     const options = { cwd: './tools/' };
 
+    const dir = fs.statSync(path).isDirectory();
     // launch layoutengine
     if (os.platform() === 'win32') {
         if (!fs.existsSync(Path.resolve('./tools/LayoutEngine.exe')))
             throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/LayoutEngine.exe'));
-        subprocess = spawnSync('LayoutEngine.exe', ['--file', path.replace(/\\/g, '/')], options);
+        subprocess = spawnSync('LayoutEngine.exe', [dir ? '--dir' : '--file', path.replace(/\\/g, '/')], options);
     } else {
         if (!fs.existsSync(Path.resolve('./tools/layoutengine')))
             throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/layoutengine'));
-        subprocess = spawnSync('./layoutengine', ['--file', path], options);
+        subprocess = spawnSync('./layoutengine', [dir ? '--dir' : '--file', path], options);
     }
 
     if (subprocess.error !== undefined) {
