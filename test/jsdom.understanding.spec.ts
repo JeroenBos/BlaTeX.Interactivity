@@ -20,7 +20,7 @@ describe('JSDom Understanding tests', () => {
     it('passes instanceof check', () => {
         expect(
             jsDomInstance.window.document.createElement('div') instanceof
-                HTMLElement
+            HTMLElement
         ).toBe(true);
     });
 });
@@ -121,7 +121,7 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
         if (!fs.existsSync(Path.resolve('./tools/LayoutEngine.exe')))
             throw new Error(
                 'LayoutEngine not found at ' +
-                    Path.resolve('./tools/LayoutEngine.exe')
+                Path.resolve('./tools/LayoutEngine.exe')
             );
         subprocess = spawnSync(
             'LayoutEngine.exe',
@@ -132,7 +132,7 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
         if (!fs.existsSync(Path.resolve('./tools/layoutengine')))
             throw new Error(
                 'LayoutEngine not found at ' +
-                    Path.resolve('./tools/layoutengine')
+                Path.resolve('./tools/layoutengine')
             );
         subprocess = spawnSync('./layoutengine', ['--file', path], options);
     }
@@ -152,6 +152,8 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     }
 
     const stdout = await tcs.promise;
+    // tslint:disable-next-line: no-console
+    console.log(stdout);
     return parseComputeLayoutOutput([stdout]);
 }
 function parseComputeLayoutOutput(stdout: string[]): TaggedRectangle[] {
