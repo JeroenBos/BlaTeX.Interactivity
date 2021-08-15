@@ -1,4 +1,4 @@
-import { assert, sequenceIndexOf } from '../src/utils';
+import { sequenceIndexOf } from '../src/utils';
 
 describe('utils.sequenceIndexOf', () => {
     it('', () => {
