@@ -30,6 +30,13 @@
     "trailingComma": "es5",
     "tabWidth": 4
   },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
+  },
   "name": "template",
   "author": "Jeroen Bos",
   "module": "dist/template.esm.js",

@@ -116,25 +116,36 @@ export function combine<T>(...comparers: Comparer<T>[]): Comparer<T> {
     };
 }
 
+/** Creates random string from lowercase letters and digits. */
+export function createRandomString(length: number): string {
+    // see https://stackoverflow.com/a/1349426/308451
+    let result = '';
+    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+            Math.floor(Math.random() * characters.length)
+        );
+    }
+    return result;
+}
 /** Gets the index in sequence at which second starts; or -1 if the second sequence doesn't exist anywhere in the first. */
-export function sequenceIndexOf<T>(first: Iterable<T>, second: Array<T>): number {
-    if (second.length == 0)
+export function sequenceIndexOf<T>(first: Iterable<T>, second: T[]): number {
+    if (second.length === 0)
         throw new Error('second must at least have one element');
 
     let i = 0;
     let currentIndex = 0;
     for (const current of first) {
-        if (current == second[i]) {
+        if (current === second[i]) {
             i++;
-            if (i == second.length) {
+            if (i === second.length) {
                 return currentIndex - second.length + 1;
             }
         } else if (i !== 0) {
-            if (current == second[0]) {
+            if (current === second[0]) {
                 i = 1;
             }
-        }
-        else {
+        } else {
             i = 0;
         }
         currentIndex++;

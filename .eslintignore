@@ -5,6 +5,10 @@
 
 // It's probably due to a TS version and ESLint version mismatch
 
-    
 src/PointToCursorHandleConverter.ts
 
+
+// This one we ignore because the code is copy/pasted
+src/xpathutils.ts
+
+src/polyfills/DOMRect.ts
