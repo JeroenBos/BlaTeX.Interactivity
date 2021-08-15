@@ -125,7 +125,7 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
                 options
             );
         } else {
-            subprocess = spawn('tools/layoutengine', ['--file', path], options);
+            subprocess = spawn('layoutengine', ['--file', path], options);
         }
         subprocess.on('exit', (code: number, signal: NodeJS.Signals) => {
             tcs.resolve();
