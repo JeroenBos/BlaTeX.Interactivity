@@ -115,3 +115,29 @@ export function combine<T>(...comparers: Comparer<T>[]): Comparer<T> {
         return 0;
     };
 }
+
+/** Gets the index in sequence at which second starts; or -1 if the second sequence doesn't exist anywhere in the first. */
+export function sequenceIndexOf<T>(first: Iterable<T>, second: Array<T>): number {
+    if (second.length == 0)
+        throw new Error('second must at least have one element');
+
+    let i = 0;
+    let currentIndex = 0;
+    for (const current of first) {
+        if (current == second[i]) {
+            i++;
+            if (i == second.length) {
+                return currentIndex - second.length + 1;
+            }
+        } else if (i !== 0) {
+            if (current == second[0]) {
+                i = 1;
+            }
+        }
+        else {
+            i = 0;
+        }
+        currentIndex++;
+    }
+    return -1;
+}
