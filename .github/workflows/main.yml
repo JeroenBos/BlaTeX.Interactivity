@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: download LayoutEngine
+        run: bash .github/workflows/Download_LayoutEngine.sh
+
       - name: Install deps and build (with cache)
         uses: bahmutov/npm-install@v1
 
