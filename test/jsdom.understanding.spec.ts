@@ -111,10 +111,9 @@ export async function toHTMLWithRectangles(html: string): Promise<HTMLElement> {
     return element;
 }
 export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
-    const tcs = new PromiseCompletionSource<void>();
+    const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
     const options = { cwd: './tools/' };
-    const stdout: string[] = [];
 
     // launch layoutengine
     if (os.platform() === 'win32') {
@@ -140,11 +139,14 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
         console.log("stderr: " + subprocess.stderr);
         throw new Error(subprocess.error.name + ": " + subprocess.error.message);
     }
+    else {
+
+        tcs.resolve(subprocess.stdout.toString());
+    }
 
 
-    await tcs.promise;
-
-    return parseComputeLayoutOutput(stdout);
+    const stdout = await tcs.promise;
+    return parseComputeLayoutOutput([stdout]);
 }
 function parseComputeLayoutOutput(stdout: string[]): TaggedRectangle[] {
     const lines = toLines(stdout);
