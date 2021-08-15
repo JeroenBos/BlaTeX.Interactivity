@@ -1,4 +1,4 @@
-import '../src/polyfills/DOMRect';
+import '../src/polyfills';
 import { JSDOM } from 'jsdom';
 import { assert, createRandomString, sequenceIndexOf } from '../src/utils';
 import { implSymbol } from '../node_modules/jsdom/lib/jsdom/living/generated/utils';

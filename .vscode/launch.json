@@ -10,7 +10,7 @@
                 "test",
                 "--silent=false",
                 "-o",
-                "pointer" // matches files, not 'describe', not to 'it'
+                "manypoints" // matches files, not 'describe', not to 'it'
             ],
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",

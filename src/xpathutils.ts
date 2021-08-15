@@ -1,3 +1,4 @@
+//@ts-nocheck
 function getXPath(node: Element): string {
     var comp, comps = [];
     var parent = null;
