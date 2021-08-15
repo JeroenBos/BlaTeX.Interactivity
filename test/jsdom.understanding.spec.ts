@@ -19,7 +19,8 @@ describe('JSDom Understanding tests', () => {
 
     it('passes instanceof check', () => {
         expect(
-            jsDomInstance.window.document.createElement('div') instanceof HTMLElement
+            jsDomInstance.window.document.createElement('div') instanceof
+                HTMLElement
         ).toBe(true);
     });
 });
@@ -117,16 +118,22 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
 
     // launch layoutengine
     if (os.platform() === 'win32') {
-        if (!fs.existsSync(Path.resolve("./tools/LayoutEngine.exe")))
-            throw new Error("LayoutEngine not found at " + Path.resolve("./tools/LayoutEngine.exe"));
+        if (!fs.existsSync(Path.resolve('./tools/LayoutEngine.exe')))
+            throw new Error(
+                'LayoutEngine not found at ' +
+                    Path.resolve('./tools/LayoutEngine.exe')
+            );
         subprocess = spawnSync(
             'LayoutEngine.exe',
             ['--file', path.replace(/\\/g, '/')],
             options
         );
     } else {
-        if (!fs.existsSync(Path.resolve("./tools/layoutengine")))
-            throw new Error("LayoutEngine not found at " + Path.resolve("./tools/layoutengine"));
+        if (!fs.existsSync(Path.resolve('./tools/layoutengine')))
+            throw new Error(
+                'LayoutEngine not found at ' +
+                    Path.resolve('./tools/layoutengine')
+            );
         subprocess = spawnSync('./layoutengine', ['--file', path], options);
     }
 
@@ -136,14 +143,13 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
         // tslint:disable-next-line: no-console
         console.log(subprocess.error.stack);
         // tslint:disable-next-line: no-console
-        console.log("stderr: " + subprocess.stderr);
-        throw new Error(subprocess.error.name + ": " + subprocess.error.message);
-    }
-    else {
-
+        console.log('stderr: ' + subprocess.stderr);
+        throw new Error(
+            subprocess.error.name + ': ' + subprocess.error.message
+        );
+    } else {
         tcs.resolve(subprocess.stdout.toString());
     }
-
 
     const stdout = await tcs.promise;
     return parseComputeLayoutOutput([stdout]);
