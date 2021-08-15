@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         node: ['14.x']
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
 
     steps:
       - name: Checkout repo
@@ -33,6 +33,6 @@ jobs:
 
       - name: Coverage
         run: yarn test --ci --coverage
-        
+
       - name: Build
         run: yarn build
