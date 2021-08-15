@@ -115,27 +115,38 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<void>();
     let subprocess: ChildProcessWithoutNullStreams;
     const options = { cwd: './tools/' };
-    if (os.platform() === 'win32') {
-        subprocess = spawn(
-            'layoutengine.exe',
-            ['--file', path.replace(/\\/g, '/')],
-            options
-        );
-    } else {
-        subprocess = spawn('tools/layoutengine', ['--file', path], options);
+    const stdout: string[] = [];
+
+    try {
+        if (os.platform() === 'win32') {
+            subprocess = spawn(
+                'layoutengine.exe',
+                ['--file', path.replace(/\\/g, '/')],
+                options
+            );
+        } else {
+            subprocess = spawn('tools/layoutengine', ['--file', path], options);
+        }
+        subprocess.on('exit', (code: number, signal: NodeJS.Signals) => {
+            tcs.resolve();
+        });
+    } catch (e) {
+        // tslint:disable-next-line: no-console
+        console.log('error');
+        // tslint:disable-next-line: no-console
+        console.log(e);
+    } finally {
+        subprocess.stdout.on('data', data => {
+            stdout.push(data.toString());
+        });
+        const stderr: string[] = [];
+        subprocess.stderr.on('data', data => {
+            stderr.push(data.toString());
+            // tslint:disable-next-line: no-console
+            console.log(data.toString());
+        });
     }
 
-    const stdout: string[] = [];
-    subprocess.stdout.on('data', data => {
-        stdout.push(data.toString());
-    });
-    const stderr: string[] = [];
-    subprocess.stderr.on('data', data => {
-        stderr.push(data.toString());
-    });
-    subprocess.on('exit', (code: number, signal: NodeJS.Signals) => {
-        tcs.resolve();
-    });
     await tcs.promise;
 
     return parseComputeLayoutOutput(stdout);
