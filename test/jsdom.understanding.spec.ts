@@ -113,13 +113,21 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
         subprocess = spawnSync('./layoutengine', ['--file', path], options);
     }
 
-    // abort if starting process failed
+
     if (subprocess.error !== undefined) {
+        // handle failure to start the process
         tcs.reject(subprocess.error);
         console.log(subprocess.error.stack);
         console.log('stderr: ' + subprocess.stderr);
-        throw new Error(subprocess.error.name + ': ' + subprocess.error.message);
+        throw new Error("fatal: " + subprocess.error.name + ': ' + subprocess.error.message);
+    } else if (subprocess.status !== 0) {
+        // handle if the process fails internally
+        tcs.reject(subprocess.stderr.toString());
+        console.log(subprocess.error.stack);
+        console.log('stderr: ' + subprocess.stderr.toString());
+        throw new Error(subprocess.stderr.toString());
     } else {
+        // handle success by the process
         tcs.resolve(subprocess.stdout.toString());
     }
 
