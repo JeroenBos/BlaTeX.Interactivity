@@ -1,8 +1,6 @@
 # Description
-This repository represents a TypeScript template, because it's really hard to get it to work.
-Although, admittedly now with TSDX it seems a lot easier.
-
-Search and replace "template" to start using this template.
+This library will try to do one thing only:
+given a piece of KaTeX html and a viewport location, determine which source code position in the KaTeX source is the closest.
 
 When cloned, this should work:
 ```bash
