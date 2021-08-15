@@ -31,8 +31,5 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      - name: Coverage
-        run: yarn test --ci --coverage
-
       - name: Build
         run: yarn build
