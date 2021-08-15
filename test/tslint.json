@@ -1,6 +1,7 @@
 {
     "extends": "../tslint.json",
     "rules": {
-        "no-debugger": false
+        "no-debugger": false,
+        "no-console": false
     }
 }
