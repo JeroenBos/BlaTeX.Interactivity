@@ -3,3 +3,6 @@
 node_modules
 dist
 tools/
+.vscode/
+!.vscode/launch.json
+!.vscode/settings.json

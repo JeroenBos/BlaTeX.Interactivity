@@ -72,6 +72,7 @@ function* siblingOf(node: Element): Iterable<Element> {
 
 export function assert(condition: boolean, msg?: string): asserts condition {
     if (!condition) {
+        debugger;
         throw new Error(msg);
     }
 }
