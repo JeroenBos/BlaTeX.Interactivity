@@ -18,10 +18,7 @@ describe('JSDom Understanding tests', () => {
     });
 
     it('passes instanceof check', () => {
-        expect(
-            jsDomInstance.window.document.createElement('div') instanceof
-                HTMLElement
-        ).toBe(true);
+        expect(jsDomInstance.window.document.createElement('div') instanceof HTMLElement).toBe(true);
     });
 });
 
@@ -54,11 +51,7 @@ describe('JSDom Understanding tests', () => {
     });
 });
 
-function setClientSize(
-    element: HTMLElement,
-    width: number,
-    height: number
-): void {
+function setClientSize(element: HTMLElement, width: number, height: number): void {
     Object.defineProperty(element[implSymbol], 'clientWidth', {
         get: () => width,
     });
@@ -76,11 +69,7 @@ describe('JSDom Understanding tests', () => {
 });
 
 export async function toHTMLWithRectangles(html: string): Promise<HTMLElement> {
-    const dir = Path.join(
-        os.tmpdir(),
-        'blatex.interactivity.jsdom',
-        createRandomString(8)
-    );
+    const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8));
     fs.mkdirSync(dir, { recursive: true });
     const path = Path.join(dir, 'Index.html');
     fs.appendFileSync(path, html);
@@ -99,10 +88,7 @@ export async function toHTMLWithRectangles(html: string): Promise<HTMLElement> {
             const rectangleTags = rectanges.map(r => r.tag);
             const elementTags = elements.map(r => r[1].tagName);
             const index = sequenceIndexOf(rectangleTags, elementTags);
-            if (index === -1)
-                throw new Error(
-                    "It looks like the rectangles and elements don't match"
-                );
+            if (index === -1) throw new Error("It looks like the rectangles and elements don't match");
             alignedRectangles = rectanges.slice(index);
         } else throw new Error('Fewer rectangles than elements');
     }
@@ -119,21 +105,11 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     // launch layoutengine
     if (os.platform() === 'win32') {
         if (!fs.existsSync(Path.resolve('./tools/LayoutEngine.exe')))
-            throw new Error(
-                'LayoutEngine not found at ' +
-                    Path.resolve('./tools/LayoutEngine.exe')
-            );
-        subprocess = spawnSync(
-            'LayoutEngine.exe',
-            ['--file', path.replace(/\\/g, '/')],
-            options
-        );
+            throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/LayoutEngine.exe'));
+        subprocess = spawnSync('LayoutEngine.exe', ['--file', path.replace(/\\/g, '/')], options);
     } else {
         if (!fs.existsSync(Path.resolve('./tools/layoutengine')))
-            throw new Error(
-                'LayoutEngine not found at ' +
-                    Path.resolve('./tools/layoutengine')
-            );
+            throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/layoutengine'));
         subprocess = spawnSync('./layoutengine', ['--file', path], options);
     }
 
@@ -142,9 +118,7 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
         tcs.reject(subprocess.error);
         console.log(subprocess.error.stack);
         console.log('stderr: ' + subprocess.stderr);
-        throw new Error(
-            subprocess.error.name + ': ' + subprocess.error.message
-        );
+        throw new Error(subprocess.error.name + ': ' + subprocess.error.message);
     } else {
         tcs.resolve(subprocess.stdout.toString());
     }
@@ -163,8 +137,7 @@ function parseComputeLayoutOutput(stdout: string[]): TaggedRectangle[] {
             foundStart = line.startsWith('########## RECTANGLES INCOMING');
         } else {
             const dimensions = line.split(',');
-            if (dimensions.length !== 5)
-                throw new Error('Expected a tag and 4 numbers for a rectangle');
+            if (dimensions.length !== 5) throw new Error('Expected a tag and 4 numbers for a rectangle');
             rectangles.push({
                 tag: dimensions[0],
                 x: parseFloat(dimensions[1]),
@@ -184,10 +157,7 @@ function* toLines(stdOut: string[]): Iterable<string> {
             .filter(s => s !== '');
     }
 }
-function setClientDimensions(
-    element: HTMLElement,
-    rect: TaggedRectangle
-): void {
+function setClientDimensions(element: HTMLElement, rect: TaggedRectangle): void {
     assert(element.tagName === rect.tag.toUpperCase());
     const domRect = new DOMRect(rect.x, rect.y, rect.width, rect.height);
     assert(domRect.x !== undefined);
@@ -245,8 +215,6 @@ describe('JSDom Understanding tests', () => {
         expect(element.clientLeft).toBe(8);
         expect(element.clientTop).toBe(8);
         expect(element.clientWidth).toBe(784);
-        expect(element.getBoundingClientRect()).toEqual(
-            new DOMRect(8, 8, 784, 0)
-        );
+        expect(element.getBoundingClientRect()).toEqual(new DOMRect(8, 8, 784, 0));
     });
 });

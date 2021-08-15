@@ -7,9 +7,7 @@ export function maxBy<T>(
     selector: (element: HTMLElement) => T | undefined,
     comparer: Comparer<T>
 ): { element: HTMLElement; value: T }[] {
-    const bests = new TiedList<{ element: HTMLElement; value: T }>((a, b) =>
-        comparer(a.value, b.value)
-    );
+    const bests = new TiedList<{ element: HTMLElement; value: T }>((a, b) => comparer(a.value, b.value));
 
     for (const element of elements) {
         const value = selector(element);
@@ -33,11 +31,7 @@ export function maxByAround<T>(
     isViableToAscend: (element: HTMLElement) => boolean = _ => true,
     isViableToDescend: (element: HTMLElement) => boolean = _ => true
 ): { element: HTMLElement; value: T }[] {
-    return maxBy<T>(
-        walkAround(node, isViableToAscend, isViableToDescend),
-        selector,
-        comparer
-    );
+    return maxBy<T>(walkAround(node, isViableToAscend, isViableToDescend), selector, comparer);
 }
 function* walkAround(
     node: HTMLElement,
@@ -69,18 +63,10 @@ function* walkAround(
 }
 
 function* siblingOf(node: Element): Iterable<Element> {
-    for (
-        let sibling = node.nextElementSibling;
-        sibling != null;
-        sibling = sibling.nextElementSibling
-    ) {
+    for (let sibling = node.nextElementSibling; sibling != null; sibling = sibling.nextElementSibling) {
         yield sibling;
     }
-    for (
-        let sibling = node.previousElementSibling;
-        sibling != null;
-        sibling = sibling.previousElementSibling
-    ) {
+    for (let sibling = node.previousElementSibling; sibling != null; sibling = sibling.previousElementSibling) {
         yield sibling;
     }
 }
@@ -102,8 +88,7 @@ export function getDepth(element: Element): number {
 
 // combines comparers as tie breakers
 export function combine<T>(...comparers: Comparer<T>[]): Comparer<T> {
-    if (comparers.length === 0)
-        throw new Error('At least one comparer is required');
+    if (comparers.length === 0) throw new Error('At least one comparer is required');
 
     return (a, b) => {
         for (const comparer of comparers) {
@@ -122,16 +107,13 @@ export function createRandomString(length: number): string {
     let result = '';
     const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
     for (let i = 0; i < length; i++) {
-        result += characters.charAt(
-            Math.floor(Math.random() * characters.length)
-        );
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return result;
 }
 /** Gets the index in sequence at which second starts; or -1 if the second sequence doesn't exist anywhere in the first. */
 export function sequenceIndexOf<T>(first: Iterable<T>, second: T[]): number {
-    if (second.length === 0)
-        throw new Error('second must at least have one element');
+    if (second.length === 0) throw new Error('second must at least have one element');
 
     let i = 0;
     let currentIndex = 0;
