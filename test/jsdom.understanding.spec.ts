@@ -124,6 +124,7 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     }
 
     const stdout = await tcs.promise;
+    console.log(subprocess);
     console.log(stdout);
     return parseComputeLayoutOutput([stdout]);
 }
