@@ -1,7 +1,9 @@
 import { TiedList } from './TiedList';
 
+export const __DEV__: boolean = true; // Tsdx lied; it's not defined elsewhere; not reachable anyway
 export type Comparer<T> = (t: T, y: T) => number;
 
+/** Results can be empty iff elements is empty. */
 export function maxBy<T>(
     elements: Iterable<HTMLElement>,
     selector: (element: HTMLElement) => T | undefined,
@@ -17,9 +19,6 @@ export function maxBy<T>(
     }
 
     const results = bests.getUnderlyingList();
-    if (results.length === 0) {
-        throw new Error('elements was empty');
-    }
     results.sort((a, b) => comparer(a.value, b.value));
     return results;
 }
@@ -43,7 +42,7 @@ function* walkAround(
     if (isViableToDescend(node)) {
         for (const child of node.children) {
             if (child instanceof HTMLElement) {
-                yield* walkAround(child, isViableToDescend, _ => false);
+                yield* walkAround(child, _ => false, isViableToDescend);
             }
         }
     }
@@ -51,13 +50,13 @@ function* walkAround(
     if (isViableToAscend(node)) {
         for (const sibling of siblingOf(node)) {
             if (sibling instanceof HTMLElement) {
-                yield* walkAround(sibling, isViableToDescend, _ => false);
+                yield* walkAround(sibling, _ => false, isViableToDescend);
             }
         }
 
         const parent = node.parentElement;
         if (parent != null) {
-            yield* walkAround(parent, _ => false, isViableToAscend);
+            yield* walkAround(parent, isViableToAscend, _ => false);
         }
     }
 }
@@ -81,7 +80,7 @@ export function getDepth(element: Element): number {
     let parent: Element | null = element.parentElement;
     while (parent != null) {
         parentCount++;
-        parent = element.parentElement;
+        parent = parent.parentElement;
     }
     return parentCount;
 }

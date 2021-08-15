@@ -20,6 +20,9 @@ export function getCursorIndexByProximity(element: HTMLElement, offset: Distance
     }
 
     const bests = maxByAround<T>(element, select, compareByMinHorizontalDistance);
+    if (bests.length == 0)
+        return undefined;
+
     const best = bests[0];
     const result = apply(best.value.distances, best.value.loc);
     return result;
