@@ -116,46 +116,31 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     const options = { cwd: './tools/' };
     const stdout: string[] = [];
 
-
-    try {
-        if (os.platform() === 'win32') {
-            if (!fs.existsSync(Path.resolve("./tools/LayoutEngine.exe")))
-                throw new Error("LayoutEngine not found at " + Path.resolve("./tools/LayoutEngine.exe"));
-            subprocess = spawnSync(
-                'LayoutEngine.exe',
-                ['--file', path.replace(/\\/g, '/')],
-                options
-            );
-        } else {
-            if (!fs.existsSync(Path.resolve("./tools/layoutengine")))
-                throw new Error("LayoutEngine not found at " + Path.resolve("./tools/layoutengine"));
-            subprocess = spawnSync('layoutengine', ['--file', path], options);
-        }
-        if (subprocess.error !== undefined) {
-            tcs.reject(subprocess.error);
-            // tslint:disable-next-line: no-console
-            console.log(subprocess.error.stack);
-            throw new Error(subprocess.error.name + ": " + subprocess.error.message);
-        }
-        // subprocess.on('exit', (code: number, signal: NodeJS.Signals) => {
-        //     tcs.resolve();
-        // });
-    } catch (e) {
-        // tslint:disable-next-line: no-console
-        console.log('error');
-        // tslint:disable-next-line: no-console
-        console.log(e);
-    } finally {
-        // subprocess.stdout.on('data', data => {
-        //     stdout.push(data.toString());
-        // });
-        // const stderr: string[] = [];
-        // subprocess.stderr.on('data', data => {
-        //     stderr.push(data.toString());
-        //     // tslint:disable-next-line: no-console
-        //     console.log(data.toString());
-        // });
+    // launch layoutengine
+    if (os.platform() === 'win32') {
+        if (!fs.existsSync(Path.resolve("./tools/LayoutEngine.exe")))
+            throw new Error("LayoutEngine not found at " + Path.resolve("./tools/LayoutEngine.exe"));
+        subprocess = spawnSync(
+            'LayoutEngine.exe',
+            ['--file', path.replace(/\\/g, '/')],
+            options
+        );
+    } else {
+        if (!fs.existsSync(Path.resolve("./tools/layoutengine")))
+            throw new Error("LayoutEngine not found at " + Path.resolve("./tools/layoutengine"));
+        subprocess = spawnSync('layoutengine', ['--file', path], options);
     }
+
+    // abort if starting process failed
+    if (subprocess.error !== undefined) {
+        tcs.reject(subprocess.error);
+        // tslint:disable-next-line: no-console
+        console.log(subprocess.error.stack);
+        // tslint:disable-next-line: no-console
+        console.log("stderr: " + subprocess.stderr);
+        throw new Error(subprocess.error.name + ": " + subprocess.error.message);
+    }
+
 
     await tcs.promise;
 
