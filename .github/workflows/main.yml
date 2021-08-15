@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         node: ['14.x']
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest] # , ubuntu-latest]
 
     steps:
       - name: Checkout repo
@@ -22,11 +22,17 @@ jobs:
       - name: Install deps and build (with cache)
         uses: bahmutov/npm-install@v1
 
+      - name: download LayoutEngine
+        run: bash .github/workflows/Download_LayoutEngine.sh
+
+      - name: Test
+        run: yarn test --ci --maxWorkers=2 --silent=false
+
       - name: Lint
         run: yarn lint
 
-      - name: Test
-        run: yarn test --ci --coverage --maxWorkers=2
+      - name: Coverage
+        run: yarn test --ci --coverage
 
       - name: Build
         run: yarn build

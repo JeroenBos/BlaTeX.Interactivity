@@ -1,0 +1,14 @@
+// we ignore this file because eslint reports this:
+// C:\git\BlaTeX.Interactivity\src\PointToCursorHandleConverter.ts     
+// 0:0  error  Parsing error: Cannot read property 'map' of undefined
+// even though 'map' doesn't occur anywhere in that file. 
+
+// It's probably due to a TS version and ESLint version mismatch
+
+src/PointToCursorHandleConverter.ts
+
+
+// This one we ignore because the code is copy/pasted
+src/xpathutils.ts
+
+src/polyfills/DOMRect.ts

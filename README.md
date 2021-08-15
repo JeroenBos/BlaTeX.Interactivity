@@ -116,3 +116,9 @@ For vanilla CSS, you can include it at the root directory and add it to the `fil
 ## Publishing to NPM
 
 We recommend using [np](https://github.com/sindresorhus/np).
+
+
+### Installation of Node14:
+sudo apt update
+curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+sudo apt -y install nodejs

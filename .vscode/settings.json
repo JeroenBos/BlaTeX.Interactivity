@@ -8,5 +8,8 @@
         "**/dist/**": true,
         "LICENSE": true,
         "yarn.lock": true
-    }
+    },
+    "tslint.exclude": [
+        "**/xpathutils.ts",
+    ]
 }
