@@ -122,7 +122,6 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     } else if (subprocess.status !== 0) {
         // handle if the process fails internally
         tcs.reject(subprocess.stderr.toString());
-        console.log(subprocess.error.stack);
         console.log('stderr: ' + subprocess.stderr.toString());
         throw new Error(subprocess.stderr.toString());
     } else {
@@ -131,8 +130,8 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     }
 
     const stdout = await tcs.promise;
-    console.log(subprocess);
-    console.log(stdout);
+    // console.log(subprocess);
+    // console.log(stdout);
     return parseComputeLayoutOutput([stdout]);
 }
 function parseComputeLayoutOutput(stdout: string[]): TaggedRectangle[] {
