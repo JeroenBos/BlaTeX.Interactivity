@@ -128,7 +128,7 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
     } else {
         if (!fs.existsSync(Path.resolve("./tools/layoutengine")))
             throw new Error("LayoutEngine not found at " + Path.resolve("./tools/layoutengine"));
-        subprocess = spawnSync('layoutengine', ['--file', path], options);
+        subprocess = spawnSync('./layoutengine', ['--file', path], options);
     }
 
     // abort if starting process failed
