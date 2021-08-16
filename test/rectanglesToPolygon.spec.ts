@@ -3,20 +3,12 @@ import Point from '../src/polyfills/Point';
 import Rectangle from '../src/polyfills/ReadOnlyRectangle';
 import { Polygon, Segment } from '../src/polyfills/RectanglesToPolygon';
 
-function toPolygon(r: Rectangle) {
-    const topLeft = new Point(r.topLeft.x, r.topLeft.y);
-    const bottomLeft = new Point(r.bottomLeft.x, r.bottomLeft.y);
-    const bottomRight = new Point(r.bottomRight.x, r.bottomRight.y);
-    const topRight = new Point(r.topRight.x, r.topRight.y);
-    return new Polygon([topLeft, bottomLeft, bottomRight, topRight]);
-}
-
 describe('polygon merging', () => {
     it('', () => {
         const r1 = new Rectangle(0, 0, 1, 1);
         const r2 = new Rectangle(1, 0, 1, 1);
-        const g = toPolygon(r1);
-        g.merge(toPolygon(r2));
+        const g = Polygon.fromRectangle(r1);
+        g.merge(Polygon.fromRectangle(r2));
 
         g.simplify();
 
@@ -34,9 +26,9 @@ describe('polygon merging', () => {
         const r1 = new Rectangle(0, 0, 1, 1);
         const r2 = new Rectangle(1, 0, 1, 1);
         const r3 = new Rectangle(0, 1, 1, 1);
-        const g = toPolygon(r1);
-        g.merge(toPolygon(r2));
-        g.merge(toPolygon(r3));
+        const g = Polygon.fromRectangle(r1);
+        g.merge(Polygon.fromRectangle(r2));
+        g.merge(Polygon.fromRectangle(r3));
 
         g.simplify();
 
@@ -57,10 +49,10 @@ describe('polygon merging', () => {
         const r2 = new Rectangle(0, 1, 1, 1);
         const r3 = new Rectangle(2, 1, 1, 1);
         const r4 = new Rectangle(0, 2, 3, 1);
-        const g = toPolygon(r1);
-        g.merge(toPolygon(r2));
-        g.merge(toPolygon(r3));
-        g.merge(toPolygon(r4));
+        const g = Polygon.fromRectangle(r1);
+        g.merge(Polygon.fromRectangle(r2));
+        g.merge(Polygon.fromRectangle(r3));
+        g.merge(Polygon.fromRectangle(r4));
 
         g.simplify();
 
@@ -101,15 +93,16 @@ describe('polygon merging', () => {
         const r3 = new Rectangle(2, 1, 1, 1);
         const r4 = new Rectangle(0, 2, 3, 1);
 
-        const g = toPolygon(r1);
-        const p2 = toPolygon(r2);
-        g.merge(p2);
-        const p3 = toPolygon(r3);
-        g.merge(p3);
-        const p4 = toPolygon(r4);
-        g.merge(p4);
+        const g = Polygon.fromRectangle(r1);
+        const p2 = Polygon.fromRectangle(r2);
+        const p3 = Polygon.fromRectangle(r3);
+        const p4 = Polygon.fromRectangle(r4);
 
+        g.merge(p2);
+        g.merge(p3);
+        g.merge(p4);
         g.simplify();
+
         expect(g.contours.length).toBe(2);
         const corners = g.contours[0].pts;
         const hole = g.contours[1].pts;
