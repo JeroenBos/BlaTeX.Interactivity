@@ -46,13 +46,13 @@ function* divideIntoRectangles(seeds: Point[]): Iterable<Rectangle> {
     function pop(index: number): Point {
         const result = pts[index];
         pts.splice(index, 1);
-        const deleted = all.delete(result);
-        assert(deleted !== undefined);
+        // const deleted = all.delete(result);
+        // assert(deleted !== undefined);
         return result;
     }
     function unpop(index: number, value: Point): void {
         pts.splice(index, 0, value);
-        all.set(value, value);
+        // all.set(value, value);
     }
     function popTop() {
         const topLeft = pop(0);
@@ -99,7 +99,7 @@ function* divideIntoRectangles(seeds: Point[]): Iterable<Rectangle> {
     deleteAllIn(rect);
 
     yield rect;
-    if (all.size === 0) return;
+    if (pts.length === 0) return;
 
     // quadrants, where 1 is the current rectangle
     // 1|2
@@ -115,7 +115,7 @@ function* divideIntoRectangles(seeds: Point[]): Iterable<Rectangle> {
             deleteAllIn(nextRect);
 
             // TODO: we should do the fillRect recursively too
-            if (all.size !== 0) {
+            if (pts.length !== 0) {
                 const fillRect = Rectangle.fromSides(rect.x, nextRect.bottom, nextRect.right, rect.bottom);
                 yield fillRect;
                 deleteAllIn(fillRect);
