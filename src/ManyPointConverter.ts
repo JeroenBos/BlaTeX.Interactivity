@@ -3,16 +3,6 @@ import Point from './polyfills/Point';
 import Rectangle from './polyfills/Rectangle';
 import HashSet from './polyfills/HashSet{T}';
 
-export const LOCATION_ATTR_NAME = 'data-loc';
-export type Distance = { dx: number; dy: number };
-export type ManhattanDistance = {
-    distanceToLeft: number;
-    distanceToRight: number;
-    distanceToTop: number;
-    distanceToBottom: number;
-};
-export type SourceLocation = { start: number; end: number };
-
 export function getCursorIndexByProximity(element: HTMLElement): number | undefined {
     const boundingRect = element.getBoundingClientRect();
     if (boundingRect.width === 0 && boundingRect.height === 0) throw new Error('Element has not measure');
@@ -20,7 +10,7 @@ export function getCursorIndexByProximity(element: HTMLElement): number | undefi
     throw new Error('not implemented');
 }
 
-export type Polygon = { y: number };
+// export type Polygon = { y: number };
 // function* getPolygonsWithSameValue(seeds: Point[], minDistance: number, getValue: (p: Point) => number): Iterable<Rectangle> {
 //     const rects = divideIntoRectangles(seeds);
 // }
