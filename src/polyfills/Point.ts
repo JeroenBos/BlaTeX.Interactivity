@@ -17,4 +17,11 @@ export default class Point {
     public static equal(a: Point, b: Point) {
         return a.equals(b);
     }
+    public clone() {
+        return new Point(this.x, this.y);
+    }
+    public toHashkey() {
+        return this.x + "_" + this.y;
+
+    }
 }

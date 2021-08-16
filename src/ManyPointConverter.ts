@@ -10,10 +10,70 @@ export function getCursorIndexByProximity(element: HTMLElement): number | undefi
     throw new Error('not implemented');
 }
 
-// export type Polygon = { y: number };
-// function* getPolygonsWithSameValue(seeds: Point[], minDistance: number, getValue: (p: Point) => number): Iterable<Rectangle> {
-//     const rects = divideIntoRectangles(seeds);
-// }
+export type Polygon = { y: number };
+function getRectanglesByValue(seeds: Point[], getValue: (p: Point) => number, minDistance: number = 1): Map<number, Rectangle[]> {
+    assert(minDistance > 0, "minDistance must be positive");
+
+    const rects = Array.from(divideIntoRectangles(seeds));
+
+    const valueOnEachCorner = createPointHashmap<number>();
+    const result = new Map<number, Rectangle[]>();
+
+    let newRects = rects;
+    while (newRects.length != 0) {
+        const thisRoundRects = newRects;
+        for (const corner of getAllCorners(newRects)) {
+            if (!valueOnEachCorner.has(corner)) {
+                valueOnEachCorner.set(corner, getValue(corner));
+            }
+        }
+        newRects = [];
+        for (const rect of thisRoundRects) {
+            const valuesOnCorners = new Set<number>(
+                [rect.topLeft, rect.topRight, rect.bottomLeft, rect.bottomRight].map(p => {
+                    const result = valueOnEachCorner.get(p);
+                    assert(result !== undefined);
+                    return result;
+                })
+            );
+            if (valuesOnCorners.size === 1) {
+                const value = valueOnEachCorner.get(rect.topLeft);
+                assert(value !== undefined);
+                const list = result.get(value);
+                if (list === undefined)
+                    result.set(value, [rect]);
+                else
+                    list.push(rect);
+            } else {
+                if (rect.width >= minDistance * 2) {
+                    if (rect.height >= minDistance * 2) {
+                        // 0|1
+                        // 2|3
+                        const middle = new Point(rect.left + rect.width / 2.0, rect.top + rect.height / 2.0);
+                        newRects.push(Rectangle.fromCorners(rect.topLeft, middle));
+                        newRects.push(Rectangle.fromSides(middle.x, rect.top, rect.right, middle.y));
+                        newRects.push(Rectangle.fromSides(rect.left, middle.y, middle.x, rect.bottom));
+                        newRects.push(Rectangle.fromCorners(middle, rect.bottomRight));
+                    }
+                    else {
+                        newRects.push(Rectangle.fromSides(rect.left, rect.top, rect.left + rect.width / 2.0, rect.bottom));
+                        newRects.push(Rectangle.fromCorners(newRects[newRects.length - 1].topRight, rect.bottomRight));
+                    }
+
+                } else if (rect.height >= minDistance * 2) {
+                    newRects.push(Rectangle.fromSides(rect.left, rect.top, rect.right, rect.top + rect.height / 2.0));
+                    newRects.push(Rectangle.fromCorners(newRects[newRects.length - 1].bottomLeft, rect.bottomRight));
+                }
+                else {
+                    // discard rectangle
+                }
+            }
+        }
+    }
+    return result;
+}
+
+
 function divideIntoRectangles(seeds: Point[]): Iterable<Rectangle> {
     assert(seeds.length > 1, 'Insufficient points');
 
@@ -147,7 +207,7 @@ function* _divideIntoRectangles(...seeds: Point[]): Iterable<Rectangle> {
 }
 
 function includeBoundingRectangle(seeds: Point[]): { pts: Point[], container: Rectangle } {
-    const all = new HashSet<Point, Point>(p => p.x + p.y, Point.equal);
+    const all = createPointHashmap<Point>();
     for (const seed of seeds)
         all.set(seed, seed);
 
@@ -191,3 +251,20 @@ function getByTopLeftSquarelikeComparer(origin: Point): (a: Point, b: Point) => 
 }
 
 export const TEST_ONLY_divideIntoRectangles = divideIntoRectangles;
+export const TEST_ONLY_getRectanglesByValue = getRectanglesByValue;
+
+function getAllCorners(rects: Rectangle[]): Point[] {
+    const all = createPointHashmap<Point>();
+
+    for (const rect of rects) {
+        all.set(rect.topLeft, rect.topLeft);
+        all.set(rect.topRight, rect.topRight);
+        all.set(rect.bottomLeft, rect.bottomLeft);
+        all.set(rect.bottomRight, rect.bottomRight);
+    }
+    return Array.from(all.all());
+}
+
+function createPointHashmap<V>() {
+    return new HashSet<Point, V>(p => p.x + p.y, Point.equal);
+}

@@ -10,7 +10,7 @@
                 "test",
                 "--silent=false",
                 "-o",
-                "manypoints" // matches files, not 'describe', not to 'it'
+                "polygon" // matches files, not 'describe', not to 'it'
             ],
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",
