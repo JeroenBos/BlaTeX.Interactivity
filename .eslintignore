@@ -6,6 +6,7 @@
 // It's probably due to a TS version and ESLint version mismatch
 
 src/PointToCursorHandleConverter.ts
+src/ManyPointConverter.ts
 
 
 // This one we ignore because the code is copy/pasted

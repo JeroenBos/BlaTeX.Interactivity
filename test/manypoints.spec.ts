@@ -31,4 +31,13 @@ describe('Test divideIntoRectangles', () => {
         assert(new Rectangle(0, 0, 1, 1).equals(rects[0]));
         assert(new Rectangle(1, 0, 1, 1).equals(rects[1]));
     });
+
+    it('Simple 4 unit rectangles next to each other', async () => {
+        const rects = Array.from(TEST_ONLY_divideIntoRectangles([new Point(0, 0), new Point(1, 1), new Point(2, 2)]));
+
+        assert(rects.length === 3);
+        assert(new Rectangle(0, 0, 1, 1).equals(rects[0]));
+        assert(new Rectangle(1, 0, 1, 1).equals(rects[1]));
+        assert(new Rectangle(0, 1, 2, 1).equals(rects[2]));
+    });
 });
