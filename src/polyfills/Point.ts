@@ -21,7 +21,6 @@ export default class Point {
         return new Point(this.x, this.y);
     }
     public toHashkey() {
-        return this.x + "_" + this.y;
-
+        return this.x + '_' + this.y;
     }
 }

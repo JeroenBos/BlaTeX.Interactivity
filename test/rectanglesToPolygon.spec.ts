@@ -1,9 +1,7 @@
-import { assert, sequenceIndexOf } from '../src/utils';
-import Point from "../src/polyfills/Point";
-import Rectangle from "../src/polyfills/ReadOnlyRectangle";
-// import { Polygon, Contour } from '../src/polyfills/RectanglesToPolygon';
-import { Polygon, Contour, Segment } from '../src/polyfills/RectanglesToPolygon';
-
+import { assert } from '../src/utils';
+import Point from '../src/polyfills/Point';
+import Rectangle from '../src/polyfills/ReadOnlyRectangle';
+import { Polygon, Segment } from '../src/polyfills/RectanglesToPolygon';
 
 function toPolygon(r: Rectangle) {
     const topLeft = new Point(r.topLeft.x, r.topLeft.y);
@@ -81,7 +79,7 @@ describe('polygon merging', () => {
         expect(hole.findIndex(corner => corner.equals(new Point(2, 1))) !== -1);
         expect(hole.findIndex(corner => corner.equals(new Point(2, 2))) !== -1);
     });
-    
+
     it('with hole from original', () => {
         const top = new Segment(new Point(0, 0), new Point(3, 0));
         const T = new Segment(new Point(2, 1), new Point(2, 0));
@@ -111,7 +109,7 @@ describe('polygon merging', () => {
         const p4 = toPolygon(r4);
         g.merge(p4);
 
-        g.simplify()
+        g.simplify();
         expect(g.contours.length).toBe(2);
         const corners = g.contours[0].pts;
         const hole = g.contours[1].pts;
@@ -127,6 +125,4 @@ describe('polygon merging', () => {
         expect(hole.findIndex(corner => corner.compare(new Point(2, 1))) !== -1);
         expect(hole.findIndex(corner => corner.compare(new Point(2, 2))) !== -1);
     });
-
-
 });
