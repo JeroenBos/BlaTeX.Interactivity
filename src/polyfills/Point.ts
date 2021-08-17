@@ -23,4 +23,8 @@ export default class Point {
     public toHashkey() {
         return this.x + '_' + this.y;
     }
+
+    public floor() {
+        return new Point(Math.floor(this.x), Math.floor(this.y));
+    }
 }

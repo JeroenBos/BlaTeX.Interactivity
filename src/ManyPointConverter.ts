@@ -2,6 +2,7 @@ import { assert } from './utils';
 import Point from './polyfills/Point';
 import Rectangle from './polyfills/Rectangle';
 import HashSet from './polyfills/HashSet{T}';
+import { Polygon as PolygonImplementation } from './polyfills/RectanglesToPolygon';
 
 export function getCursorIndexByProximity(element: HTMLElement): number | undefined {
     const boundingRect = element.getBoundingClientRect();
@@ -10,14 +11,95 @@ export function getCursorIndexByProximity(element: HTMLElement): number | undefi
     throw new Error('not implemented');
 }
 
-export type Polygon = { y: number };
-function getRectanglesByValue(seeds: Point[], getValue: (p: Point) => number, minDistance: number = 1): Map<number, Rectangle[]> {
+export type Polygon = {
+    readonly contours: ReadonlyArray<{ readonly pts: ReadonlyArray<Point> }>
+    simplify(): void;
+};
+
+/** In this setup, as opposed to getPolygonsByValue where the lattice ends are inclusive,
+ * the lattice ends (that is the right and bottom of the bounding box) are excluded.
+ * You can think of this are the lattice being represented by the building blocks of many 
+ * unit rectangles, each unit rectangle having 4 corners. (That's ends inclusive).
+ * The coordinates can be continuous. 
+ * Lattice exclusive is more that each rectangle is a single node with a single value.
+ * It's also necessarily a discrete lattice. The node has the value of the topleft of its unit.
+ * 
+ * The discrete lattice can be mapped to the problem of continuous lattices, by
+ * - reducing the size of the bounding box by 1 on the right and bottom
+ * 
+ * The problem is that points can have different values now, depending on from which direction you approach the corner 🤔
+ */
+export function getDiscretePolygonsByValue_LatticeEndExclusive(
+    seeds: Point[],
+    getValue: (p: Point) => number): Map<number, Polygon> {
+
+    // @ts-ignore
+    const [rectanglesByValue, valuesByPts] = getRectanglesByValue(
+        seeds,
+        p => getValue(p.floor()),
+        1,
+        r => getValue(r.topLeft.floor()),
+        Math.floor
+    );
+
+    // increase the widths and heights by one to make rectangles "touching" for the next algorithm
+    // for (const [, rectangles] of rectanglesByValue) {
+    //     for (let i = 0; i < rectangles.length; i++) {
+    //         const r = rectangles[i];
+    //         rectangles[i] = new Rectangle(r.x, r.y, r.width + 1, r.height + 1);
+    //     }
+    // }
+    // for (const _ of valuesByPts.keys()) {
+    //     // TODO detect if points from the grid are missing and add unit rectangles there
+    // }
+
+    const polygons = aggregateRectangles(rectanglesByValue);
+    // TODO: decrease the polygons width and height again by one
+    // The naive implementation would check for the direction of a segment (given the clockwise guarantees of the algorithm)
+    // but then that could lead more deformities that would have to be resolved
+    // for now I'll accept being one pixes off on the bottom and right
+    return polygons;
+}
+export function getPolygonsByValue(
+    seeds: Point[],
+    getValue: (p: Point) => number,
+    minDistance: number = 1,
+): Map<number, Polygon> {
+    const [rectanglesByValue,] = getRectanglesByValue(seeds, getValue, minDistance);
+
+    return aggregateRectangles(rectanglesByValue);
+}
+function aggregateRectangles(rectanglesByValue: Map<number, Rectangle[]>): Map<number, Polygon> {
+    const result = new Map<number, Polygon>();
+    for (const [value, rectangles] of rectanglesByValue) {
+        const p = PolygonImplementation.fromRectangle(rectangles[0]);
+        for (const rectangle of rectangles.slice(1)) {
+            p.merge(PolygonImplementation.fromRectangle(rectangle));
+        }
+        result.set(value, p);
+    }
+    return result;
+}
+function getRectanglesByValue(
+    seeds: Point[],
+    getValue: (p: Point) => number,
+    minDistance: number = 1,
+    getValueUnderMinDistance: (r: Rectangle) => number | undefined = r => getValue(r.topLeft),
+    floorDistances: (q: number) => number = q => q
+): [Map<number, Rectangle[]>, HashSet<Point, number>] {
     assert(minDistance > 0, "minDistance must be positive");
 
     const rects = Array.from(divideIntoRectangles(seeds));
 
     const valueOnEachCorner = createPointHashmap<number>();
     const result = new Map<number, Rectangle[]>();
+    function setResult(value: number, rectangle: Rectangle) {
+        const list = result.get(value);
+        if (list === undefined)
+            result.set(value, [rectangle]);
+        else
+            list.push(rectangle);
+    }
 
     let newRects = rects;
     while (newRects.length != 0) {
@@ -39,38 +121,46 @@ function getRectanglesByValue(seeds: Point[], getValue: (p: Point) => number, mi
             if (valuesOnCorners.size === 1) {
                 const value = valueOnEachCorner.get(rect.topLeft);
                 assert(value !== undefined);
-                const list = result.get(value);
-                if (list === undefined)
-                    result.set(value, [rect]);
-                else
-                    list.push(rect);
+                setResult(value, rect);
+
             } else {
+                const f = floorDistances;
                 if (rect.width >= minDistance * 2) {
                     if (rect.height >= minDistance * 2) {
                         // 0|1
                         // 2|3
-                        const middle = new Point(rect.left + rect.width / 2.0, rect.top + rect.height / 2.0);
+                        const middle = new Point(rect.left + f(rect.width / 2), rect.top + f(rect.height / 2));
                         newRects.push(Rectangle.fromCorners(rect.topLeft, middle));
                         newRects.push(Rectangle.fromSides(middle.x, rect.top, rect.right, middle.y));
                         newRects.push(Rectangle.fromSides(rect.left, middle.y, middle.x, rect.bottom));
                         newRects.push(Rectangle.fromCorners(middle, rect.bottomRight));
                     }
                     else {
-                        newRects.push(Rectangle.fromSides(rect.left, rect.top, rect.left + rect.width / 2.0, rect.bottom));
+                        newRects.push(Rectangle.fromSides(rect.left, rect.top, rect.left + f(rect.width / 2), rect.bottom));
                         newRects.push(Rectangle.fromCorners(newRects[newRects.length - 1].topRight, rect.bottomRight));
                     }
 
                 } else if (rect.height >= minDistance * 2) {
-                    newRects.push(Rectangle.fromSides(rect.left, rect.top, rect.right, rect.top + rect.height / 2.0));
+                    newRects.push(Rectangle.fromSides(rect.left, rect.top, rect.right, rect.top + f(rect.height / 2)));
                     newRects.push(Rectangle.fromCorners(newRects[newRects.length - 1].bottomLeft, rect.bottomRight));
                 }
                 else {
-                    // discard rectangle
+                    // rectangle too small
+                    const value = getValueUnderMinDistance(rect);
+                    if (value !== undefined) {
+                        setResult(value, rect);
+                    } else {
+                        // too small rectangle doesn't have a value. discard it
+                    }
                 }
             }
         }
     }
-    return result;
+    // sort by topLeft point:
+    for (const [, rectangles] of result) {
+        rectangles.sort((a, b) => byTopLeftSquarelikeComparer(a.topLeft, b.topLeft));
+    }
+    return [result, valueOnEachCorner];
 }
 
 
@@ -228,27 +318,25 @@ function includeBoundingRectangle(seeds: Point[]): { pts: Point[], container: Re
 
 function getByTopLeftSquarelikeComparer(origin: Point): (a: Point, b: Point) => number {
     return (a, b) => byTopLeftSquarelikeComparer(new Point(a.x - origin.x, a.y - origin.y), new Point(b.x - origin.x, b.y - origin.y));
-
-    function byTopLeftSquarelikeComparer(a: Point, b: Point): number {
-        const aManhattanDistanceToTopLeft = a.x + a.y;
-        const bManhattanDistanceToTopLeft = b.x + b.y;
-        if (aManhattanDistanceToTopLeft < bManhattanDistanceToTopLeft)
-            return -1;
-        else if (aManhattanDistanceToTopLeft > bManhattanDistanceToTopLeft)
-            return 1;
-        // prefer the most square-like rectangle:
-        const squareLike = b.x * b.y - a.x * a.y;
-        if (squareLike !== 0) {
-            return squareLike;
-        }
-        // prefer with higher x
-        return a.x > b.x ? -1 : a.x < b.x ? 1 : 0;
-    }
-
-    // function byTopLeftComparer(a: Point, b: Point): number {
-    //     return (a.x === b.x ? 0 : a.x < b.x ? -1 : 1) + 2 * (a.y === b.y ? 0 : a.y < b.y ? -1 : 1);
-    // }
 }
+function byTopLeftSquarelikeComparer(a: Point, b: Point): number {
+    const aManhattanDistanceToTopLeft = a.x + a.y;
+    const bManhattanDistanceToTopLeft = b.x + b.y;
+    if (aManhattanDistanceToTopLeft < bManhattanDistanceToTopLeft)
+        return -1;
+    else if (aManhattanDistanceToTopLeft > bManhattanDistanceToTopLeft)
+        return 1;
+    // prefer the most square-like rectangle:
+    const squareLike = b.x * b.y - a.x * a.y;
+    if (squareLike !== 0) {
+        return squareLike;
+    }
+    // prefer with higher x
+    return a.x > b.x ? -1 : a.x < b.x ? 1 : 0;
+}
+// function byTopLeftComparer(a: Point, b: Point): number {
+//     return (a.x === b.x ? 0 : a.x < b.x ? -1 : 1) + 2 * (a.y === b.y ? 0 : a.y < b.y ? -1 : 1);
+// }
 
 export const TEST_ONLY_divideIntoRectangles = divideIntoRectangles;
 export const TEST_ONLY_getRectanglesByValue = getRectanglesByValue;

@@ -294,13 +294,13 @@ Contour.prototype._simplify = function () {
 
         // prevent div by zero:
         if (p.x === next.x && next.x === after.x) {
-            this.pts.splice(i, 1);
+            this.pts.splice((i + 1) % this.pts.length, 1);
             i--;
         } else {
             const firstSlope = (next.y - p.y) / (next.x - p.x);
             const secondSlope = (after.y - next.y) / (after.x - next.x);
             if (firstSlope === secondSlope) {
-                this.pts.splice(i, 1);
+                this.pts.splice((i + 1) % this.pts.length, 1);
                 i--;
             }
         }
