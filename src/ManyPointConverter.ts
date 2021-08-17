@@ -64,6 +64,7 @@ function aggregateRectangles(rectanglesByValue: Map<number, Rectangle[]>): Map<n
         for (const rectangle of rectangles.slice(1)) {
             p.merge(Polygon.fromRectangle(rectangle));
         }
+        p.simplify();
         result.set(value, p);
     }
     return result;

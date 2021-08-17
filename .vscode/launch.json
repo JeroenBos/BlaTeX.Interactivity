@@ -10,7 +10,7 @@
                 "test",
                 "--silent=false",
                 "-o",
-                "points" // matches files, not 'describe', not to 'it'
+                "integration" // matches files, not 'describe', not to 'it'
             ],
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",

@@ -48,7 +48,8 @@ export default class DOMRectReadOnly {
         return new Point(this.right, this.top);
     }
     public static fromRect(other?: DOMRectInit): DOMRectReadOnly {
-        throw new Error('not implemented' + other);
+        if (other === undefined) return new DOMRectReadOnly(0, 0, 0, 0);
+        return new DOMRectReadOnly(other.x ?? 0, other.y ?? 0, other.width ?? 0, other.height ?? 0);
     }
     public toJSON(): string {
         return `{ "x": ${this.x}, "y": ${this.y}, "width": ${this.width}, "height": ${this.height} }`;
