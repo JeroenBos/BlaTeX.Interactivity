@@ -11,7 +11,7 @@ function swapRemoveArrayItemAt(ar: any[], i: number) {
 export default class HashMap<K, V> {
     m = new Map<number, { k: K; v: V }[]>();
     size: number = 0;
-    constructor(private hash: (k: K) => number, private trueEqual: (a: K, b: K) => boolean) { }
+    constructor(private hash: (k: K) => number, private trueEqual: (a: K, b: K) => boolean) {}
     set(k: K, v: V): V | undefined {
         //returns the old v for that k
         var kh = this.hash(k);

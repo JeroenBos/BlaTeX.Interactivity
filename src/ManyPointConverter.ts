@@ -2,19 +2,7 @@ import { assert } from './utils';
 import Point from './polyfills/Point';
 import Rectangle from './polyfills/Rectangle';
 import HashSet from './polyfills/HashSet{T}';
-import { Polygon as PolygonImplementation } from './polyfills/RectanglesToPolygon';
-
-export function getCursorIndexByProximity(element: HTMLElement): number | undefined {
-    const boundingRect = element.getBoundingClientRect();
-    if (boundingRect.width === 0 && boundingRect.height === 0) throw new Error('Element has not measure');
-
-    throw new Error('not implemented');
-}
-
-export type Polygon = {
-    readonly contours: ReadonlyArray<{ readonly pts: ReadonlyArray<Point> }>
-    simplify(): void;
-};
+import { Polygon } from './polyfills/RectanglesToPolygon';
 
 /** In this setup, as opposed to getPolygonsByValue where the lattice ends are inclusive,
  * the lattice ends (that is the right and bottom of the bounding box) are excluded.
@@ -72,9 +60,9 @@ export function getPolygonsByValue(
 function aggregateRectangles(rectanglesByValue: Map<number, Rectangle[]>): Map<number, Polygon> {
     const result = new Map<number, Polygon>();
     for (const [value, rectangles] of rectanglesByValue) {
-        const p = PolygonImplementation.fromRectangle(rectangles[0]);
+        const p = Polygon.fromRectangle(rectangles[0]);
         for (const rectangle of rectangles.slice(1)) {
-            p.merge(PolygonImplementation.fromRectangle(rectangle));
+            p.merge(Polygon.fromRectangle(rectangle));
         }
         result.set(value, p);
     }

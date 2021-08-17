@@ -1,8 +1,50 @@
 // @ts-nocheck
 // Segment object
-function Segment(a, b) {
-    this.ptA = new Point(a);
-    this.ptB = new Point(b);
+class Segment {
+    constructor(a, b) {
+        this.ptA = new Point(a);
+        this.ptB = new Point(b);
+    }
+
+    intersection(other) {
+        return intersect(
+            this.ptA.x,
+            this.ptA.y,
+            this.ptB.x,
+            this.ptB.y,
+            other.ptA.x,
+            other.ptA.y,
+            other.ptB.x,
+            other.ptB.y
+        );
+        // line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
+        // Determine the intersection point of two line segments
+        // Return FALSE if the lines don't intersect
+        function intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+            // Check if none of the lines are of length 0
+            if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
+                return undefined;
+            }
+            let denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+
+            // Lines are parallel
+            if (denominator === 0) {
+                return undefined;
+            }
+
+            let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
+            let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
+            // is the intersection along the segments
+            if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+                return undefined;
+            }
+            // Return a object with the x and y coordinates of the intersection
+            let x = x1 + ua * (x2 - x1);
+            let y = y1 + ua * (y2 - y1);
+
+            return new Point(x, y);
+        }
+    }
 }
 Segment.prototype.toString = function () {
     return '[' + this.ptA + ',' + this.ptB + ']';
@@ -22,60 +64,29 @@ Segment.prototype.strictIntersection = function (other) {
 
     return this.intersection(other);
 };
-Segment.prototype.intersection = function (other) {
-    return intersect(
-        this.ptA.x,
-        this.ptA.y,
-        this.ptB.x,
-        this.ptB.y,
-        other.ptA.x,
-        other.ptA.y,
-        other.ptB.x,
-        other.ptB.y
-    );
-    // line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
-    // Determine the intersection point of two line segments
-    // Return FALSE if the lines don't intersect
-    function intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
-        // Check if none of the lines are of length 0
-        if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
-            return false;
+
+class Point {
+    constructor(a, b) {
+        // a=x,b=y
+        if (b !== undefined) {
+            this.x = a;
+            this.y = b;
         }
-        let denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
-
-        // Lines are parallel
-        if (denominator === 0) {
-            return false;
+        // a=Point or {x:?,y:?,id:?}
+        else if (a !== undefined && a) {
+            this.x = a.x;
+            this.y = a.y;
         }
-
-        let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
-        let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
-        // is the intersection along the segments
-        if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
-            return false;
+        // empty
+        else {
+            this.x = this.y = 0;
         }
-        // Return a object with the x and y coordinates of the intersection
-        let x = x1 + ua * (x2 - x1);
-        let y = y1 + ua * (y2 - y1);
-
-        return new Point(x, y);
     }
-};
-
-function Point(a, b) {
-    // a=x,b=y
-    if (b !== undefined) {
-        this.x = a;
-        this.y = b;
+    equals(other, strict = false) {
+        return this.x === other.x && this.y === other.y;
     }
-    // a=Point or {x:?,y:?,id:?}
-    else if (a !== undefined && a) {
-        this.x = a.x;
-        this.y = a.y;
-    }
-    // empty
-    else {
-        this.x = this.y = 0;
+    compare(other, strict = false) {
+        return this.x === other.x && this.y === other.y;
     }
 }
 Point.prototype.toString = function () {
@@ -104,38 +115,35 @@ Point.prototype.set = function (a) {
     this.x = a.x;
     this.y = a.y;
 };
-Point.prototype.compare = function (other, strict) {
-    return this.x === other.x && this.y === other.y;
-};
-Point.prototype.equals = function (other, strict) {
-    return this.x === other.x && this.y === other.y;
-};
 
 // Contour object, a collection of points forming a closed figure
 // Clockwise = filled, counterclockwise = hollow
-function Contour(a) {
-    this.pts = []; // no points
-    if (a) {
-        var iPt;
-        var nPts;
-        if (a instanceof Contour) {
-            var pts = a.pts;
-            nPts = pts.length;
-            for (iPt = 0; iPt < nPts; iPt++) {
-                this.pts.push(pts[iPt].clone());
+class Contour {
+    pts: Point[];
+    constructor(a) {
+        this.pts = []; // no points
+        if (a) {
+            var iPt;
+            var nPts;
+            if (a instanceof Contour) {
+                var pts = a.pts;
+                nPts = pts.length;
+                for (iPt = 0; iPt < nPts; iPt++) {
+                    this.pts.push(pts[iPt].clone());
+                }
+                if (a.bbox) {
+                    this.bbox = a.bbox.clone();
+                }
+                this.area = a.area;
+                this.hole = a.hole; // may sound funny..
+            } else if (a instanceof Array) {
+                nPts = a.length;
+                for (iPt = 0; iPt < nPts; iPt++) {
+                    this.pts.push(a[iPt].clone());
+                }
+            } else {
+                alert("Contour ctor: Unknown arg 'a'");
             }
-            if (a.bbox) {
-                this.bbox = a.bbox.clone();
-            }
-            this.area = a.area;
-            this.hole = a.hole; // may sound funny..
-        } else if (a instanceof Array) {
-            nPts = a.length;
-            for (iPt = 0; iPt < nPts; iPt++) {
-                this.pts.push(a[iPt].clone());
-            }
-        } else {
-            alert("Contour ctor: Unknown arg 'a'");
         }
     }
 }
@@ -308,28 +316,165 @@ Contour.prototype._simplify = function () {
 };
 
 // Polygon object, a collection of Contour objects
-function Polygon(a) {
-    this.contours = []; // no contour
-    if (a) {
-        if (a instanceof Polygon) {
-            var contours = a.contours;
-            var nContours = contours.length;
-            for (var iContour = 0; iContour < nContours; iContour++) {
-                this.contours.push(new Contour(contours[iContour]));
+class Polygon {
+    public contours: Contour[];
+    constructor(a) {
+        this.contours = []; // no contour
+        if (a) {
+            if (a instanceof Polygon) {
+                var contours = a.contours;
+                var nContours = contours.length;
+                for (var iContour = 0; iContour < nContours; iContour++) {
+                    this.contours.push(new Contour(contours[iContour]));
+                }
+                if (this.bbox) {
+                    this.bbox = a.bbox.clone();
+                }
+                this.area = a.area;
+                if (this.centroid) {
+                    this.centroid = a.centroid.clone();
+                }
+                this.mostlyHollow = a.mostlyHollow;
+            } else if (a instanceof Array) {
+                this.contours.push(new Contour(a));
+            } else {
+                alert("Polygon ctor: Unknown arg 'a'");
             }
-            if (this.bbox) {
-                this.bbox = a.bbox.clone();
-            }
-            this.area = a.area;
-            if (this.centroid) {
-                this.centroid = a.centroid.clone();
-            }
-            this.mostlyHollow = a.mostlyHollow;
-        } else if (a instanceof Array) {
-            this.contours.push(new Contour(a));
-        } else {
-            alert("Polygon ctor: Unknown arg 'a'");
         }
+    }
+    static fromRectangle(r) {
+        const topLeft = new Point(r.topLeft.x, r.topLeft.y);
+        const bottomLeft = new Point(r.bottomLeft.x, r.bottomLeft.y);
+        const bottomRight = new Point(r.bottomRight.x, r.bottomRight.y);
+        const topRight = new Point(r.topRight.x, r.topRight.y);
+        return new Polygon([topLeft, bottomLeft, bottomRight, topRight]);
+    }
+
+    simplify() {
+        // merge segments that are extensions of each other
+        for (const contour of this.contours) {
+            contour._simplify();
+        }
+    }
+
+    merge(other) {
+        for (const contour of this.contours) {
+            for (const otherContour of other.contours) {
+                contour.divideOnIntersections(otherContour);
+            }
+        }
+        // Simply put, this algorithm XOR each segment of
+        // a polygon with each segment of another polygon.
+        // This means we delete any segment which appear an
+        // even number of time. Whatever segments are left in the
+        // collection are connected together to form one or more
+        // contour.
+        // Of course, this works because we know we are working
+        // with polygons which are perfectly adjacent and never
+        // overlapping.
+        // A nice side-effect of the current algorithm is that
+        // we do not need to know expressly which contours are full
+        // and which are holes: The contours created will automatically
+        // have a clockwise/counterclockwise direction such that they
+        // fits exactly the non-zero winding number rule used by the
+        // <canvas> element, thus suitable to be used as is for
+        // clipping and complex polygon filling.
+        // TODO: write an article to illustrate exactly how this work.
+        // TODO: handle special cases here (ex. empty polygon, etc)
+
+        // A Javascript object can be used as an associative array, but
+        // they are not real associative array, as there is no way
+        // to query the number of entries in the object. For this
+        // reason, we maintain an element counter ourself.
+        var segments = {};
+        var contours = this.contours;
+        var nContours = contours.length;
+        var pts;
+        var nPts;
+        var iPtA;
+        var iPtB;
+        var idA;
+        var idB;
+        for (var iContour = 0; iContour < nContours; iContour++) {
+            pts = contours[iContour].pts;
+            nPts = pts.length;
+            iPtA = nPts - 1;
+            for (iPtB = 0; iPtB < nPts; iPtA = iPtB++) {
+                idA = pts[iPtA].toHashkey();
+                idB = pts[iPtB].toHashkey();
+                if (!segments[idA]) {
+                    segments[idA] = { n: 1, pts: {} };
+                } else {
+                    segments[idA].n++;
+                }
+                segments[idA].pts[idB] = new Segment(pts[iPtA], pts[iPtB]);
+            }
+        }
+        // enumerate segments in other's contours, eliminate duplicate
+        contours = other.contours;
+        nContours = contours.length;
+        for (iContour = 0; iContour < nContours; iContour++) {
+            pts = contours[iContour].pts;
+            nPts = pts.length;
+            iPtA = nPts - 1;
+            for (iPtB = 0; iPtB < nPts; iPtA = iPtB++) {
+                idA = pts[iPtA].toHashkey();
+                idB = pts[iPtB].toHashkey();
+                // duplicate (we eliminate same segment in reverse direction)
+                if (segments[idB] && segments[idB].pts[idA]) {
+                    delete segments[idB].pts[idA];
+                    if (!--segments[idB].n) {
+                        delete segments[idB];
+                    }
+                }
+                // not a duplicate
+                else {
+                    if (!segments[idA]) {
+                        segments[idA] = { n: 1, pts: {} };
+                    } else {
+                        segments[idA].n++;
+                    }
+                    segments[idA].pts[idB] = new Segment(pts[iPtA], pts[iPtB]);
+                }
+            }
+        }
+        // recreate and store new contours by jumping from one point to the next,
+        // using the second point of the segment as hash key for next segment
+        this.contours = []; // regenerate new contours
+        var contour;
+        var segment;
+        for (idA in segments) {
+            // we need this to get a starting point for a new contour
+            contour = new Contour();
+            this.contours.push(contour);
+            for (idB in segments[idA].pts) {
+                break;
+            }
+            segment = segments[idA].pts[idB];
+            while (segment) {
+                contour.addPoint(segment.ptA);
+                // remove from collection since it has now been used
+                delete segments[idA].pts[idB];
+                if (!--segments[idA].n) {
+                    delete segments[idA];
+                }
+                idA = segment.ptB.toHashkey();
+                if (segments[idA]) {
+                    for (idB in segments[idA].pts) {
+                        break;
+                    } // any end point will do
+                    segment = segments[idA].pts[idB];
+                } else {
+                    segment = null;
+                }
+            }
+        }
+
+        // invalidate cached values
+        delete this.bbox;
+        delete this.area;
+        delete this.centroid;
+        delete this.mostlyHollow;
     }
 }
 Polygon.prototype.clone = function () {
@@ -346,13 +491,7 @@ Polygon.prototype.getBbox = function () {
     }
     return this.bbox.clone();
 };
-Polygon.fromRectangle = function (r) {
-    const topLeft = new Point(r.topLeft.x, r.topLeft.y);
-    const bottomLeft = new Point(r.bottomLeft.x, r.bottomLeft.y);
-    const bottomRight = new Point(r.bottomRight.x, r.bottomRight.y);
-    const topRight = new Point(r.topRight.x, r.topRight.y);
-    return new Polygon([topLeft, bottomLeft, bottomRight, topRight]);
-}
+
 Polygon.prototype.getArea = function () {
     // We addup the area of all our contours.
     // Contours representing holes will have a negative area.
@@ -477,132 +616,6 @@ Polygon.prototype.getPoints = function () {
         }
     }
     return r;
-};
-Polygon.prototype.merge = function (other) {
-    for (const contour of this.contours) {
-        for (const otherContour of other.contours) {
-            contour.divideOnIntersections(otherContour);
-        }
-    }
-    // Simply put, this algorithm XOR each segment of
-    // a polygon with each segment of another polygon.
-    // This means we delete any segment which appear an
-    // even number of time. Whatever segments are left in the
-    // collection are connected together to form one or more
-    // contour.
-    // Of course, this works because we know we are working
-    // with polygons which are perfectly adjacent and never
-    // overlapping.
-    // A nice side-effect of the current algorithm is that
-    // we do not need to know expressly which contours are full
-    // and which are holes: The contours created will automatically
-    // have a clockwise/counterclockwise direction such that they
-    // fits exactly the non-zero winding number rule used by the
-    // <canvas> element, thus suitable to be used as is for
-    // clipping and complex polygon filling.
-    // TODO: write an article to illustrate exactly how this work.
-    // TODO: handle special cases here (ex. empty polygon, etc)
-
-    // A Javascript object can be used as an associative array, but
-    // they are not real associative array, as there is no way
-    // to query the number of entries in the object. For this
-    // reason, we maintain an element counter ourself.
-    var segments = {};
-    var contours = this.contours;
-    var nContours = contours.length;
-    var pts;
-    var nPts;
-    var iPtA;
-    var iPtB;
-    var idA;
-    var idB;
-    for (var iContour = 0; iContour < nContours; iContour++) {
-        pts = contours[iContour].pts;
-        nPts = pts.length;
-        iPtA = nPts - 1;
-        for (iPtB = 0; iPtB < nPts; iPtA = iPtB++) {
-            idA = pts[iPtA].toHashkey();
-            idB = pts[iPtB].toHashkey();
-            if (!segments[idA]) {
-                segments[idA] = { n: 1, pts: {} };
-            } else {
-                segments[idA].n++;
-            }
-            segments[idA].pts[idB] = new Segment(pts[iPtA], pts[iPtB]);
-        }
-    }
-    // enumerate segments in other's contours, eliminate duplicate
-    contours = other.contours;
-    nContours = contours.length;
-    for (iContour = 0; iContour < nContours; iContour++) {
-        pts = contours[iContour].pts;
-        nPts = pts.length;
-        iPtA = nPts - 1;
-        for (iPtB = 0; iPtB < nPts; iPtA = iPtB++) {
-            idA = pts[iPtA].toHashkey();
-            idB = pts[iPtB].toHashkey();
-            // duplicate (we eliminate same segment in reverse direction)
-            if (segments[idB] && segments[idB].pts[idA]) {
-                delete segments[idB].pts[idA];
-                if (!--segments[idB].n) {
-                    delete segments[idB];
-                }
-            }
-            // not a duplicate
-            else {
-                if (!segments[idA]) {
-                    segments[idA] = { n: 1, pts: {} };
-                } else {
-                    segments[idA].n++;
-                }
-                segments[idA].pts[idB] = new Segment(pts[iPtA], pts[iPtB]);
-            }
-        }
-    }
-    // recreate and store new contours by jumping from one point to the next,
-    // using the second point of the segment as hash key for next segment
-    this.contours = []; // regenerate new contours
-    var contour;
-    var segment;
-    for (idA in segments) {
-        // we need this to get a starting point for a new contour
-        contour = new Contour();
-        this.contours.push(contour);
-        for (idB in segments[idA].pts) {
-            break;
-        }
-        segment = segments[idA].pts[idB];
-        while (segment) {
-            contour.addPoint(segment.ptA);
-            // remove from collection since it has now been used
-            delete segments[idA].pts[idB];
-            if (!--segments[idA].n) {
-                delete segments[idA];
-            }
-            idA = segment.ptB.toHashkey();
-            if (segments[idA]) {
-                for (idB in segments[idA].pts) {
-                    break;
-                } // any end point will do
-                segment = segments[idA].pts[idB];
-            } else {
-                segment = null;
-            }
-        }
-    }
-
-    // invalidate cached values
-    delete this.bbox;
-    delete this.area;
-    delete this.centroid;
-    delete this.mostlyHollow;
-};
-
-Polygon.prototype.simplify = function () {
-    // merge segments that are extensions of each other
-    for (const contour of this.contours) {
-        contour._simplify();
-    }
 };
 // Bounding box object
 function Bbox(a, b, c, d) {
