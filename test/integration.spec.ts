@@ -1,5 +1,5 @@
 import { toHTMLWithRectangles } from './jsdom.understanding.spec';
-import { allPointsByIndexToSVG } from '../src/paintAllPointsByIndex';
+import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { assert } from '../src/utils';
 
 const getStyle = (value: number): string => {
@@ -18,7 +18,7 @@ describe('Color HTML based on source locations', () => {
     it('<div>TEXT</div>', async () => {
         const html = '<div>TEXT</div>';
         const element = await toHTMLWithRectangles(html);
-        const svg = allPointsByIndexToSVG(element, getStyle);
+        const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         console.log(svg);
         assert(
@@ -32,7 +32,7 @@ describe('Color HTML based on source locations', () => {
     it('<div data-loc="0,1">TEXT</div>', async () => {
         const html = '<div data-loc="0,1">TEXT</div>';
         const element = await toHTMLWithRectangles(html);
-        const svg = allPointsByIndexToSVG(element, getStyle);
+        const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         console.log(svg);
         assert(
