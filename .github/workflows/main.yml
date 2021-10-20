@@ -27,7 +27,8 @@ jobs:
 
       - name: Test
         run: yarn test --ci --maxWorkers=2 --silent=false
-
+        timeout-minutes: 3
+        
       - name: Lint
         run: yarn lint
 
