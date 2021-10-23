@@ -80,7 +80,7 @@ export async function toHTMLWithRectangles(html: string, includeKaTeX: boolean =
         const katexDir = Path.resolve('./node_modules/katex/dist/') + '/';
         assert(fs.existsSync(katexDir), 'katex not found. Run `yarn install`?');
 
-        for (const file of ['katex.css/']) {
+        for (const file of ['katex.css']) {
             fs.copyFileSync(katexDir + file, dir + file);
         }
         links = `<link href="katex.css" rel="stylesheet" />`;
