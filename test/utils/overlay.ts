@@ -1,12 +1,14 @@
 import fs from 'fs';
+import Point from '../../src/polyfills/Point';
 
 /** Overlays two HTMLs. */
 export function overlay(
     html: string,
     htmlToBeOverlayed: string,
+    offset: Point = new Point(0, 0),
     path: string | undefined = './test/index.html'
 ): string {
-    const overlayPrefix = `<div style="width:100%; height:100%; position:absolute; top:0; left:0; z-index:10; fill-opacity: 50%; ">`;
+    const overlayPrefix = `<div style="width:100%; height:100%; position:absolute; left:${offset.x}; top:${offset.y}; z-index:10; fill-opacity: 50%; ">`;
     const overlayPostfix = `</div>`;
 
     const insertionIndex = getInsertionIndex(html);
