@@ -5,7 +5,7 @@ import { implSymbol } from '../node_modules/jsdom/lib/jsdom/living/generated/uti
 import os from 'os';
 import fs from 'fs';
 import Path from 'path';
-import { spawnSync, SpawnSyncReturns } from 'child_process';
+import { spawnSync, SpawnSyncReturns, execSync } from 'child_process';
 import { getAllElementsByXPath } from '../src/xpathutils';
 
 describe('JSDom Understanding tests', () => {
@@ -130,8 +130,12 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
             throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/LayoutEngine.exe'));
         subprocess = spawnSync('LayoutEngine.exe', [dir ? '--dir' : '--file', path.replace(/\\/g, '/')], options);
     } else {
-        if (!fs.existsSync(Path.resolve('./tools/layoutengine')))
-            throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/layoutengine'));
+        const enginePath = Path.resolve('./tools/layoutengine');
+        if (!fs.existsSync(enginePath)) throw new Error(`LayoutEngine not found at '${enginePath}`);
+
+        const bashOutput = execSync(`/bin/bash -c "[[ -x '${enginePath}' ]] && echo true || echo false"`).toString();
+        assert(bashOutput === 'true\n', './tools/layoutengine does not have the executable bit set!');
+
         subprocess = spawnSync('./layoutengine', [dir ? '--dir' : '--file', path], options);
     }
 
