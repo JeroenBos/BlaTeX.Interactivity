@@ -9,8 +9,9 @@
             "args": [
                 "test",
                 "--silent=false",
+                "--verbose",
                 "-o",
-                "integration" // matches files, not 'describe', not to 'it'
+                "overlay" // matches files, not 'describe', not to 'it'
             ],
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",
