@@ -64,7 +64,6 @@ describe('Color HTML based on source locations', () => {
         const element = await toHTMLWithRectangles(html);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
-        console.log(svg);
         assert(
             svg ===
                 `<svg width="784" height="18">

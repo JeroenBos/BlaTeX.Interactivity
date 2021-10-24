@@ -22,7 +22,7 @@ export function allPointsByIndexToSVG(
 export function allPointsByIndexToSVGByProximity(element: HTMLElement, getStyle: (value: number) => string): string {
     const getValue = function(p: Point) {
         const result = getCursorIndexByProximity(element, { dx: p.x, dy: p.y }) ?? -1;
-        console.log(`${p.x}, ${p.y}: ${result}`);
+        // console.log(`${p.x}, ${p.y}: ${result}`);
         return result;
     };
     return allPointsByIndexToSVG(element, getValue, getStyle);

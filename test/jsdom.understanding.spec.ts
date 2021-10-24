@@ -71,7 +71,7 @@ describe('JSDom Understanding tests', () => {
 export async function toHTMLWithRectanglesWithKatex(html: string): Promise<HTMLElement> {
     return toHTMLWithRectangles(html, true);
 }
-export async function toHTMLWithRectangles(html: string, includeKaTeX: boolean = false): Promise<HTMLElement> {
+export async function toHTMLWithRectangles(htmlBody: string, includeKaTeX: boolean = false): Promise<HTMLElement> {
     const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8)) + '/';
     fs.mkdirSync(dir, { recursive: true });
     const path = Path.join(dir, 'Index.html');
@@ -85,12 +85,12 @@ export async function toHTMLWithRectangles(html: string, includeKaTeX: boolean =
         }
         links = `<link href="katex.css" rel="stylesheet" />`;
     }
-    html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
     <html>
         <head>
             ${links}
         </head>
-        <body>${html}</body>
+        <body>${htmlBody}</body>
     </html>`;
 
     fs.appendFileSync(path, html);
