@@ -3,15 +3,31 @@ import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { assert } from '../src/utils';
 
 const getStyle = (value: number): string => {
-    switch (value) {
-        case -1:
-            return 'fill:gray;fill-rule: evenodd';
+    const common = '; stroke: black; stroke-width: 1; ';
+    if (value === -1) return 'fill:gray;fill-rule: evenodd';
+    switch (value % 10) {
         case 0:
-            return 'fill:black;fill-rule: evenodd';
+            return 'fill:black;fill-rule: evenodd' + common;
         case 1:
-            return 'fill:red;fill-rule: evenodd';
+            return 'fill:red;fill-rule: evenodd' + common;
+        case 2:
+            return 'fill:blue;fill-rule: evenodd' + common;
+        case 3:
+            return 'fill:purple;fill-rule: evenodd' + common;
+        case 4:
+            return 'fill:light-blue;fill-rule: evenodd' + common;
+        case 5:
+            return 'fill:orange;fill-rule: evenodd' + common;
+        case 6:
+            return 'fill:cyan;fill-rule: evenodd' + common;
+        case 7:
+            return 'fill:light-green;fill-rule: evenodd' + common;
+        case 8:
+            return 'fill:light-gray;fill-rule: evenodd' + common;
+        case 9:
+            return 'fill:green;fill-rule: evenodd' + common;
         default:
-            return 'fill:yellow;fill-rule: evenodd';
+            return 'fill:yellow;fill-rule: evenodd' + common;
     }
 };
 describe('Color HTML based on source locations', () => {
