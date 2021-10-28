@@ -9,7 +9,7 @@ describe('Test html overlay', () => {
 
         assert(
             overlayed ===
-                '<svg width="784" height="18"> <rect width="100" height="100" style="fill: red"/> </svg><div style="width:100%; height:100%; position:absolute; left:0; top:0; z-index:10; fill-opacity: 50%; "><svg width="784" height="18"> <rect width="100" height="100" style="fill: green" left="10" top="10"/> </svg></div>'
+            '<svg width="784" height="18"> <rect width="100" height="100" style="fill: red"/> </svg><div style="width:100%; height:100%; position:absolute; left:0px; top:0px; z-index:10; fill-opacity: 50%; "><svg width="784" height="18"> <rect width="100" height="100" style="fill: green" left="10" top="10"/> </svg></div>'
         );
     });
 
