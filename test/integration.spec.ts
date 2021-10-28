@@ -48,9 +48,9 @@ describe('Color HTML based on source locations', () => {
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
-        assert(
-            testableSvgPart ===
-                `<svg width="784" height="18">
+        assertEqual(
+            testableSvgPart,
+            `<svg width="784" height="18">
 <path d="M792,0 0,0 0,26 792,26 792,0" />
 </svg>`
         );
@@ -62,9 +62,9 @@ describe('Color HTML based on source locations', () => {
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
-        assert(
-            testableSvgPart ===
-                `<svg width="784" height="18">
+        assertEqual(
+            testableSvgPart,
+            `<svg width="784" height="18">
 <path d="M392,0 0,0 0,26 392,26 392,0" />
 <path d="M792,26 792,0 400,0 400,0 392,0 392,26 792,26" />
 </svg>`
@@ -77,9 +77,9 @@ describe('Color HTML based on source locations', () => {
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
-        assert(
-            testableSvgPart ===
-                `<svg width="784" height="36">
+        assertEqual(
+            testableSvgPart,
+            `<svg width="784" height="36">
 <path d="M392,0 0,0 0,44 392,44 392,0" />
 <path d="M792,44 792,0 400,0 400,0 392,0 392,44 792,44" />
 </svg>`
@@ -92,9 +92,9 @@ describe('Color HTML based on source locations', () => {
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
-        assert(
-            testableSvgPart ===
-                `<svg width="784" height="18">
+        assertEqual(
+            testableSvgPart,
+            `<svg width="784" height="18">
 <path d="M21,0 0,0 0,26 21,26 21,0" />
 <path d="M62,26 106,26 106,0 62,0 62,26
  M106,26 204,26 204,0 106,0 106,26

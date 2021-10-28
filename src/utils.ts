@@ -69,7 +69,12 @@ function* siblingOf(node: Element): Iterable<Element> {
         yield sibling;
     }
 }
-
+export function assertEqual(actual: any, expected: any, msg?: string) {
+    if (actual !== expected) {
+        debugger;
+        throw new Error(msg ?? `${actual} != '${expected}'`);
+    }
+}
 export function assert(condition: boolean, msg?: string): asserts condition {
     if (!condition) {
         debugger;

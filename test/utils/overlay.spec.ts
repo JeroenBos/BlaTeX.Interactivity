@@ -1,4 +1,5 @@
-import { assert } from '../../src/utils';
+import { assertEqual } from '../../src/utils';
+import { getTestableSvgPart } from '../integration.spec';
 import { overlay } from './overlay';
 
 describe('Test html overlay', () => {
@@ -7,8 +8,8 @@ describe('Test html overlay', () => {
         const html2 = `<svg width="784" height="18"> <rect width="100" height="100" style="fill: green" left="10" top="10"/> </svg>`;
         const overlayed = overlay(html1, html2);
 
-        assert(
-            overlayed ===
+        assertEqual(
+            overlayed,
             '<svg width="784" height="18"> <rect width="100" height="100" style="fill: red"/> </svg><div style="width:100%; height:100%; position:absolute; left:0px; top:0px; z-index:10; fill-opacity: 50%; "><svg width="784" height="18"> <rect width="100" height="100" style="fill: green" left="10" top="10"/> </svg></div>'
         );
     });
@@ -25,10 +26,16 @@ describe('Test html overlay', () => {
         const svg = `<svg width="784" height="18"> <rect width="100" height="100" style="fill: green" left="10" top="10"/> </svg>`;
 
         const overlayed = overlay(html, svg);
-
-        assert(
-            overlayed.replace(/\n/g, '') ===
-                `<!DOCTYPE html>        <html>            <head>            <link href="katex.css" rel="stylesheet" />  <!-- doesn't exist, but doesn't matter for test -->            </head>            <body><svg width="784" height="18"> <rect width="100" height="100" style="fill: red"/> </svg><div style="width:100%; height:100%; position:absolute; left:0; top:0; z-index:10; fill-opacity: 50%; "><svg width="784" height="18"> <rect width="100" height="100" style="fill: green" left="10" top="10"/> </svg></div></body>        </html>`
+        const testable = getTestableSvgPart(overlayed);
+        assertEqual(
+            testable,
+            `<!DOCTYPE html>
+        <html>
+            <head>
+            <link href="katex.css" rel="stylesheet" />  <!-- doesn't exist, but doesn't matter for test -->
+            </head>
+            <body><svg width="784" height="18"> <rect width="100" height="100"/> </svg><div><svg width="784" height="18"> <rect width="100" height="100" left="10" top="10"/> </svg></div></body>
+        </html>`
         );
     });
 });
