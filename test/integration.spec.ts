@@ -1,7 +1,19 @@
 import { toHTMLElementWithBoundingRectangles } from './jsdom.understanding.spec';
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
-import { assert } from '../src/utils';
+import { assertEqual } from '../src/utils';
+import { overlay } from './utils/overlay';
+import Point from '../src/polyfills/Point';
 
+export const debugGetBoundingRects = (someElementOrDocument: Element | Document, ...ids: string[]) => {
+    const document =
+        someElementOrDocument instanceof Element ? someElementOrDocument.ownerDocument : someElementOrDocument;
+
+    const result = [];
+    for (const id of ids) {
+        result.push(document.getElementById(id).getBoundingClientRect());
+    }
+    return result;
+};
 const getStyle = (value: number): string => {
     const common = '; stroke: black; stroke-width: 1; ';
     if (value === -1) return 'fill:gray;fill-rule: evenodd';
@@ -30,7 +42,7 @@ const getStyle = (value: number): string => {
             return 'fill:yellow;fill-rule: evenodd' + common;
     }
 };
-const getTestableSvgPart = (svg: string): string => {
+export const getTestableSvgPart = (svg: string): string => {
     while (true) {
         const pattern = ' style="';
         const styleIndex = svg.indexOf(pattern);
@@ -101,6 +113,43 @@ describe('Color HTML based on source locations', () => {
  M204,26 400,26 400,0 204,0 204,26
  M400,26 792,26 792,0 400,0 400,26" />
 <path d="M62,0 21,0 21,26 62,26 62,0" />
+</svg>`
+        );
+    });
+
+    it('f(x)', async () => {
+        const html = `
+    <span class="katex-html"
+            aria-hidden="true">
+          <span class="base">
+              <span class="strut"
+                    style="height: 1em; vertical-align: -0.25em;">
+              </span>
+              <span class="mord mathnormal"
+                    style="margin-right: 0.10764em;"
+                    data-loc="0,1">f</span>
+              <span class="mopen"
+                    data-loc="1,2">(</span>
+              <span class="mord mathnormal"
+                    data-loc="2,3">x</span>
+              <span class="mclose"
+                    data-loc="3,4">)</span>
+          </span>
+      </span>`;
+        const element = await toHTMLElementWithBoundingRectangles(html, true);
+        const svg = allPointsByIndexToSVGByProximity(element, getStyle);
+
+        overlay(html, svg, new Point(8, 8)); // debug purposes only
+
+        const testableSvgPart = getTestableSvgPart(svg);
+        assertEqual(
+            testableSvgPart,
+            `<svg width="37.703125" height="17">
+<path d="M4,0 4,0 3,0 3,25 14,25 14,0 4,0" />
+<path d="M3,0 0,0 0,25 3,25 3,0" />
+<path d="M36,0 26,0 26,0 25,0 25,25 36,25 36,0" />
+<path d="M14,25 17,25 17,25 25,25 25,0 17,0 17,0 14,0 14,25" />
+<path d="M40,0 40,0 36,0 36,25 37,25 37,25 40,25 40,25 45.703125,25 45.703125,0 40,0" />
 </svg>`
         );
     });

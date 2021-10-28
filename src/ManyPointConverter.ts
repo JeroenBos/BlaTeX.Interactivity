@@ -19,7 +19,8 @@ import { Polygon } from './polyfills/RectanglesToPolygon';
  */
 export function getDiscretePolygonsByValue_LatticeEndExclusive(
     seeds: Point[],
-    getValue: (p: Point) => number): Map<number, Polygon> {
+    getValue: (p: Point) => number,
+    out_Rectangles: Rectangle[] | undefined = undefined): Map<number, Polygon> {
 
     // @ts-ignore
     const [rectanglesByValue, valuesByPts] = getRectanglesByValue(
@@ -29,6 +30,14 @@ export function getDiscretePolygonsByValue_LatticeEndExclusive(
         r => getValue(r.topLeft.floor()),
         Math.floor
     );
+
+    if (out_Rectangles !== undefined) {
+        for (const [_, rects] of rectanglesByValue) {
+            for (const rect of rects) {
+                out_Rectangles.push(rect);
+            }
+        }
+    }
 
     // increase the widths and heights by one to make rectangles "touching" for the next algorithm
     // for (const [, rectangles] of rectanglesByValue) {
@@ -89,7 +98,6 @@ function getRectanglesByValue(
         else
             list.push(rectangle);
     }
-
     let newRects = rects;
     while (newRects.length != 0) {
         const thisRoundRects = newRects;
