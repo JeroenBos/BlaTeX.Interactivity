@@ -191,7 +191,7 @@ function* toLines(stdOut: string[]): Iterable<string> {
     }
 }
 function setClientDimensions(element: HTMLElement, rect: TaggedRectangle): void {
-    assert(element.tagName === rect.tag.toUpperCase());
+    assert(element.tagName.toUpperCase() === rect.tag.toUpperCase());
     const domRect = new DOMRect(rect.x, rect.y, rect.width, rect.height);
     assert(domRect.x !== undefined);
     assert(domRect.y !== undefined);
