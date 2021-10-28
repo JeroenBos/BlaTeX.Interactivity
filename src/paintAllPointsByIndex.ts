@@ -10,16 +10,23 @@ export function allPointsByIndexToSVG(
     configuration: Configuration,
     getValue: (p: Point) => number,
     getStyle: (value: number) => string,
-    rectangleStyle: string | undefined = undefined
+    prepolygonRectangleStyle: string | undefined = undefined
 ): string {
     const boundingRect = Rectangle.fromRect(element.getBoundingClientRect());
     if (boundingRect.width === 0 && boundingRect.height === 0) throw new Error('Element has no measure');
 
     const seeds = configuration.seeder(boundingRect);
-    const extraRects =
-        rectangleStyle !== undefined ? { style: rectangleStyle, rectangles: [] as Rectangle[] } : undefined;
-    const polygons = configuration.getDiscretePolygonsByValue(seeds, getValue, extraRects?.rectangles);
-    return polygonsToSVG(polygons, getStyle, boundingRect, extraRects);
+    const prepolygonStyle =
+        prepolygonRectangleStyle !== undefined
+            ? { style: prepolygonRectangleStyle, rectangles: [] as Rectangle[] }
+            : undefined;
+    const polygons = configuration.getDiscretePolygonsByValue(seeds, getValue, prepolygonStyle?.rectangles);
+
+    const svgBuilder: string[] = [`<svg width="${boundingRect.width}" height="${boundingRect.height}">`];
+    svgBuilder.push(...polygonsToSVGLines(polygons, getStyle));
+    svgBuilder.push(...prepolygonRectsToSVGLines(prepolygonStyle));
+    svgBuilder.push(`</svg>`);
+    return svgBuilder.join('\n');
 }
 
 export class Configuration {
@@ -42,36 +49,36 @@ export function allPointsByIndexToSVGByProximity(
     element: HTMLElement,
     getStyle: (value: number) => string,
     configuration = new Configuration(),
-    rectangleStyle?: string
+    prepolygonRectangleStyle?: string
 ): string {
     const getValue = function(p: Point) {
         const result = getCursorIndexByProximity(element, { dx: p.x, dy: p.y }) ?? -1;
         // console.log(`${p.x}, ${p.y}: ${result}`);
         return result;
     };
-    return allPointsByIndexToSVG(element, configuration, getValue, getStyle, rectangleStyle);
+    return allPointsByIndexToSVG(element, configuration, getValue, getStyle, prepolygonRectangleStyle);
 }
 
-function polygonsToSVG(
-    polygons: Map<number, Polygon>,
-    getStyle: (value: number) => string,
-    boundingRect: Rectangle,
-    extraRectangles: { style: string; rectangles: Rectangle[] } | undefined = undefined
-): string {
-    const svgBuilder: string[] = [`<svg width="${boundingRect.width}" height="${boundingRect.height}">`];
+function polygonsToSVGLines(polygons: Map<number, Polygon>, getStyle: (value: number) => string): string[] {
+    const svgBuilder: string[] = [];
     for (const [value, polygon] of polygons) {
         svgBuilder.push(`<path d="${polygon.toSvgPathString()}" style="${getStyle(value)}" />`);
     }
-    if (extraRectangles !== undefined) {
-        for (const rectangle of extraRectangles.rectangles) {
-            svgBuilder.push(
-                `<rect x="${rectangle.left}" y="${rectangle.top}" width="${rectangle.width}" height="${rectangle.height}" style="${extraRectangles.style}" />`
-            );
-        }
-    }
-    svgBuilder.push('</svg>');
 
-    return svgBuilder.join('\n');
+    return svgBuilder;
+}
+function prepolygonRectsToSVGLines(prepolygonStyle?: { style: string; rectangles: Rectangle[] }): string[] {
+    if (prepolygonStyle === undefined) {
+        return [];
+    }
+
+    const svgBuilder: string[] = [];
+    for (const rectangle of prepolygonStyle.rectangles) {
+        svgBuilder.push(
+            `<rect x="${rectangle.left}" y="${rectangle.top}" width="${rectangle.width}" height="${rectangle.height}" style="${prepolygonStyle.style}" />`
+        );
+    }
+    return svgBuilder;
 }
 
 function createSeeds(boundingRect: DOMRect): Point[] {
