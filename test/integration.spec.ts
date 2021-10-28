@@ -1,4 +1,4 @@
-import { toHTMLWithRectangles } from './jsdom.understanding.spec';
+import { toHTMLElementWithBoundingRectangles } from './jsdom.understanding.spec';
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { assert } from '../src/utils';
 
@@ -44,7 +44,7 @@ const getTestableSvgPart = (svg: string): string => {
 describe('Color HTML based on source locations', () => {
     it('<div>TEXT</div>', async () => {
         const html = '<div>TEXT</div>';
-        const element = await toHTMLWithRectangles(html);
+        const element = await toHTMLElementWithBoundingRectangles(html);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
@@ -58,7 +58,7 @@ describe('Color HTML based on source locations', () => {
 
     it('<div data-loc="0,1">TEXT</div>', async () => {
         const html = '<div data-loc="0,1">TEXT</div>';
-        const element = await toHTMLWithRectangles(html);
+        const element = await toHTMLElementWithBoundingRectangles(html);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
@@ -73,7 +73,7 @@ describe('Color HTML based on source locations', () => {
 
     it('<div><div data-loc="0,1">TEXT</div><div data-loc="1,2">TEXT</div></div>', async () => {
         const html = '<div><div data-loc="0,1">TEXT</div><div data-loc="1,2">TEXT</div></div>';
-        const element = await toHTMLWithRectangles(html);
+        const element = await toHTMLElementWithBoundingRectangles(html);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
@@ -88,7 +88,7 @@ describe('Color HTML based on source locations', () => {
 
     it('<div><span data-loc="0,1">TEXT</span><span data-loc="1,2">TEXT</span></div>', async () => {
         const html = '<div><span data-loc="0,1">TEXT</span><span data-loc="1,2">TEXT</span></div>';
-        const element = await toHTMLWithRectangles(html);
+        const element = await toHTMLElementWithBoundingRectangles(html);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);

@@ -68,10 +68,13 @@ describe('JSDom Understanding tests', () => {
     });
 });
 
-export async function toHTMLWithRectanglesWithKatex(html: string): Promise<HTMLElement> {
-    return toHTMLWithRectangles(html, true);
+export async function toHTMLElementWithBoundingRectanglesWithKatex(html: string): Promise<HTMLElement> {
+    return toHTMLElementWithBoundingRectangles(html, true);
 }
-export async function toHTMLWithRectangles(htmlBody: string, includeKaTeX: boolean = false): Promise<HTMLElement> {
+export async function toHTMLElementWithBoundingRectangles(
+    htmlElement: string,
+    includeKaTeX: boolean = false
+): Promise<HTMLElement> {
     const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8)) + '/';
     fs.mkdirSync(dir, { recursive: true });
     const path = Path.join(dir, 'Index.html');
@@ -90,7 +93,7 @@ export async function toHTMLWithRectangles(htmlBody: string, includeKaTeX: boole
         <head>
             ${links}
         </head>
-        <body>${htmlBody}</body>
+        <body>${htmlElement}</body>
     </html>`;
 
     fs.appendFileSync(path, html);
@@ -244,7 +247,7 @@ class PromiseCompletionSource<T> {
 
 describe('JSDom Understanding tests', () => {
     it('Can override properties with selenium', async () => {
-        const element = await toHTMLWithRectangles('<div></div>');
+        const element = await toHTMLElementWithBoundingRectangles('<div></div>');
         expect(element.clientLeft).toBe(8);
         expect(element.clientTop).toBe(8);
         expect(element.clientWidth).toBe(784);

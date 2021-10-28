@@ -1,22 +1,25 @@
-import { toHTMLWithRectangles, toHTMLWithRectanglesWithKatex } from './jsdom.understanding.spec';
+import {
+    toHTMLElementWithBoundingRectangles,
+    toHTMLElementWithBoundingRectanglesWithKatex,
+} from './jsdom.understanding.spec';
 import { getCursorIndexByProximity } from '../src/PointToCursorHandleConverter';
 
 describe('Resolve location to parsetree location', () => {
     it('Simple <div> without annotations yields no location', async () => {
-        const element = await toHTMLWithRectangles('<div></div>');
+        const element = await toHTMLElementWithBoundingRectangles('<div></div>');
 
         const result = getCursorIndexByProximity(element, { dx: 50, dy: 50 });
 
         expect(result).toBe(undefined);
     });
     it('Simple <div> clicking near the left', async () => {
-        const element = await toHTMLWithRectangles('<div data-loc="0,1"></div>');
+        const element = await toHTMLElementWithBoundingRectangles('<div data-loc="0,1"></div>');
 
         const clickToTheLeft = getCursorIndexByProximity(element, { dx: 50, dy: 50 });
         expect(clickToTheLeft).toBe(0);
     });
     it('Simple <div> clicking near the right', async () => {
-        const element = await toHTMLWithRectangles('<div data-loc="0,1"></div>');
+        const element = await toHTMLElementWithBoundingRectangles('<div data-loc="0,1"></div>');
 
         const clickToTheRight = getCursorIndexByProximity(element, { dx: 750, dy: 50 });
         expect(clickToTheRight).toBe(1);
@@ -25,7 +28,7 @@ describe('Resolve location to parsetree location', () => {
 
 describe('Resolve KaTeX Source Location', () => {
     it('Simple <div> without annotations yields no location', async () => {
-        const element = await toHTMLWithRectanglesWithKatex(`
+        const element = await toHTMLElementWithBoundingRectanglesWithKatex(`
         <span class="katex">
             <span class="katex-html" aria-hidden="true">
                 <span class="base">
