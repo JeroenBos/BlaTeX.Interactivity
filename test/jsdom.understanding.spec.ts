@@ -37,11 +37,24 @@ export function toHTML(html: string): HTMLElement {
     const [headElement, bodyElement] = rootElement.children;
     assert(headElement instanceof HTMLHeadElement);
     assert(bodyElement instanceof HTMLBodyElement);
-    assert(bodyElement.childElementCount === 1);
-    const firstElement = bodyElement.children[0];
 
-    assert(firstElement instanceof HTMLElement);
-    return firstElement;
+    // here I have made a convience to ignore all katex stylesheet links and only pick the only other element as the body
+    const katexLinkCount = countKatexStylesheetLink(bodyElement.children);
+    assert(bodyElement.childElementCount === 1 + katexLinkCount);
+
+    const onlyNonLinkElement = bodyElement.children[bodyElement.children.length - 1];
+    assert(onlyNonLinkElement instanceof HTMLElement);
+    return onlyNonLinkElement;
+}
+function countKatexStylesheetLink(htmlElements: HTMLCollection): number {
+    let result = 0;
+    for (const element of htmlElements) {
+        if (isKatexStylesheetLink(element)) result++;
+    }
+    return result;
+}
+export function isKatexStylesheetLink(htmlElement: Element): boolean {
+    return htmlElement.tagName.toUpperCase() === 'LINK' && (htmlElement as HTMLLinkElement).href.endsWith('/katex.css');
 }
 
 describe('JSDom Understanding tests', () => {
