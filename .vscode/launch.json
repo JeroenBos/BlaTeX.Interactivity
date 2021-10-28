@@ -10,8 +10,10 @@
                 "test",
                 "--silent=false",
                 "--verbose",
-                "-o",
-                "overlay" // matches files, not 'describe', not to 'it'
+                "--maxWorkers",
+                "1", // jest spawn tens of useless processes no clue why
+                "--testNamePattern",
+                "x to the 2" // regex against describe + it
             ],
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",
