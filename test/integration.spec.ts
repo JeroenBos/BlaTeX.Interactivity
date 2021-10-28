@@ -118,24 +118,15 @@ describe('Color HTML based on source locations', () => {
     });
 
     it('f(x)', async () => {
-        const html = `
-    <span class="katex-html"
-            aria-hidden="true">
-          <span class="base">
-              <span class="strut"
-                    style="height: 1em; vertical-align: -0.25em;">
-              </span>
-              <span class="mord mathnormal"
-                    style="margin-right: 0.10764em;"
-                    data-loc="0,1">f</span>
-              <span class="mopen"
-                    data-loc="1,2">(</span>
-              <span class="mord mathnormal"
-                    data-loc="2,3">x</span>
-              <span class="mclose"
-                    data-loc="3,4">)</span>
-          </span>
-      </span>`;
+        const html = `<span class="katex-html"
+        aria-hidden="true"><span class="base"><span class="strut"
+                style="height: 1em; vertical-align: -0.25em;"></span><span
+                class="mord mathnormal"
+                style="margin-right: 0.10764em;"
+                data-loc="0,1">f</span><span class="mopen"
+                data-loc="1,2">(</span><span class="mord mathnormal"
+                data-loc="2,3">x</span><span class="mclose"
+                data-loc="3,4">)</span></span></span>`;
         const element = await toHTMLElementWithBoundingRectangles(html, true);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
@@ -144,12 +135,12 @@ describe('Color HTML based on source locations', () => {
         const testableSvgPart = getTestableSvgPart(svg);
         assertEqual(
             testableSvgPart,
-            `<svg width="37.703125" height="17">
-<path d="M4,0 4,0 3,0 3,25 14,25 14,0 4,0" />
+            `<svg width="25.703125" height="17">
+<path d="M10,0 4,0 4,0 3,0 3,25 10,25 10,0" />
 <path d="M3,0 0,0 0,25 3,25 3,0" />
-<path d="M36,0 26,0 26,0 25,0 25,25 36,25 36,0" />
-<path d="M14,25 17,25 17,25 25,25 25,0 17,0 17,0 14,0 14,25" />
-<path d="M40,0 40,0 36,0 36,25 37,25 37,25 40,25 40,25 45.703125,25 45.703125,0 40,0" />
+<path d="M33.703125,25 33.703125,0 26,0 26,0 24,0 24,25 33.703125,25" />
+<path d="M10,25 17,25 17,0 11,0 11,0 10,0 10,25" />
+<path d="M24,0 17,0 17,25 24,25 24,0" />
 </svg>`
         );
     });
