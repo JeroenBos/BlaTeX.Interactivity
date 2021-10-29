@@ -75,7 +75,7 @@ function polygonsToSVGLines(polygons: Map<number, Polygon>, getStyle: (value: nu
         svgBuilder.push(`<path d="${polygon.toSvgPathString()}" style="${getStyle(value)}" />`);
     }
 
-    return svgBuilder;
+    return svgBuilder.sort();
 }
 function prepolygonRectsToSVGLines(prepolygonStyle?: { style: string; rectangles: Rectangle[] }): string[] {
     if (prepolygonStyle === undefined) {
