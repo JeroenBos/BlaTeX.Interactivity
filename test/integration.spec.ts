@@ -3,6 +3,7 @@ import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { assertEqual } from '../src/utils';
 import { overlay } from './utils/overlay';
 import Point from '../src/polyfills/Point';
+import fs from 'fs';
 
 export const debugGetBoundingRects = (someElementOrDocument: Element | Document, ...ids: string[]) => {
     const document =
@@ -118,15 +119,7 @@ describe('Color HTML based on source locations', () => {
     });
 
     it('f(x)', async () => {
-        const html = `<span class="katex-html"
-        aria-hidden="true"><span class="base"><span class="strut"
-                style="height: 1em; vertical-align: -0.25em;"></span><span
-                class="mord mathnormal"
-                style="margin-right: 0.10764em;"
-                data-loc="0,1">f</span><span class="mopen"
-                data-loc="1,2">(</span><span class="mord mathnormal"
-                data-loc="2,3">x</span><span class="mclose"
-                data-loc="3,4">)</span></span></span>`;
+        const html = fs.readFileSync('./test/AnnotatedData/f(x).html').toString();
         const element = await toHTMLElementWithBoundingRectangles(html, true);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
