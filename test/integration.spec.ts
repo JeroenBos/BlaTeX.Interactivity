@@ -4,6 +4,7 @@ import { assertEqual } from '../src/utils';
 import { overlay } from './utils/overlay';
 import Point from '../src/polyfills/Point';
 import fs from 'fs';
+import { getTestableSvgPart } from './utils/utils';
 
 export const debugGetBoundingRects = (someElementOrDocument: Element | Document, ...ids: string[]) => {
     const document =
@@ -43,17 +44,7 @@ const getStyle = (value: number): string => {
             return 'fill:yellow;fill-rule: evenodd' + common;
     }
 };
-export const getTestableSvgPart = (svg: string): string => {
-    while (true) {
-        const pattern = ' style="';
-        const styleIndex = svg.indexOf(pattern);
-        if (styleIndex < 0) break;
 
-        const closingQuote = svg.indexOf('"', styleIndex + pattern.length);
-        svg = svg.substr(0, styleIndex) + svg.substr(closingQuote + 1);
-    }
-    return svg;
-};
 describe('Color HTML based on source locations', () => {
     it('<div>TEXT</div>', async () => {
         const html = '<div>TEXT</div>';

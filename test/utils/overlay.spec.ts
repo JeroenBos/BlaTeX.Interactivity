@@ -1,6 +1,6 @@
 import { assertEqual } from '../../src/utils';
-import { getTestableSvgPart } from '../integration.spec';
 import { overlay } from './overlay';
+import { getTestableSvgPart } from './utils';
 
 describe('Test html overlay', () => {
     it('Simple divs overlay, without html wrapper', async () => {
