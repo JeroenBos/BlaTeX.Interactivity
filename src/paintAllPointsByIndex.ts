@@ -1,5 +1,5 @@
 import { getDiscretePolygonsByValue_LatticeEndExclusive } from './ManyPointConverter';
-import { getCursorIndexByProximity } from './PointToCursorHandleConverter';
+import { getCursorIndexByProximity, LOCATION_ATTR_NAME } from './PointToCursorHandleConverter';
 import Point from './polyfills/Point';
 import Rectangle from './polyfills/ReadOnlyRectangle';
 import { Polygon } from './polyfills/RectanglesToPolygon';
@@ -10,7 +10,8 @@ export function allPointsByIndexToSVG(
     configuration: Configuration,
     getValue: (p: Point) => number,
     getStyle: (value: number) => string,
-    prepolygonRectangleStyle: string | undefined = undefined
+    prepolygonRectangleStyle?: string,
+    datalocRectangleStyle?: string
 ): string {
     const boundingRect = Rectangle.fromRect(element.getBoundingClientRect());
     if (boundingRect.width === 0 && boundingRect.height === 0) throw new Error('Element has no measure');
@@ -25,6 +26,7 @@ export function allPointsByIndexToSVG(
     const svgBuilder: string[] = [`<svg width="${boundingRect.width}" height="${boundingRect.height}">`];
     svgBuilder.push(...polygonsToSVGLines(polygons, getStyle));
     svgBuilder.push(...prepolygonRectsToSVGLines(prepolygonStyle));
+    svgBuilder.push(...computeDatalocRectangles(element, datalocRectangleStyle));
     svgBuilder.push(`</svg>`);
     return svgBuilder.join('\n');
 }
@@ -49,14 +51,22 @@ export function allPointsByIndexToSVGByProximity(
     element: HTMLElement,
     getStyle: (value: number) => string,
     configuration = new Configuration(),
-    prepolygonRectangleStyle?: string
+    prepolygonRectangleStyle?: string,
+    datalocRectangleStyle?: string
 ): string {
     const getValue = function(p: Point) {
         const result = getCursorIndexByProximity(element, { dx: p.x, dy: p.y }) ?? -1;
         // console.log(`${p.x}, ${p.y}: ${result}`);
         return result;
     };
-    return allPointsByIndexToSVG(element, configuration, getValue, getStyle, prepolygonRectangleStyle);
+    return allPointsByIndexToSVG(
+        element,
+        configuration,
+        getValue,
+        getStyle,
+        prepolygonRectangleStyle,
+        datalocRectangleStyle
+    );
 }
 
 function polygonsToSVGLines(polygons: Map<number, Polygon>, getStyle: (value: number) => string): string[] {
@@ -89,4 +99,23 @@ function createSeeds(boundingRect: DOMRect): Point[] {
         new Point(boundingRect.right, boundingRect.bottom),
         new Point(boundingRect.right, boundingRect.top),
     ];
+}
+
+function computeDatalocRectangles(element: HTMLElement, datalocStyle?: string): string[] {
+    if (datalocStyle === undefined) {
+        return [];
+    }
+    const offset = element.getBoundingClientRect();
+
+    const datalocElements = element.querySelectorAll('[' + LOCATION_ATTR_NAME + ']');
+    const svgBuilder: string[] = [];
+    for (const datalocElement of datalocElements) {
+        const r = datalocElement.getBoundingClientRect();
+        svgBuilder.push(
+            `<rect x="${r.left - offset.x}" y="${r.top - offset.y}" width="${r.width}" height="${
+                r.height
+            }" style="${datalocStyle}" />`
+        );
+    }
+    return svgBuilder;
 }
