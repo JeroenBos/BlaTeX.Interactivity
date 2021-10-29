@@ -6,3 +6,4 @@ tools/
 .vscode/
 !.vscode/launch.json
 !.vscode/settings.json
+test/index.html
