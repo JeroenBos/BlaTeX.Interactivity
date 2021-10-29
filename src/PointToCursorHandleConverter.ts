@@ -63,7 +63,9 @@ function getDistance(element: HTMLElement, point: Point): ManhattanDistance {
 
     return { distanceToLeft, distanceToRight, distanceToTop, distanceToBottom };
 }
-
+export function getDistance_FOR_TESTING_ONLY(element: HTMLElement, point: Point): ManhattanDistance {
+    return getDistance(element, point);
+}
 
 /** Returns the source location of the element, if present. */
 function selectLocation(element: HTMLElement): SourceLocation | undefined {
