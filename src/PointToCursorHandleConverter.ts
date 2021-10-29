@@ -19,7 +19,7 @@ export function getCursorIndexByProximity(element: HTMLElement, offset: Distance
         return { distances, loc, depth: getDepth(e) };
     }
 
-    const bests = maxByAround<T>(element, select, compareByMinHorizontalDistance);
+    const bests = maxByAround<T>(element, select, compareByMinHorizontalDistance); // compareByMinHorizontalDistanceWithMaxVerticalDistance(7));
     if (bests.length === 0)
         return undefined;
 
@@ -31,11 +31,30 @@ export function getCursorIndexByProximity(element: HTMLElement, offset: Distance
 function compareByMinHorizontalDistance(a: { distances: MinDistances }, b: { distances: MinDistances }) {
     return b.distances.minHorizontalDistance - a.distances.minHorizontalDistance;
 }
+// @ts-ignore
+function compareByMinHorizontalDistanceWithMaxVerticalDistance(maxVerticalDistance: number) {
+    return (a: { distances: MinDistances }, b: { distances: MinDistances }) => {
+        const aIsCloseEnough = a.distances.minVerticalDistance < maxVerticalDistance;
+        const bIsCloseEnough = b.distances.minVerticalDistance < maxVerticalDistance;
+        if (aIsCloseEnough && bIsCloseEnough) {
+            return compareByMinHorizontalDistance(a, b);
+        }
+        else if (aIsCloseEnough) {
+            return -1;
+        }
+        else if (bIsCloseEnough) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+}
 function apply(d: MinDistances, loc: SourceLocation): number {
     if (loc.start === loc.end)
         return loc.start;
 
-    switch (d.horizontal) {
+    switch (d.horizontalType) {
         case HorizontalClosestDistanceType.LeftIn:
         case HorizontalClosestDistanceType.LeftOut:
             return loc.start;
@@ -90,8 +109,8 @@ export type MinDistances = {
     minDistance: number,
     minHorizontalDistance: number,
     minVerticalDistance: number,
-    horizontal: HorizontalClosestDistanceType,
-    vertical: VerticalClosestDistanceType,
+    horizontalType: HorizontalClosestDistanceType,
+    verticalType: VerticalClosestDistanceType,
 };
 export enum HorizontalClosestDistanceType {
     LeftOut,
@@ -131,5 +150,5 @@ function getMinDistanceAndType(q: ManhattanDistance): MinDistances {
         vertical = q.distanceToBottom > 0 ? VerticalClosestDistanceType.BottomOut : VerticalClosestDistanceType.BottomIn;
     }
 
-    return { minDistance, horizontal, vertical, minHorizontalDistance, minVerticalDistance };
+    return { minDistance, horizontalType: horizontal, verticalType: vertical, minHorizontalDistance, minVerticalDistance };
 }
