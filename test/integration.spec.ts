@@ -17,7 +17,7 @@ export const debugGetBoundingRects = (someElementOrDocument: Element | Document,
     return result;
 };
 const getStyle = (value: number): string => {
-    const common = '; stroke: black; stroke-width: 1; ';
+    const common = '; opacity: 50%; stroke: black; stroke-width: 0.1; ';
     if (value === -1) return 'fill:gray;fill-rule: evenodd';
     switch (value % 10) {
         case 0:
