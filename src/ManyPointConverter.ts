@@ -22,6 +22,9 @@ export function getDiscretePolygonsByValue_LatticeEndExclusive(
     getValue: (p: Point) => number,
     out_Rectangles: Rectangle[] | undefined = undefined): Map<number, Polygon> {
 
+    for (const seed of seeds)
+        assert(Number.isInteger(seed.x) && Number.isInteger(seed.y), `Point(${seed.x}, ${seed.y}) is not on the integer lattice`);
+        
     // @ts-ignore
     const [rectanglesByValue, valuesByPts] = getRectanglesByValue(
         seeds,
