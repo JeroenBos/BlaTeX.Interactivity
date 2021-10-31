@@ -86,7 +86,8 @@ export async function toHTMLElementWithBoundingRectanglesWithKatex(html: string)
 }
 export async function toHTMLElementWithBoundingRectangles(
     htmlElement: string,
-    includeKaTeX: boolean = false
+    includeKaTeX: boolean = false,
+    headless = true
 ): Promise<HTMLElement> {
     const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8)) + '/';
     fs.mkdirSync(dir, { recursive: true });
@@ -111,7 +112,7 @@ export async function toHTMLElementWithBoundingRectangles(
 
     fs.appendFileSync(path, html);
 
-    const rectanges = await computeLayout(path);
+    const rectanges = await computeLayout(path, headless);
 
     const element = toHTML(html);
     const elements = getAllElementsByXPath(element.ownerDocument);
@@ -134,17 +135,24 @@ export async function toHTMLElementWithBoundingRectangles(
     }
     return element;
 }
-export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
+export async function computeLayout(path: string, headless: boolean): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
     const options = { cwd: './tools/' };
 
     const dir = fs.statSync(path).isDirectory();
+    const args = [dir ? '--dir' : '--file', path];
+    if (!headless) {
+        args.push('--headful');
+    }
+
     // launch layoutengine
     if (os.platform() === 'win32') {
         if (!fs.existsSync(Path.resolve('./tools/LayoutEngine.exe')))
             throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/LayoutEngine.exe'));
-        subprocess = spawnSync('LayoutEngine.exe', [dir ? '--dir' : '--file', path.replace(/\\/g, '/')], options);
+        // args[1] is path:
+        args[1] = args[1].replace(/\\/g, '/')
+        subprocess = spawnSync('LayoutEngine.exe', args, options);
     } else {
         const enginePath = Path.resolve('./tools/layoutengine');
         if (!fs.existsSync(enginePath)) throw new Error(`LayoutEngine not found at '${enginePath}`);
@@ -152,7 +160,7 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
         const bashOutput = execSync(`/bin/bash -c "[[ -x '${enginePath}' ]] && echo true || echo false"`).toString();
         assert(bashOutput === 'true\n', './tools/layoutengine does not have the executable bit set!');
 
-        subprocess = spawnSync('./layoutengine', [dir ? '--dir' : '--file', path], options);
+        subprocess = spawnSync('./layoutengine', args, options);
     }
 
     if (subprocess.error !== undefined) {
