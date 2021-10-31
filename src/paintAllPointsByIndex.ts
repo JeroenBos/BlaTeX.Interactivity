@@ -54,8 +54,8 @@ export function allPointsByIndexToSVGByProximity(
     prepolygonRectangleStyle?: string,
     datalocRectangleStyle?: string
 ): string {
-    const getValue = function(p: Point) {
-        const result = getCursorIndexByProximity(element, { dx: p.x, dy: p.y }) ?? -1;
+    const getValue = (p: Point) => {
+        const result = getCursorIndexByProximity(element, p) ?? -1;
         // console.log(`${p.x}, ${p.y}: ${result}`);
         return result;
     };
@@ -93,11 +93,10 @@ function prepolygonRectsToSVGLines(prepolygonStyle?: { style: string; rectangles
 
 function createSeeds(boundingRect: DOMRect): Point[] {
     return [
-        new Point(0, 0),
-        new Point(boundingRect.left, boundingRect.top),
-        new Point(boundingRect.left, boundingRect.bottom),
-        new Point(boundingRect.right, boundingRect.bottom),
-        new Point(boundingRect.right, boundingRect.top),
+        new Point(Math.floor(boundingRect.left), Math.floor(boundingRect.top)),
+        new Point(Math.floor(boundingRect.left), Math.ceil(boundingRect.bottom)),
+        new Point(Math.ceil(boundingRect.right), Math.ceil(boundingRect.bottom)),
+        new Point(Math.ceil(boundingRect.right), Math.floor(boundingRect.top)),
     ];
 }
 
@@ -105,16 +104,12 @@ function computeDatalocRectangles(element: HTMLElement, datalocStyle?: string): 
     if (datalocStyle === undefined) {
         return [];
     }
-    const offset = element.getBoundingClientRect();
-
     const datalocElements = element.querySelectorAll('[' + LOCATION_ATTR_NAME + ']');
     const svgBuilder: string[] = [];
     for (const datalocElement of datalocElements) {
         const r = datalocElement.getBoundingClientRect();
         svgBuilder.push(
-            `<rect x="${r.left - offset.x}" y="${r.top - offset.y}" width="${r.width}" height="${
-                r.height
-            }" style="${datalocStyle}" />`
+            `<rect x="${r.left}" y="${r.top}" width="${r.width}" height="${r.height}" style="${datalocStyle}" />`
         );
     }
     return svgBuilder;

@@ -27,4 +27,10 @@ export default class Point {
     public floor() {
         return new Point(Math.floor(this.x), Math.floor(this.y));
     }
+    public round() {
+        return new Point(Math.round(this.x), Math.round(this.y));
+    }
+    public ceil() {
+        return new Point(Math.ceil(this.x), Math.ceil(this.y));
+    }
 }

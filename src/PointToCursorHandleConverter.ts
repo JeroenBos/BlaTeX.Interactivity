@@ -6,8 +6,7 @@ export type Distance = { dx: number, dy: number };
 export type ManhattanDistance = { distanceToLeft: number, distanceToRight: number, distanceToTop: number, distanceToBottom: number };
 export type SourceLocation = { start: number, end: number };
 
-export function getCursorIndexByProximity(element: HTMLElement, offset: Distance): number | undefined {
-    const point = toPoint(element, offset);
+export function getCursorIndexByProximity(element: HTMLElement, point: Point): number | undefined {
     type T = { distances: MinDistances, loc: SourceLocation, depth: number };
 
     function select(e: HTMLElement): T | undefined {
@@ -61,12 +60,6 @@ function apply(d: MinDistances, loc: SourceLocation): number {
         case HorizontalClosestDistanceType.RightIn:
         case HorizontalClosestDistanceType.RightOut:
             return loc.end;
-    }
-}
-function toPoint(element: Element, offset: Distance): Point {
-    return {
-        x: element.clientLeft + offset.dx,
-        y: element.clientTop + offset.dy,
     }
 }
 

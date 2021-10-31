@@ -2,14 +2,14 @@ import fs from 'fs';
 import Point from '../../src/polyfills/Point';
 
 /** Overlays two HTMLs. */
-export function overlayWithKatexCSS(
+export function overlayBodyWithKatexCSS(
     htmlBody: string,
     htmlToBeOverlayed: string,
     offset: Point = new Point(0, 0),
     scale: number = 1,
     path: string | undefined = './test/index.html'
 ) {
-    const bodyStyle = `transform: scale(${scale}); transform-origin: 0 0; margin: 8 8; `;
+    const bodyStyle = `transform: scale(${scale}); transform-origin: 0 0; margin: 0 0; `;
     const html = `<!DOCTYPE html><html>  <head><link href="../node_modules/katex/dist/katex.css" rel="stylesheet" /></head>  <body style="${bodyStyle}>${htmlBody}</body></html>`;
     return overlay(html, htmlToBeOverlayed, offset, path);
 }

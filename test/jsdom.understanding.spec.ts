@@ -107,7 +107,7 @@ export async function toHTMLElementWithBoundingRectangles(
         <head>
             ${links}
         </head>
-        <body>${htmlElement}</body>
+        ${htmlElement.indexOf('<body>') < 0 ? `<body style="margin: 0">${htmlElement}</body>` : htmlElement}
     </html>`;
 
     fs.appendFileSync(path, html);
@@ -151,7 +151,7 @@ export async function computeLayout(path: string, headless: boolean): Promise<Ta
         if (!fs.existsSync(Path.resolve('./tools/LayoutEngine.exe')))
             throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/LayoutEngine.exe'));
         // args[1] is path:
-        args[1] = args[1].replace(/\\/g, '/')
+        args[1] = args[1].replace(/\\/g, '/');
         subprocess = spawnSync('LayoutEngine.exe', args, options);
     } else {
         const enginePath = Path.resolve('./tools/layoutengine');
@@ -269,9 +269,9 @@ class PromiseCompletionSource<T> {
 describe('JSDom Understanding tests', () => {
     it('Can override properties with selenium', async () => {
         const element = await toHTMLElementWithBoundingRectangles('<div></div>');
-        expect(element.clientLeft).toBe(8);
-        expect(element.clientTop).toBe(8);
-        expect(element.clientWidth).toBe(784);
-        expect(element.getBoundingClientRect()).toEqual(new DOMRect(8, 8, 784, 0));
+        expect(element.clientLeft).toBe(0);
+        expect(element.clientTop).toBe(0);
+        expect(element.clientWidth).toBe(1920);
+        expect(element.getBoundingClientRect()).toEqual(new DOMRect(0, 0, 1920, 0));
     });
 });
