@@ -21,7 +21,7 @@ describe('Resolve location to parsetree location', () => {
     it('Simple <div> clicking near the right', async () => {
         const element = await toHTMLElementWithBoundingRectangles('<div data-loc="0,1"></div>');
 
-        const clickToTheRight = getCursorIndexByProximity(element, { x: 750, y: 50 });
+        const clickToTheRight = getCursorIndexByProximity(element, { x: 1900, y: 50 });
         expect(clickToTheRight).toBe(1);
     });
 });
