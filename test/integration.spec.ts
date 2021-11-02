@@ -178,5 +178,4 @@ describe('Color HTML based on source locations', () => {
 </svg>`
         );
     });
-
 });
