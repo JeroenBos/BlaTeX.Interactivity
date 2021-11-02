@@ -59,9 +59,9 @@ describe('Test getDistance internally.', () => {
         const distancesToOrigin = getDistance_FOR_TESTING_ONLY(element, { x: 0, y: 0 });
 
         // the element's bounding rect is {0, 1, width=13.4375, 21}
-        expect(distancesToOrigin.distanceToLeft).toBe(0);
-        expect(distancesToOrigin.distanceToRight).toBe(-13.4375);
-        expect(distancesToOrigin.distanceToTop).toBe(-1);
-        expect(distancesToOrigin.distanceToBottom).toBe(-22);
+        expect(distancesToOrigin.offsetToLeft).toBe(0);
+        expect(distancesToOrigin.offsetToRight).toBe(-13.4375);
+        expect(distancesToOrigin.offsetToTop).toBe(-1);
+        expect(distancesToOrigin.offsetToBottom).toBe(-22);
     });
 });

@@ -3,7 +3,7 @@ import { assert, maxByAround, getDepth } from './utils';
 export const LOCATION_ATTR_NAME = "data-loc";
 export type Point = { x: number, y: number };
 export type Distance = { dx: number, dy: number };
-export type ManhattanDistance = { distanceToLeft: number, distanceToRight: number, distanceToTop: number, distanceToBottom: number };
+export type ManhattanOffset = { offsetToLeft: number, offsetToRight: number, offsetToTop: number, offsetToBottom: number };
 export type SourceLocation = { start: number, end: number };
 
 export function getCursorIndexByProximity(element: HTMLElement, point: Point): number | undefined {
@@ -63,7 +63,7 @@ function apply(d: MinDistances, loc: SourceLocation): number {
     }
 }
 
-function getDistance(element: HTMLElement, point: Point): ManhattanDistance {
+function getDistance(element: HTMLElement, point: Point): ManhattanOffset {
 
     function distance1D(start: number, end: number, q: number): [number, number] {
         return [q - start, q - end];
@@ -73,9 +73,9 @@ function getDistance(element: HTMLElement, point: Point): ManhattanDistance {
     const [distanceToLeft, distanceToRight] = distance1D(rect.left, rect.right, point.x);
     const [distanceToTop, distanceToBottom] = distance1D(rect.top, rect.bottom, point.y);
 
-    return { distanceToLeft, distanceToRight, distanceToTop, distanceToBottom };
+    return { offsetToLeft: distanceToLeft, offsetToRight: distanceToRight, offsetToTop: distanceToTop, offsetToBottom: distanceToBottom };
 }
-export function getDistance_FOR_TESTING_ONLY(element: HTMLElement, point: Point): ManhattanDistance {
+export function getDistance_FOR_TESTING_ONLY(element: HTMLElement, point: Point): ManhattanOffset {
     return getDistance(element, point);
 }
 
@@ -117,30 +117,30 @@ export enum VerticalClosestDistanceType {
     BottomOut,
     BottomIn,
 }
-function getMinDistanceAndType(q: ManhattanDistance): MinDistances {
+function getMinDistanceAndType(q: ManhattanOffset): MinDistances {
     const minDistance = Math.min(
-        Math.abs(q.distanceToBottom),
-        Math.abs(q.distanceToLeft),
-        Math.abs(q.distanceToRight),
-        Math.abs(q.distanceToTop)
+        Math.abs(q.offsetToBottom),
+        Math.abs(q.offsetToLeft),
+        Math.abs(q.offsetToRight),
+        Math.abs(q.offsetToTop)
     );
-    const minHorizontalDistance = Math.min(Math.abs(q.distanceToLeft), Math.abs(q.distanceToRight));
-    const minVerticalDistance = Math.min(Math.abs(q.distanceToTop), Math.abs(q.distanceToBottom));
+    const minHorizontalDistance = Math.min(Math.abs(q.offsetToLeft), Math.abs(q.offsetToRight));
+    const minVerticalDistance = Math.min(Math.abs(q.offsetToTop), Math.abs(q.offsetToBottom));
 
     let horizontal: HorizontalClosestDistanceType;
-    if (Math.abs(q.distanceToLeft) < Math.abs(q.distanceToRight)) {
-        horizontal = q.distanceToLeft > 0 ? HorizontalClosestDistanceType.LeftOut : HorizontalClosestDistanceType.LeftIn;
+    if (Math.abs(q.offsetToLeft) < Math.abs(q.offsetToRight)) {
+        horizontal = q.offsetToLeft > 0 ? HorizontalClosestDistanceType.LeftOut : HorizontalClosestDistanceType.LeftIn;
     }
     else {
-        horizontal = q.distanceToRight > 0 ? HorizontalClosestDistanceType.RightOut : HorizontalClosestDistanceType.RightIn;
+        horizontal = q.offsetToRight > 0 ? HorizontalClosestDistanceType.RightOut : HorizontalClosestDistanceType.RightIn;
     }
 
     let vertical: VerticalClosestDistanceType;
-    if (Math.abs(q.distanceToTop) < Math.abs(q.distanceToBottom)) {
-        vertical = q.distanceToTop > 0 ? VerticalClosestDistanceType.TopOut : VerticalClosestDistanceType.TopIn;
+    if (Math.abs(q.offsetToTop) < Math.abs(q.offsetToBottom)) {
+        vertical = q.offsetToTop > 0 ? VerticalClosestDistanceType.TopOut : VerticalClosestDistanceType.TopIn;
     }
     else {
-        vertical = q.distanceToBottom > 0 ? VerticalClosestDistanceType.BottomOut : VerticalClosestDistanceType.BottomIn;
+        vertical = q.offsetToBottom > 0 ? VerticalClosestDistanceType.BottomOut : VerticalClosestDistanceType.BottomIn;
     }
 
     return { minDistance, horizontalType: horizontal, verticalType: vertical, minHorizontalDistance, minVerticalDistance };
