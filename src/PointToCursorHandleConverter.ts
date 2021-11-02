@@ -108,14 +108,49 @@ export type MinDistances = {
 export enum HorizontalClosestDistanceType {
     LeftOut,
     LeftIn,
-    RightOut,
     RightIn,
+    RightOut,
+}
+export namespace HorizontalClosestDistanceType {
+    export function IsIn(e: HorizontalClosestDistanceType) {
+        switch (e) {
+            case HorizontalClosestDistanceType.LeftIn:
+            case HorizontalClosestDistanceType.RightIn:
+                return true;
+            case HorizontalClosestDistanceType.LeftOut:
+            case HorizontalClosestDistanceType.RightOut:
+                return false;
+            default:
+                throw new Error("Invalid HorizontalClosestDistanceType");
+        }
+    }
+    export function IsOut(e: HorizontalClosestDistanceType) {
+        return !IsIn(e);
+    }
+
 }
 export enum VerticalClosestDistanceType {
     TopOut,
     TopIn,
-    BottomOut,
     BottomIn,
+    BottomOut,
+}
+export namespace VerticalClosestDistanceType {
+    export function IsIn(e: VerticalClosestDistanceType) {
+        switch (e) {
+            case VerticalClosestDistanceType.TopIn:
+            case VerticalClosestDistanceType.BottomIn:
+                return true;
+            case VerticalClosestDistanceType.TopOut:
+            case VerticalClosestDistanceType.BottomOut:
+                return false;
+            default:
+                throw new Error("Invalid VerticalClosestDistanceType");
+        }
+    }
+    export function IsOut(e: VerticalClosestDistanceType) {
+        return !IsIn(e);
+    }
 }
 function getMinDistanceAndType(q: ManhattanOffset): MinDistances {
     const minDistance = Math.min(
