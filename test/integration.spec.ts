@@ -108,7 +108,7 @@ describe('Color HTML based on source locations', () => {
     });
 
     it('x to the 2 with horizontal offset', async () => {
-        const htmlElement = fs.readFileSync('./test/AnnotatedData/x^2 with horizontal offset.html').toString();
+        const zoom = false; // for debugging purposes // for this test it unfortunately matters
 
         // The unfortunate truth is that computing the boundingClientRect returns slightly different results in the headless vs headful chromedriver.
         // I have the following options to work around that:
@@ -118,27 +118,65 @@ describe('Color HTML based on source locations', () => {
         //
         // Actually you know what, I'm willing to go to the LayoutEngine to workaround it from there
 
-        const headless = false; // for this test it unfortunately matters
-        const element = (await toHTMLElementWithBoundingRectangles(htmlElement, true, headless)) as HTMLDivElement;
+        const htmlElement = fs.readFileSync('./test/AnnotatedData/x^2 with horizontal offset.html').toString();
+        const element = await toHTMLElementWithBoundingRectangles(htmlElement, true, zoom ? { zoom: 500 } : undefined);
         const svg = allPointsByIndexToSVGByProximity(
             element,
             getStyle,
             undefined,
             'stroke:red; stroke-width: 0.1px; fill: transparent',
-            'fill:green; stroke-width: 0.1px; opacity: 50%'
+            'fill:green; stroke-width: 0.1px; opacity: 30%'
         );
 
         overlayBodyWithKatexCSS(htmlElement, svg, new Point(0, 0), 1); // debug purposes only
-        const debugRects = debugGetBoundingRects(element, 'x', '2'); // eslint-disable-line @typescript-eslint/no-unused-vars
+        const debugRects = debugGetBoundingRects(element as HTMLDivElement, 'x', '2'); // eslint-disable-line @typescript-eslint/no-unused-vars
 
         const testableSvgPart = getTestableSvgPart(svg).replace(/\n<rect.*\/>/g, '');
         assertEqual(
             testableSvgPart,
-            `<svg width="17.427084" height="21.333334">
+            zoom
+                ? `<svg width="17.425001" height="21.333334">
 <path d="M105,0 100,0 100,23 105,23 105,0" />
 <path d="M114,0 105,0 105,23 106,23 106,23 109,23 109,23 114,23 114,0" />
 <path d="M115,23 115,23 118,23 118,0 114,0 114,23 115,23" />
 </svg>`
+                : `<svg width="17.421875" height="21">
+<path d="M105,1 100,1 100,22 105,22 105,1" />
+<path d="M106,1 105,1 105,22 106,22 106,22 109,22 109,1 106,1 106,1
+ M109,22 114,22 114,1 109,1 109,22" />
+<path d="M115,22 115,22 118,22 118,1 114,1 114,22 115,22" />
+</svg>`
         );
     });
+
+    it('f(x)', async () => {
+        const zoom = false; // for debugging purposes // for this test it unfortunately matters
+
+        const htmlBody = fs.readFileSync('./test/AnnotatedData/f(x).html').toString();
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
+        const svg = allPointsByIndexToSVGByProximity(element as HTMLElement, getStyle);
+
+        overlayBodyWithKatexCSS(htmlBody, svg); // debug purposes only
+
+        const testableSvgPart = getTestableSvgPart(svg);
+        assertEqual(
+            testableSvgPart,
+            zoom
+                ? `<svg width="25.708334" height="17.733334">
+<path d="M10,0 3,0 3,19 10,19 10,0" />
+<path d="M17,0 10,0 10,19 13,19 13,19 17,19 17,0" />
+<path d="M24,19 24,0 19,0 19,0 17,0 17,19 19,19 19,19 24,19" />
+<path d="M26,0 24,0 24,19 26,19 26,0" />
+<path d="M3,0 0,0 0,19 3,19 3,0" />
+</svg>`
+                : `<svg width="25.703125" height="17">
+<path d="M10,0 3,0 3,17 10,17 10,0" />
+<path d="M13,0 13,0 10,0 10,17 13,17 13,17 17,17 17,0 13,0" />
+<path d="M24,0 19,0 19,0 17,0 17,17 19,17 19,17 24,17 24,0" />
+<path d="M26,0 24,0 24,17 26,17 26,0" />
+<path d="M3,0 0,0 0,17 3,17 3,0" />
+</svg>`
+        );
+    });
+
 });

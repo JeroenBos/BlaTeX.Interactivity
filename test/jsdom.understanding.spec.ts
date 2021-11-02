@@ -81,13 +81,23 @@ describe('JSDom Understanding tests', () => {
     });
 });
 
+// if there's a zoom, headless must be false
+type LayoutConfig =
+    | {
+          headless?: boolean;
+      }
+    | {
+          headless?: false;
+          zoom?: number;
+      };
+
 export async function toHTMLElementWithBoundingRectanglesWithKatex(html: string): Promise<HTMLElement> {
     return toHTMLElementWithBoundingRectangles(html, true);
 }
 export async function toHTMLElementWithBoundingRectangles(
     htmlElement: string,
     includeKaTeX: boolean = false,
-    headless = true
+    layoutConfig: LayoutConfig = {}
 ): Promise<HTMLElement> {
     const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8)) + '/';
     fs.mkdirSync(dir, { recursive: true });
@@ -112,7 +122,7 @@ export async function toHTMLElementWithBoundingRectangles(
 
     fs.appendFileSync(path, html);
 
-    const rectanges = await computeLayout(path, headless);
+    const rectanges = await computeLayout(path, layoutConfig);
 
     const element = toHTML(html);
     const elements = getAllElementsByXPath(element.ownerDocument);
@@ -135,14 +145,20 @@ export async function toHTMLElementWithBoundingRectangles(
     }
     return element;
 }
-export async function computeLayout(path: string, headless: boolean): Promise<TaggedRectangle[]> {
+export async function computeLayout(path: string, layoutConfig: LayoutConfig): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
     const options = { cwd: './tools/' };
 
     const dir = fs.statSync(path).isDirectory();
     const args = [dir ? '--dir' : '--file', path];
-    if (!headless) {
+
+    if ('zoom' in layoutConfig && layoutConfig.zoom !== undefined && layoutConfig.zoom !== 100) {
+        assert(Number.isInteger(layoutConfig.zoom), "'zoom' must be an integer");
+        args.push('--zoom');
+        args.push(layoutConfig.zoom.toString());
+        args.push('--headful'); // zoom requires headful (next version of LayoutEngine will automatically do this, but this can't hurt)
+    } else if (layoutConfig.headless === false) {
         args.push('--headful');
     }
 
