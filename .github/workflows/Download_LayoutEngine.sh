@@ -10,8 +10,8 @@ case "${unameOut}" in
                 ;;
     *)          curl -L -o tools/layoutengine https://github.com/JeroenBos/JBSnorro.LayoutEngine/raw/master/LayoutEngine/publish/LayoutEngine;
                 sudo chmod 755 './tools/layoutengine';
-                rm tools/chromedriver -f;
-                tools/LayoutEngine --version;
+                rm -f tools/chromedriver;
+                tools/layoutengine --version;
                 ;;
 esac
 
