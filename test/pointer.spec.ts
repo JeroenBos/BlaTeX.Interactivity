@@ -7,7 +7,6 @@ import { getCursorIndexByProximity, getDistance_FOR_TESTING_ONLY } from '../src/
 describe('Resolve location to parsetree location', () => {
     it('Simple <div> without annotations yields no location', async () => {
         const element = await toHTMLElementWithBoundingRectangles('<div></div>');
-
         const result = getCursorIndexByProximity(element, { x: 50, y: 50 });
 
         expect(result).toBe(undefined);

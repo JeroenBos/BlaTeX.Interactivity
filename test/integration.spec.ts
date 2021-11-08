@@ -2,53 +2,13 @@ import { toHTMLElementWithBoundingRectangles } from './jsdom.understanding.spec'
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { assertEqual } from '../src/utils';
 import { overlayBodyWithKatexCSS } from './utils/overlay';
-import Point from '../src/polyfills/Point';
 import fs from 'fs';
-import { getTestableSvgPart } from './utils/utils';
-
-export const debugGetBoundingRects = (someElementOrDocument: Element | Document, ...ids: string[]) => {
-    const document =
-        someElementOrDocument instanceof Element ? someElementOrDocument.ownerDocument : someElementOrDocument;
-
-    const result = [];
-    for (const id of ids) {
-        result.push(document.getElementById(id).getBoundingClientRect());
-    }
-    return result;
-};
-const getStyle = (value: number): string => {
-    const common = '; opacity: 50%; stroke: black; stroke-width: 0.1; ';
-    if (value === -1) return 'fill:gray;fill-rule: evenodd';
-    switch (value % 10) {
-        case 0:
-            return 'fill:black;fill-rule: evenodd' + common;
-        case 1:
-            return 'fill:red;fill-rule: evenodd' + common;
-        case 2:
-            return 'fill:blue;fill-rule: evenodd' + common;
-        case 3:
-            return 'fill:purple;fill-rule: evenodd' + common;
-        case 4:
-            return 'fill:light-blue;fill-rule: evenodd' + common;
-        case 5:
-            return 'fill:orange;fill-rule: evenodd' + common;
-        case 6:
-            return 'fill:cyan;fill-rule: evenodd' + common;
-        case 7:
-            return 'fill:light-green;fill-rule: evenodd' + common;
-        case 8:
-            return 'fill:light-gray;fill-rule: evenodd' + common;
-        case 9:
-            return 'fill:green;fill-rule: evenodd' + common;
-        default:
-            return 'fill:yellow;fill-rule: evenodd' + common;
-    }
-};
+import { debugGetBoundingRects, getStyle, getTestableSvgPart } from './utils/utils';
 
 describe('Color HTML based on source locations', () => {
     it('<div>TEXT</div>', async () => {
-        const html = '<div>TEXT</div>';
-        const element = await toHTMLElementWithBoundingRectangles(html);
+        const htmlBody = '<div>TEXT</div>';
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
@@ -61,8 +21,8 @@ describe('Color HTML based on source locations', () => {
     });
 
     it('<div data-loc="0,1">TEYT</div>', async () => {
-        const html = '<div data-loc="0,1">TEYT</div>';
-        const element = await toHTMLElementWithBoundingRectangles(html);
+        const htmlBody = '<div data-loc="0,1">TEYT</div>';
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
@@ -76,8 +36,8 @@ describe('Color HTML based on source locations', () => {
     });
 
     it('<div><div data-loc="0,1">TAXT</div><div data-loc="1,2">TAXT</div></div>', async () => {
-        const html = '<div><div data-loc="0,1">TAXT</div><div data-loc="1,2">TAXT</div></div>';
-        const element = await toHTMLElementWithBoundingRectangles(html);
+        const htmlBody = '<div><div data-loc="0,1">TAXT</div><div data-loc="1,2">TAXT</div></div>';
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
@@ -91,10 +51,10 @@ describe('Color HTML based on source locations', () => {
     });
 
     it('<div><span data-loc="0,1">TUXT</span><span data-loc="1,2">TUXT</span></div>', async () => {
-        const html = '<div><span data-loc="0,1">TUXT</span><span data-loc="1,2">TUXT</span></div>';
-        const element = await toHTMLElementWithBoundingRectangles(html);
+        const htmlBody = '<div><span data-loc="0,1">TUXT</span><span data-loc="1,2">TUXT</span></div>';
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody);
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
-        overlayBodyWithKatexCSS(html, svg, new Point(0, 0), 1); // debug purposes only
+        overlayBodyWithKatexCSS(htmlBody, svg); // debug purposes only
 
         const testableSvgPart = getTestableSvgPart(svg);
         assertEqual(
@@ -108,7 +68,7 @@ describe('Color HTML based on source locations', () => {
     });
 
     it('x to the 2 with horizontal offset', async () => {
-        const zoom = false; // for debugging purposes // for this test it unfortunately matters
+        const zoom = true; // for debugging purposes // for this test it unfortunately matters
 
         // The unfortunate truth is that computing the boundingClientRect returns slightly different results in the headless vs headful chromedriver.
         // I have the following options to work around that:
@@ -128,7 +88,7 @@ describe('Color HTML based on source locations', () => {
             'fill:green; stroke-width: 0.1px; opacity: 30%'
         );
 
-        overlayBodyWithKatexCSS(htmlElement, svg, new Point(0, 0), 1); // debug purposes only
+        overlayBodyWithKatexCSS(htmlElement, svg, './test/x_to_the_2_with_horizontal_index_after.html'); // debug purposes only
         const debugRects = debugGetBoundingRects(element as HTMLDivElement, 'x', '2'); // eslint-disable-line @typescript-eslint/no-unused-vars
 
         const testableSvgPart = getTestableSvgPart(svg).replace(/\n<rect.*\/>/g, '');
@@ -156,7 +116,7 @@ describe('Color HTML based on source locations', () => {
         const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
         const svg = allPointsByIndexToSVGByProximity(element as HTMLElement, getStyle);
 
-        overlayBodyWithKatexCSS(htmlBody, svg); // debug purposes only
+        overlayBodyWithKatexCSS(htmlBody, svg, './test/f_of_x_index_after.html'); // debug purposes only
 
         const testableSvgPart = getTestableSvgPart(svg);
         assertEqual(

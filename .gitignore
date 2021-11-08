@@ -7,3 +7,5 @@ tools/
 !.vscode/launch.json
 !.vscode/settings.json
 test/index.html
+test/*after.html
+test/*before.html
