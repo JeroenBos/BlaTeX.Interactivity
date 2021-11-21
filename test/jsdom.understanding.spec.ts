@@ -8,6 +8,7 @@ import Path from 'path';
 import { spawnSync, SpawnSyncReturns, execSync } from 'child_process';
 import { getAllElementsByXPath } from '../src/xpathutils';
 import { isDebugging } from './utils/utils';
+import { timer } from './utils/timer';
 
 describe('JSDom Understanding tests', () => {
     // copied from https://stackoverflow.com/a/64027981/308451
@@ -149,7 +150,7 @@ export async function toHTMLElementWithBoundingRectangles(
 export async function computeLayout(path: string, layoutConfig: LayoutConfig): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
-    const options = { cwd: './tools/' };
+    const options = { cwd: './tools/', timeout: 10000 };
 
     const dir = fs.statSync(path).isDirectory();
     const args = [dir ? '--dir' : '--file', path];
@@ -165,6 +166,7 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig): P
     }
 
     // launch layoutengine
+    const startTime = timer();
     if (os.platform() === 'win32') {
         if (!fs.existsSync(Path.resolve('./tools/LayoutEngine.exe')))
             throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/LayoutEngine.exe'));
@@ -181,6 +183,7 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig): P
         subprocess = spawnSync('./layoutengine', args, options);
     }
 
+    console.log(startTime.ms);
     if (subprocess.error !== undefined) {
         // handle failure to start the process
         tcs.reject(subprocess.error);
