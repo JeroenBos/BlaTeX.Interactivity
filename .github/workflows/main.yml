@@ -26,6 +26,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
           choco upgrade googlechrome -y --version=95.0.4638.54 --ignore-checksums
+          ./.github/workflows/print_chrome_version.bat
 
       - name: download LayoutEngine
         run: bash .github/workflows/Download_LayoutEngine.sh
