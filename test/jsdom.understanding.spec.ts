@@ -183,7 +183,9 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig): P
         subprocess = spawnSync('./layoutengine', args, options);
     }
 
-    console.log(startTime.ms);
+    if (false) {
+        console.debug(startTime.ms);
+    }
     if (subprocess.error !== undefined) {
         // handle failure to start the process
         tcs.reject(subprocess.error);
