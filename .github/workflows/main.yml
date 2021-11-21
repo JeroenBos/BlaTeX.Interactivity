@@ -25,7 +25,7 @@ jobs:
       - name: Ensure latest chrome version is installed (docker image can be out-of-date) (Windows)
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
-          (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo
+          choco pin add -n=googlechrome  # prevent auto-upgrade
           choco upgrade googlechrome -y --version=95.0.4638.54 --ignore-checksums
           (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo
 
