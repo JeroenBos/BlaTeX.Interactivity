@@ -19,9 +19,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
-
       - name: Ensure latest chrome version is installed (docker image can be out-of-date) (Windows)
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
@@ -36,6 +33,9 @@ jobs:
 
       - name: download LayoutEngine
         run: bash .github/workflows/Download_LayoutEngine.sh
+
+      - name: Install deps and build (with cache)
+        uses: bahmutov/npm-install@v1
 
       - name: Test
         run: yarn test --ci --maxWorkers=2 --silent=false
