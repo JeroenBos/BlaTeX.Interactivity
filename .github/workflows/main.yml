@@ -26,7 +26,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
           choco uninstall googlechrome
-          choco pin add -n=googlechrome  # prevent auto-upgrade
+          choco pin add -n=googlechrome --version=95.0.4638.54  # prevent auto-upgrade
           choco install googlechrome -y --version=95.0.4638.54 --ignore-checksums
           (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo
 
