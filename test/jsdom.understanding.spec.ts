@@ -7,6 +7,7 @@ import fs from 'fs';
 import Path from 'path';
 import { spawnSync, SpawnSyncReturns, execSync } from 'child_process';
 import { getAllElementsByXPath } from '../src/xpathutils';
+import { isDebugging } from './utils/utils';
 
 describe('JSDom Understanding tests', () => {
     // copied from https://stackoverflow.com/a/64027981/308451
@@ -154,6 +155,7 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig): P
     const args = [dir ? '--dir' : '--file', path];
 
     if ('zoom' in layoutConfig && layoutConfig.zoom !== undefined && layoutConfig.zoom !== 100) {
+        assert(isDebugging, "'zoom' cannot be specified in CI");
         assert(Number.isInteger(layoutConfig.zoom), "'zoom' must be an integer");
         args.push('--zoom');
         args.push(layoutConfig.zoom.toString());
