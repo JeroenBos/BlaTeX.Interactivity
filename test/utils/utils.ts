@@ -51,3 +51,14 @@ export const getStyle = (value: number): string => {
             return 'fill:yellow;fill-rule: evenodd' + common;
     }
 };
+
+export const isDebugging = 'DEBUG' in process.env;
+
+/** Like jest.it, but with a debug variable injected. In CI and under yarn test, runs as debug=false; in debugging runs with debug=true. */
+export function debug_it(description: string, f: (debug: boolean) => Promise<void>) {
+    if (isDebugging) {
+        it(description + ' (Debug)', async () => f(true));
+    } else {
+        it(description + ' (Non-debug)', async () => f(false));
+    }
+}

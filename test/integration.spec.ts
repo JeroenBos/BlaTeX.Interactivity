@@ -3,7 +3,7 @@ import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { assertEqual } from '../src/utils';
 import { overlayBodyWithKatexCSS } from './utils/overlay';
 import fs from 'fs';
-import { debugGetBoundingRects, getStyle, getTestableSvgPart } from './utils/utils';
+import { debugGetBoundingRects, debug_it, getStyle, getTestableSvgPart } from './utils/utils';
 
 describe('Color HTML based on source locations', () => {
     it('<div>TEXT</div>', async () => {
@@ -67,9 +67,7 @@ describe('Color HTML based on source locations', () => {
         );
     });
 
-    it('x to the 2 with horizontal offset', async () => {
-        const zoom = true; // for debugging purposes // for this test it unfortunately matters
-
+    debug_it('x to the 2 with horizontal offset', async (zoom: boolean) => {
         // The unfortunate truth is that computing the boundingClientRect returns slightly different results in the headless vs headful chromedriver.
         // I have the following options to work around that:
         // - Switch to Firefox and hope it's not the same there
@@ -109,9 +107,7 @@ describe('Color HTML based on source locations', () => {
         );
     });
 
-    it('f(x)', async () => {
-        const zoom = false; // for debugging purposes // for this test it unfortunately matters
-
+    debug_it('f(x)', async zoom => {
         const htmlBody = fs.readFileSync('./test/AnnotatedData/f(x).html').toString();
         const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
         const svg = allPointsByIndexToSVGByProximity(element as HTMLElement, getStyle);
