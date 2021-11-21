@@ -1,4 +1,4 @@
-import { assert, maxByAround, getDepth } from './utils';
+import { assert, maxByAround, getDepth, Comparer, mapComparer } from './utils';
 
 export const LOCATION_ATTR_NAME = "data-loc";
 export type Point = { x: number, y: number };
@@ -18,7 +18,8 @@ export function getCursorIndexByProximity(element: HTMLElement, point: Point): n
         return { distances, loc, depth: getDepth(e) };
     }
 
-    const bests = maxByAround<T>(element, select, compareByMinHorizontalDistance); // compareByMinHorizontalDistanceWithMaxVerticalDistance(7));
+    const comparer: Comparer<MinDistances> = compareByMinHorizontalDistance; // compareByMinHorizontalDistanceWithMaxVerticalDistance(7));
+    const bests = maxByAround<T>(element, select, mapComparerToDistances(comparer));
     if (bests.length === 0)
         return undefined;
 
@@ -26,15 +27,17 @@ export function getCursorIndexByProximity(element: HTMLElement, point: Point): n
     const result = apply(best.value.distances, best.value.loc);
     return result;
 }
-
-function compareByMinHorizontalDistance(a: { distances: MinDistances }, b: { distances: MinDistances }) {
-    return b.distances.minHorizontalDistance - a.distances.minHorizontalDistance;
+function mapComparerToDistances(comparer: Comparer<MinDistances>) {
+    return mapComparer(comparer, (element: { distances: MinDistances }) => element.distances);
+}
+function compareByMinHorizontalDistance(a: MinDistances, b: MinDistances) {
+    return b.minHorizontalDistance - a.minHorizontalDistance;
 }
 // @ts-ignore
 function compareByMinHorizontalDistanceWithMaxVerticalDistance(maxVerticalDistance: number) {
-    return (a: { distances: MinDistances }, b: { distances: MinDistances }) => {
-        const aIsCloseEnough = a.distances.minVerticalDistance < maxVerticalDistance;
-        const bIsCloseEnough = b.distances.minVerticalDistance < maxVerticalDistance;
+    return (a: MinDistances, b: MinDistances) => {
+        const aIsCloseEnough = a.minVerticalDistance < maxVerticalDistance;
+        const bIsCloseEnough = b.minVerticalDistance < maxVerticalDistance;
         if (aIsCloseEnough && bIsCloseEnough) {
             return compareByMinHorizontalDistance(a, b);
         }

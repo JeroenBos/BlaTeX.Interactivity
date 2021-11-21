@@ -1,7 +1,13 @@
 import { TiedList } from './TiedList';
 
 export const __DEV__: boolean = true; // Tsdx lied; it's not defined elsewhere; not reachable anyway
-export type Comparer<T> = (t: T, y: T) => number;
+export type Comparer<T> = (a: T, b: T) => number;
+export function mapComparer<TSource, TResult>(
+    comparer: Comparer<TSource>,
+    selector: (source: TResult) => TSource
+): Comparer<TResult> {
+    return (a, b) => comparer(selector(a), selector(b));
+}
 
 /** Results can be empty iff elements is empty. */
 export function maxBy<T>(
