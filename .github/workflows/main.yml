@@ -26,7 +26,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
           choco upgrade googlechrome -y --version=95.0.4638.54 --ignore-checksums
-          ./.github/workflows/print_chrome_version.bat
+          (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo
 
       - name: Print chrome version (Ubuntu)
         if: ${{ matrix.os == 'ubuntu-latest' }} 
