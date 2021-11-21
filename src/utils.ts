@@ -72,8 +72,56 @@ function* siblingOf(node: Element): Iterable<Element> {
 export function assertEqual(actual: any, expected: any, msg?: string) {
     if (actual !== expected) {
         debugger;
-        throw new Error(msg ?? `${actual} != '${expected}'`);
+
+        if (isString(actual) && isString(expected)) {
+            msg = msg ?? computeUnequalStringAssertionDescription(actual, expected);
+        }
+        throw new Error(msg ?? `AssertionError:\n${actual} != '${expected}'`);
     }
+}
+
+function computeUnequalStringAssertionDescription(actual: string, expected: string) {
+    // const multiline = actual.indexOf("\n") !== -1;
+    const diffIndex = firstNonMatchingIndex(actual, expected);
+    const long = actual.length > 100;
+    const { line, column } = getLineAndColOf(actual, diffIndex);
+    if (long) {
+        const preellipsis = computeStartIndex(actual) === 0 ? '' : '...';
+        const postellipsis = computeEndIndex(actual) === actual.length ? '' : '...';
+        const actualSegment = computeSegment(actual);
+        const expectedSegment = computeSegment(expected);
+        return `AssertionError:\nLine ${line}, column ${column} differ:\n'${preellipsis}${actualSegment}${postellipsis}' != '${expectedSegment}';`;
+    } else {
+        return `AssertionError:\n${actual}\n != \n'${expected}'`;
+    }
+
+    function computeSegment(s: string) {
+        const startIndex = computeStartIndex(s);
+        const endIndex = computeEndIndex(s);
+        return s.substr(startIndex, endIndex - startIndex);
+    }
+    function computeStartIndex(s: string) {
+        const start = Math.max(0, diffIndex - 10);
+        for (let i = start; i < diffIndex; i++) {
+            if (s[i] === '\n') {
+                if (i + 1 !== s.length && s[i + 1] === '\r') return i + 1;
+                else return i;
+            }
+        }
+        return start;
+    }
+    function computeEndIndex(s: string) {
+        const end = Math.min(diffIndex + 50, s.length);
+        for (let i = diffIndex; i < end; i++) {
+            if (s[i] === '\n') {
+                return i;
+            }
+        }
+        return end;
+    }
+}
+export function isString(obj: any): obj is string {
+    return typeof obj === 'string' || obj instanceof String;
 }
 export function assert(condition: boolean, msg?: string): asserts condition {
     if (!condition) {
@@ -104,6 +152,32 @@ export function combine<T>(...comparers: Comparer<T>[]): Comparer<T> {
         }
         return 0;
     };
+}
+export function firstNonMatchingIndex(a: string, b: string): number {
+    let i;
+    for (i = 0; i < Math.min(a.length, b.length); i++) {
+        if (a[i] !== b[i]) {
+            return i;
+        }
+    }
+    if (a.length === b.length) return i;
+    return -1;
+}
+
+export function getLineAndColOf(s: string, index: number): { line: number; column: number } {
+    let lineCount = 0;
+    let lineStart = 0;
+    for (let i = 0; i <= s.length; i++) {
+        if (i === index || i === s.length) {
+            return { line: lineCount, column: i - lineStart };
+        } else if (s[i] === '\n') {
+            lineCount++;
+            lineStart = i;
+        } else if (s[i] === '\r' && lineStart + 1 === i) {
+            lineStart++;
+        }
+    }
+    throw new Error('Index out of range');
 }
 
 /** Creates random string from lowercase letters and digits. */
