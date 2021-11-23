@@ -42,7 +42,7 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Test
-        run: yarn test --ci --maxWorkers=2 --silent=false
+        run: yarn test --ci --maxWorkers=1 --silent=false
         timeout-minutes: 3
         
       - name: Lint
