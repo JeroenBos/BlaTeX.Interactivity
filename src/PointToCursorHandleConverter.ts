@@ -155,10 +155,10 @@ export namespace MinDistances {
             if (VerticalClosestDistanceType.IsIn(self.verticalType)) {
                 return Math.min(self.minHorizontalDistance, self.minVerticalDistance);
             }
-            return self.minHorizontalDistance;
+            return self.minVerticalDistance;
         }
         if (VerticalClosestDistanceType.IsIn(self.verticalType)) {
-            return self.minVerticalDistance;
+            return self.minHorizontalDistance;
         }
         return self.minHorizontalDistance + self.minVerticalDistance;
     }

@@ -22,8 +22,11 @@ export const ManhattenComparerToBoundary = createComparer();
 function createComparer() {
     const result = (lhs: MinDistances, rhs: MinDistances) => {
         if (MinDistances.contains(lhs) !== MinDistances.contains(rhs)) {
-            if (MinDistances.contains(lhs)) return LHS_IS_SMALLER;
-            else return RHS_IS_SMALLER;
+            if (MinDistances.contains(lhs)) {
+                return LHS_IS_SMALLER;
+            } else {
+                return RHS_IS_SMALLER;
+            }
         }
 
         const lhsDistance = MinDistances.getManhattanDistance(lhs);
