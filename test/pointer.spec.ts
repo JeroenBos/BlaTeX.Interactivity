@@ -2,13 +2,23 @@ import {
     toHTMLElementWithBoundingRectangles,
     toHTMLElementWithBoundingRectanglesWithKatex,
 } from './jsdom.understanding.spec';
-import { getCursorIndexByProximity, getDistance_FOR_TESTING_ONLY } from '../src/PointToCursorHandleConverter';
+import {
+    getCursorIndexByProximity,
+    getCursorIndexByProximity_FOR_TESTING_ONLY,
+    getDistance,
+    getDistance_FOR_TESTING_ONLY,
+    getHtmlElementsWithDataloc,
+    HorizontalClosestDistanceType,
+    MinDistances,
+    VerticalClosestDistanceType,
+} from '../src/PointToCursorHandleConverter';
 import fs from 'fs';
-import { overlayBodyWithKatexCSS } from './utils/overlay';
+import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
 import Point from '../src/polyfills/Point';
-import { assert } from '../src/utils';
+import { assert, getDataLoc } from '../src/utils';
 import { debug_it, getStyle } from './utils/utils';
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
+import { ManhattenComparerToBoundary } from '../src/ManhattanToBoundaryComparer';
 
 describe('Resolve location to parsetree location', () => {
     it('Simple <div> without annotations yields no location', async () => {
@@ -64,10 +74,10 @@ describe('Test getDistance internally.', () => {
         const distancesToOrigin = getDistance_FOR_TESTING_ONLY(element, { x: 0, y: 0 });
 
         // the element's bounding rect is {0, 1, width=13.4375, 21}
-        expect(distancesToOrigin.offsetToLeft).toBe(0);
-        expect(distancesToOrigin.offsetToRight).toBe(-13.4375);
-        expect(distancesToOrigin.offsetToTop).toBe(-1);
-        expect(distancesToOrigin.offsetToBottom).toBe(-22);
+        expect(distancesToOrigin.offsetFromLeft).toBe(0);
+        expect(distancesToOrigin.offsetFromRight).toBe(-13.4375);
+        expect(distancesToOrigin.offsetFromTop).toBe(-1);
+        expect(distancesToOrigin.offsetFromBottom).toBe(-22);
     });
 });
 
@@ -76,12 +86,50 @@ describe('Test point to cursor handler for specific points.', () => {
         const htmlBody = fs.readFileSync('./test/AnnotatedData/x_1^2.html').toString();
         const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
 
-        overlayBodyWithKatexCSS(htmlBody, allPointsByIndexToSVGByProximity(element, getStyle)); // debug purposes only
+        dumpOverlayBodyWithKatexCSS(
+            htmlBody,
+            allPointsByIndexToSVGByProximity(
+                element,
+                getStyle,
+                undefined,
+                undefined,
+                'stroke: red; stroke-width: 0.3; fill: transparent;',
+                true
+            )
+        ); // debug purposes only
+
+        const point = new Point(13, 15);
+        const datalocElements = getHtmlElementsWithDataloc(element);
+
+        const elementx = getDataLoc('0,1', datalocElements);
+        const distancex = MinDistances.fromManhattan(getDistance(elementx, point));
+        assert(distancex.horizontalType === HorizontalClosestDistanceType.RightOut);
+        assert(distancex.verticalType === VerticalClosestDistanceType.BottomIn);
+
+        const element1 = getDataLoc('2,3', datalocElements);
+        const distance1 = MinDistances.fromManhattan(getDistance(element1, point));
+        assert(distance1.horizontalType === HorizontalClosestDistanceType.LeftIn);
+        assert(distance1.verticalType === VerticalClosestDistanceType.TopIn);
+
+        const element2 = getDataLoc('4,5', datalocElements);
+        const distance2 = MinDistances.fromManhattan(getDistance(element2, point));
+        assert(distance2.horizontalType === HorizontalClosestDistanceType.LeftIn);
+        assert(distance2.verticalType === VerticalClosestDistanceType.BottomOut);
+
+        const comparer = ManhattenComparerToBoundary;
+
+        assert(comparer(distance1, distancex) === -1);
+        assert(comparer(distance1, distance2) === -1);
+
+        const elements = [elementx, element1, element2];
+
+        const distances = getCursorIndexByProximity_FOR_TESTING_ONLY(elements, point);
+        assert(comparer(distances[1], distances[0]) === -1);
 
         const points = [
             { p: new Point(4, 5), index: 0 },
             { p: new Point(6, 10), index: 1 },
-            { p: new Point(13, 13), index: 4 },
+            { p: new Point(13, 15), index: 2 },
         ];
 
         for (const { p, index } of points) {
@@ -89,10 +137,10 @@ describe('Test point to cursor handler for specific points.', () => {
 
             // debugging purposes:
             const svg = `<svg><rect x="${p.x}" y="${p.y}" width="1" height="1" style="fill: red"/></svg>`;
-            overlayBodyWithKatexCSS(htmlBody + `<div>${result}</div>`, svg, './test/x_1^2_after.html'); // debug purposes only
+            dumpOverlayBodyWithKatexCSS(htmlBody + `<div>${result}</div>`, svg, './test/x_1^2_after.html'); // debug purposes only
 
             assert(result === index);
-            console.log(`Point (${p.x}, ${p.y}) successful`);
+            // console.log(`Point (${p.x}, ${p.y}) successful`);
         }
     });
 });

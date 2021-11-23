@@ -1,12 +1,12 @@
 import { assertEqual } from '../../src/utils';
-import { overlay } from './overlay';
+import { dumpOverlay } from './overlay';
 import { getTestableSvgPart } from './utils';
 
 describe('Test html overlay', () => {
     it('Simple divs overlay, without html wrapper', async () => {
         const html1 = `<svg width="784" height="18"> <rect width="100" height="100" style="fill: red"/> </svg>`;
         const html2 = `<svg width="784" height="18"> <rect width="100" height="100" style="fill: green" left="10" top="10"/> </svg>`;
-        const overlayed = overlay(html1, html2);
+        const overlayed = dumpOverlay(html1, html2);
 
         assertEqual(
             overlayed,
@@ -25,7 +25,7 @@ describe('Test html overlay', () => {
         </html>`;
         const svg = `<svg width="784" height="18"> <rect width="100" height="100" style="fill: green" left="10" top="10"/> </svg>`;
 
-        const overlayed = overlay(html, svg);
+        const overlayed = dumpOverlay(html, svg);
         const testable = getTestableSvgPart(overlayed);
         assertEqual(
             testable,

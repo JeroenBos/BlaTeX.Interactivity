@@ -9,6 +9,30 @@ export function mapComparer<TSource, TResult>(
     return (a, b) => comparer(selector(a), selector(b));
 }
 
+export function orderBy<T>(
+    elements: Iterable<HTMLElement>,
+    selector: (element: HTMLElement) => T | undefined,
+    comparer: Comparer<T>
+): { element: HTMLElement; value: T }[] {
+    const result: { element: HTMLElement; value: T }[] = [];
+    for (const element of elements) {
+        const value = selector(element);
+        if (value === undefined) continue;
+
+        result.push({ element, value });
+    }
+    result.sort((a, b) => comparer(a.value, b.value));
+    return result;
+}
+
+export function orderByDesc<T>(
+    elements: Iterable<HTMLElement>,
+    selector: (element: HTMLElement) => T | undefined,
+    comparer: Comparer<T>
+): { element: HTMLElement; value: T }[] {
+    return orderBy(elements, selector, (a, b) => comparer(b, a));
+}
+
 /** Results can be empty iff elements is empty. */
 export function maxBy<T>(
     elements: Iterable<HTMLElement>,
@@ -29,16 +53,34 @@ export function maxBy<T>(
     return results;
 }
 
-export function maxByAround<T>(
+/**
+ * Gets HTML elements ordered by a comparable,
+ * where the elements are the HTML tree elements of a specified HTML element, and branches of the tree can be excluded.
+ */
+export function maxByDirectedWalker<TComparable>(
     node: HTMLElement,
-    selector: (element: HTMLElement) => T | undefined,
-    comparer: Comparer<T>,
+    comparableSelector: (element: HTMLElement) => TComparable | undefined,
+    comparer: Comparer<TComparable>,
     isViableToAscend: (element: HTMLElement) => boolean = _ => true,
     isViableToDescend: (element: HTMLElement) => boolean = _ => true
-): { element: HTMLElement; value: T }[] {
-    return maxBy<T>(walkAround(node, isViableToAscend, isViableToDescend), selector, comparer);
+): { element: HTMLElement; value: TComparable }[] {
+    const f = orderByDesc; // should be maxBy for non-debugging (btw, orderByDesc is the one that maps to max, because bests were at the beginning of the array)
+    return f<TComparable>(walkAround(node, isViableToAscend, isViableToDescend), comparableSelector, comparer);
 }
-function* walkAround(
+/**
+ * Gets HTML elements ordered by a comparable,
+ * where the elements are the HTML tree elements of a specified HTML element, and branches of the tree can be excluded.
+ */
+export function minByDirectedWalker<TComparable>(
+    node: HTMLElement,
+    comparableSelector: (element: HTMLElement) => TComparable | undefined,
+    comparer: Comparer<TComparable>,
+    isViableToAscend: (element: HTMLElement) => boolean = _ => true,
+    isViableToDescend: (element: HTMLElement) => boolean = _ => true
+) {
+    return maxByDirectedWalker(node, comparableSelector, (a, b) => comparer(b, a), isViableToAscend, isViableToDescend);
+}
+export function* walkAround( // not really supposed to be exported I'd say
     node: HTMLElement,
     isViableToAscend: (element: HTMLElement) => boolean,
     isViableToDescend: (element: HTMLElement) => boolean
@@ -75,6 +117,7 @@ function* siblingOf(node: Element): Iterable<Element> {
         yield sibling;
     }
 }
+
 export function assertEqual(actual: any, expected: any, msg?: string) {
     if (actual !== expected) {
         debugger;
@@ -84,6 +127,13 @@ export function assertEqual(actual: any, expected: any, msg?: string) {
         }
         throw new Error(msg ?? `AssertionError:\n${actual} != '${expected}'`);
     }
+}
+
+export function getDataLoc(dataloc: string, htmlElements: HTMLElement[]): HTMLElement {
+    for (const element of htmlElements) {
+        if (element.attributes['data-loc' as any].value === dataloc) return element;
+    }
+    assert(false, `No element with data-loc '${dataloc}' found`);
 }
 
 function computeUnequalStringAssertionDescription(actual: string, expected: string) {
@@ -110,8 +160,8 @@ function computeUnequalStringAssertionDescription(actual: string, expected: stri
         const start = Math.max(0, diffIndex - 10);
         for (let i = start; i < diffIndex; i++) {
             if (s[i] === '\n') {
-                if (i + 1 !== s.length && s[i + 1] === '\r') return i + 1;
-                else return i;
+                if (i + 1 !== s.length && s[i + 1] === '\r') return i + 2;
+                else return i + 1;
             }
         }
         return start;

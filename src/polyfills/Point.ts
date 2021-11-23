@@ -33,4 +33,8 @@ export default class Point {
     public ceil() {
         return new Point(Math.ceil(this.x), Math.ceil(this.y));
     }
+
+    public toString() {
+        return `(${this._x}, ${this._y})`;
+    }
 }
