@@ -4,7 +4,7 @@ import Point from './polyfills/Point';
 import Rectangle from './polyfills/ReadOnlyRectangle';
 import { Polygon } from './polyfills/RectanglesToPolygon';
 
-export const debugPrefix = "<!--DEBUG-->";
+export const debugPrefix = '<!--DEBUG-->';
 /** Creates an svg with polygons (colored via getStyle(indexOfPolygon)) enclosing same-valued regions (per getValue) on the element. */
 export function allPointsByIndexToSVG(
     element: HTMLElement,
@@ -24,13 +24,17 @@ export function allPointsByIndexToSVG(
         prepolygonRectangleStyle !== undefined
             ? { style: prepolygonRectangleStyle, rectangles: [] as Rectangle[] }
             : undefined;
-    const values: [Point, number][] = [];
+    const values: { p: Point; value: number }[] = [];
     const newGetValue = (p: Point) => {
         const value = getValue(p);
-        values.push([p, value]);
+        values.push({ p, value });
         return value;
-    }
-    const polygons = configuration.getDiscretePolygonsByValue(seeds, pointsStyle ? newGetValue : getValue, prepolygonStyle?.rectangles);
+    };
+    const polygons = configuration.getDiscretePolygonsByValue(
+        seeds,
+        pointsStyle ? newGetValue : getValue,
+        prepolygonStyle?.rectangles
+    );
 
     const svgBuilder: string[] = [`<svg width="${boundingRect.width}" height="${boundingRect.height}">`];
     svgBuilder.push(...polygonsToSVGLines(polygons, getStyle));
@@ -51,7 +55,7 @@ export class Configuration {
             out_Rectangles?: Rectangle[]
         ) => Map<number, Polygon> = getDiscretePolygonsByValue_LatticeEndExclusive,
         public readonly seeder: (boundingRect: DOMRect) => Point[] = createSeeds
-    ) { }
+    ) {}
     public static createWithExtraSeeds(points: Point[]) {
         return new Configuration(getDiscretePolygonsByValue_LatticeEndExclusive, (boundingRect: DOMRect) =>
             createSeeds(boundingRect).concat(points)
@@ -80,7 +84,7 @@ export function allPointsByIndexToSVGByProximity(
         prepolygonRectangleStyle,
         datalocRectangleStyle,
         pointsStyle,
-        point,
+        point
     );
 }
 
@@ -138,16 +142,13 @@ function computeDatalocRectangles(element: HTMLElement, datalocStyle?: string): 
     return svgBuilder;
 }
 
-
-function computePointsRectangles(values: [Point, number][], getStyle: (value: number) => string): string[] {
+function computePointsRectangles(values: { p: Point; value: number }[], getStyle: (value: number) => string): string[] {
     const svgBuilder: string[] = [];
-    for (const [p, value] of values) {
+    for (const { p, value } of values) {
         const common = `opacity: 50%; stroke: black; stroke-width: 0.2;`;
         const rectStyle = getStyle(value);
         const style = rectStyle.substring(0, rectStyle.length - common.length); // strips common. yes this is a hack
-        svgBuilder.push(
-            `${debugPrefix}<rect x="${p.x}" y="${p.y}" width="0.4" height="0.4" style="${style}" />`
-        );
+        svgBuilder.push(`${debugPrefix}<rect x="${p.x}" y="${p.y}" width="0.4" height="0.4" style="${style}" />`);
     }
     return svgBuilder;
 }
