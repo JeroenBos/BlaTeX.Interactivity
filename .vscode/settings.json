@@ -11,5 +11,6 @@
     },
     "tslint.exclude": [
         "**/xpathutils.ts",
+        // "**/src/polyfills/**"
     ]
 }

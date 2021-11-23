@@ -1,4 +1,4 @@
-import '../src/polyfills/DOMRect';
+import '../src/polyfills';
 import { JSDOM } from 'jsdom';
 import { assert, createRandomString, sequenceIndexOf } from '../src/utils';
 import { implSymbol } from '../node_modules/jsdom/lib/jsdom/living/generated/utils';
@@ -7,6 +7,8 @@ import fs from 'fs';
 import Path from 'path';
 import { spawnSync, SpawnSyncReturns, execSync } from 'child_process';
 import { getAllElementsByXPath } from '../src/xpathutils';
+import { isDebugging } from './utils/utils';
+import { timer } from './utils/timer';
 
 describe('JSDom Understanding tests', () => {
     // copied from https://stackoverflow.com/a/64027981/308451
@@ -37,11 +39,24 @@ export function toHTML(html: string): HTMLElement {
     const [headElement, bodyElement] = rootElement.children;
     assert(headElement instanceof HTMLHeadElement);
     assert(bodyElement instanceof HTMLBodyElement);
-    assert(bodyElement.childElementCount === 1);
-    const firstElement = bodyElement.children[0];
 
-    assert(firstElement instanceof HTMLElement);
-    return firstElement;
+    // here I have made a convience to ignore all katex stylesheet links and only pick the only other element as the body
+    const katexLinkCount = countKatexStylesheetLink(bodyElement.children);
+    assert(bodyElement.childElementCount === 1 + katexLinkCount);
+
+    const onlyNonLinkElement = bodyElement.children[bodyElement.children.length - 1];
+    assert(onlyNonLinkElement instanceof HTMLElement);
+    return onlyNonLinkElement;
+}
+function countKatexStylesheetLink(htmlElements: HTMLCollection): number {
+    let result = 0;
+    for (const element of htmlElements) {
+        if (isKatexStylesheetLink(element)) result++;
+    }
+    return result;
+}
+export function isKatexStylesheetLink(htmlElement: Element): boolean {
+    return htmlElement.tagName.toUpperCase() === 'LINK' && (htmlElement as HTMLLinkElement).href.endsWith('/katex.css');
 }
 
 describe('JSDom Understanding tests', () => {
@@ -68,10 +83,24 @@ describe('JSDom Understanding tests', () => {
     });
 });
 
-export async function toHTMLWithRectanglesWithKatex(html: string): Promise<HTMLElement> {
-    return toHTMLWithRectangles(html, true);
+// if there's a zoom, headless must be false
+type LayoutConfig =
+    | {
+          headless?: boolean;
+      }
+    | {
+          headless?: false;
+          zoom?: number;
+      };
+
+export async function toHTMLElementWithBoundingRectanglesWithKatex(html: string): Promise<HTMLElement> {
+    return toHTMLElementWithBoundingRectangles(html, true);
 }
-export async function toHTMLWithRectangles(html: string, includeKaTeX: boolean = false): Promise<HTMLElement> {
+export async function toHTMLElementWithBoundingRectangles(
+    htmlElement: string,
+    includeKaTeX: boolean = false,
+    layoutConfig: LayoutConfig = {}
+): Promise<HTMLElement> {
     const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8)) + '/';
     fs.mkdirSync(dir, { recursive: true });
     const path = Path.join(dir, 'Index.html');
@@ -85,17 +114,17 @@ export async function toHTMLWithRectangles(html: string, includeKaTeX: boolean =
         }
         links = `<link href="katex.css" rel="stylesheet" />`;
     }
-    html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
     <html>
         <head>
             ${links}
         </head>
-        <body>${html}</body>
+        ${htmlElement.indexOf('<body>') < 0 ? `<body style="margin: 0">${htmlElement}</body>` : htmlElement}
     </html>`;
 
     fs.appendFileSync(path, html);
 
-    const rectanges = await computeLayout(path);
+    const rectanges = await computeLayout(path, layoutConfig);
 
     const element = toHTML(html);
     const elements = getAllElementsByXPath(element.ownerDocument);
@@ -118,17 +147,32 @@ export async function toHTMLWithRectangles(html: string, includeKaTeX: boolean =
     }
     return element;
 }
-export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
+export async function computeLayout(path: string, layoutConfig: LayoutConfig): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
-    const options = { cwd: './tools/' };
+    const options = { cwd: './tools/', timeout: 20000 };
 
     const dir = fs.statSync(path).isDirectory();
+    const args = [dir ? '--dir' : '--file', path];
+
+    if ('zoom' in layoutConfig && layoutConfig.zoom !== undefined && layoutConfig.zoom !== 100) {
+        assert(isDebugging, "'zoom' cannot be specified in CI");
+        assert(Number.isInteger(layoutConfig.zoom), "'zoom' must be an integer");
+        args.push('--zoom');
+        args.push(layoutConfig.zoom.toString());
+        args.push('--headful'); // zoom requires headful (next version of LayoutEngine will automatically do this, but this can't hurt)
+    } else if (layoutConfig.headless === false) {
+        args.push('--headful');
+    }
+
     // launch layoutengine
+    const startTime = timer();
     if (os.platform() === 'win32') {
         if (!fs.existsSync(Path.resolve('./tools/LayoutEngine.exe')))
             throw new Error('LayoutEngine not found at ' + Path.resolve('./tools/LayoutEngine.exe'));
-        subprocess = spawnSync('LayoutEngine.exe', [dir ? '--dir' : '--file', path.replace(/\\/g, '/')], options);
+        // args[1] is path:
+        args[1] = args[1].replace(/\\/g, '/');
+        subprocess = spawnSync('LayoutEngine.exe', args, options);
     } else {
         const enginePath = Path.resolve('./tools/layoutengine');
         if (!fs.existsSync(enginePath)) throw new Error(`LayoutEngine not found at '${enginePath}`);
@@ -136,9 +180,12 @@ export async function computeLayout(path: string): Promise<TaggedRectangle[]> {
         const bashOutput = execSync(`/bin/bash -c "[[ -x '${enginePath}' ]] && echo true || echo false"`).toString();
         assert(bashOutput === 'true\n', './tools/layoutengine does not have the executable bit set!');
 
-        subprocess = spawnSync('./layoutengine', [dir ? '--dir' : '--file', path], options);
+        subprocess = spawnSync('./layoutengine', args, options);
     }
 
+    if (false) {
+        console.debug(startTime.ms);
+    }
     if (subprocess.error !== undefined) {
         // handle failure to start the process
         tcs.reject(subprocess.error);
@@ -191,7 +238,7 @@ function* toLines(stdOut: string[]): Iterable<string> {
     }
 }
 function setClientDimensions(element: HTMLElement, rect: TaggedRectangle): void {
-    assert(element.tagName === rect.tag.toUpperCase());
+    assert(element.tagName.toUpperCase() === rect.tag.toUpperCase());
     const domRect = new DOMRect(rect.x, rect.y, rect.width, rect.height);
     assert(domRect.x !== undefined);
     assert(domRect.y !== undefined);
@@ -244,10 +291,10 @@ class PromiseCompletionSource<T> {
 
 describe('JSDom Understanding tests', () => {
     it('Can override properties with selenium', async () => {
-        const element = await toHTMLWithRectangles('<div></div>');
-        expect(element.clientLeft).toBe(8);
-        expect(element.clientTop).toBe(8);
-        expect(element.clientWidth).toBe(784);
-        expect(element.getBoundingClientRect()).toEqual(new DOMRect(8, 8, 784, 0));
+        const element = await toHTMLElementWithBoundingRectangles('<div></div>');
+        expect(element.clientLeft).toBe(0);
+        expect(element.clientTop).toBe(0);
+        expect(element.clientWidth).toBe(1920);
+        expect(element.getBoundingClientRect()).toEqual(new DOMRect(0, 0, 1920, 0));
     });
 });

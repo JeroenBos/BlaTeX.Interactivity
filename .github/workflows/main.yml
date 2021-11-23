@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         node: ['14.x']
-        os: [windows-latest] # , ubuntu-latest]
+        os: [windows-latest, ubuntu-latest]
 
     steps:
       - name: Checkout repo
@@ -19,19 +19,30 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
-
+      - name: Ensure latest chrome version is installed (docker image can be out-of-date) (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }} 
+        run: |
+            sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add 
+            sudo bash -c "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list" 
+            sudo apt -y update
+            sudo apt -y install google-chrome-stable=95.0.4638.69-1
+            google-chrome --version
       - name: Ensure latest chrome version is installed (docker image can be out-of-date) (Windows)
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
-          choco upgrade googlechrome -y --version=95.0.4638.54
+            wmic product where "name like 'Google Chrome'" call uninstall /nointeractive     # uninstall default version
+            choco install googlechrome -y --version=95.0.4638.69 --ignore-checksums          # install
+            choco pin add -n=googlechrome --version=95.0.4638.69                             # not sure if it works. TODO: https://github.com/chocolatey/choco/issues/798
+            (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo   # print version
 
       - name: download LayoutEngine
         run: bash .github/workflows/Download_LayoutEngine.sh
 
+      - name: Install deps and build (with cache)
+        uses: bahmutov/npm-install@v1
+
       - name: Test
-        run: yarn test --ci --maxWorkers=2 --silent=false
+        run: yarn test --ci --maxWorkers=1 --silent=false
         timeout-minutes: 3
         
       - name: Lint

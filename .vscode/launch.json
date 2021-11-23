@@ -9,8 +9,11 @@
             "args": [
                 "test",
                 "--silent=false",
-                "-o",
-                "pointer" // matches files, not 'describe', not to 'it'
+                "--verbose",
+                "--maxWorkers",
+                "1", // jest spawn tens of useless processes no clue why
+                "--testNamePattern",
+                "x to the 2" // regex against describe + it
             ],
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",
