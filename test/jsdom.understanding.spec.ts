@@ -290,6 +290,12 @@ class PromiseCompletionSource<T> {
 }
 
 describe('JSDom Understanding tests', () => {
+    beforeEach(() => {
+        const jsDomInstance = new JSDOM();
+        global.Node = jsDomInstance.window.Node;
+        global.Document = jsDomInstance.window.Document;
+    });
+
     it('Can override properties with selenium', async () => {
         const element = await toHTMLElementWithBoundingRectangles('<div></div>');
         expect(element.clientLeft).toBe(0);

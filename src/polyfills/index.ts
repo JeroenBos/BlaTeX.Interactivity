@@ -7,4 +7,5 @@ global.DOMRectReadOnly = ReadOnlyRectangle;
 //@ts-ignore
 global.DOMRect = Rectangle;
 
-export default { Point: Point, Rectangle, ReadOnlyRectangle };
+const exported = { Point: Point, Rectangle, ReadOnlyRectangle };
+export default exported;
