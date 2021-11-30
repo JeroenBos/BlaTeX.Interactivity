@@ -7,8 +7,7 @@ unameOut="$(uname -s)"
 # download chrome version of layout engine:
 case "${unameOut}" in
     MINGW*)     curl -L -o tools/google-chrome-standalone.exe https://github.com/JeroenBos/JBSnorro.LayoutEngine/raw/master/LayoutEngine/installers/ChromeStandaloneSetup64.exe;           ;;
-    *)          curl -L -o tools/google-chrome-stable.deb    https://github.com/JeroenBos/JBSnorro.LayoutEngine/raw/master/LayoutEngine/installers/google-chrome-stable_current_amd64.deb; 
-                sudo chmod 755 './tools/google-chrome-stable.deb';                                                                                                                         ;;
+    *)          curl -L -o tools/google-chrome-stable.deb    https://github.com/JeroenBos/JBSnorro.LayoutEngine/raw/master/LayoutEngine/installers/google-chrome-stable_current_amd64.deb; ;;
 esac
 
 # download layout engine:
