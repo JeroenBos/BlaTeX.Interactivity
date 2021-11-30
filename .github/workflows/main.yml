@@ -33,6 +33,7 @@ jobs:
             # install specific version:
             ls
             cd tools
+            echo -
             ls
             cd ..
             sudo apt install ./tools/google-chrome-stable.deb
