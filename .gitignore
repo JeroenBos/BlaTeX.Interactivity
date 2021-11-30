@@ -9,3 +9,4 @@ tools/
 test/index.html
 test/*after.html
 test/*before.html
+tools/google-chrome*
