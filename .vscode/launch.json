@@ -19,6 +19,9 @@
                 "${workspaceFolder}/**",
                 "!**/node_modules/**"
             ],
+            "env": {
+                "DEBUG": "true"
+            },
             "outputCapture": "std",
             "justMyCode": true
         }
