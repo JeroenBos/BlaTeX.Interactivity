@@ -19,25 +19,33 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+          
+      - name: download LayoutEngine and associated chrome version
+        run: bash .github/workflows/Download_LayoutEngine.sh
+
       - name: Ensure latest chrome version is installed (docker image can be out-of-date) (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }} 
         run: |
-            sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add 
-            sudo bash -c "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list" 
-            sudo apt -y update
-            sudo apt list -a google-chrome-stable
-            sudo apt -y install google-chrome-stable=96.0.4664.45-1
+            # uninstall chrome:
+            sudo apt purge google-chrome-stable -y
+            rm -rf ~/.config/google-chrome
+
+            # install specific version:
+            sudo apt install ./tools/google-chrome-stable.deb
+
+            # print version
             google-chrome --version
       - name: Ensure latest chrome version is installed (docker image can be out-of-date) (Windows)
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
-            wmic product where "name like 'Google Chrome'" call uninstall /nointeractive     # uninstall default version
-            choco install googlechrome -y --version=96.0.4664.45 --ignore-checksums          # install
-            choco pin add -n=googlechrome --version=96.0.4664.45                             # not sure if it works. TODO: https://github.com/chocolatey/choco/issues/798
-            (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo   # print version
-
-      - name: download LayoutEngine
-        run: bash .github/workflows/Download_LayoutEngine.sh
+            # uninstall default version
+            wmic product where "name like 'Google Chrome'" call uninstall /nointeractive
+            
+            # install specific version:
+            LayoutEngine\installers\ChromeStandaloneSetup64.exe /silent /install
+            
+            # print version
+            (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo
 
       - name: Install deps and build (with cache)
         uses: bahmutov/npm-install@v1
