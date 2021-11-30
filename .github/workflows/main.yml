@@ -42,7 +42,9 @@ jobs:
             wmic product where "name like 'Google Chrome'" call uninstall /nointeractive
             
             # install specific version:
-            tools\ChromeStandaloneSetup64.exe /silent /install
+            cd tools
+            ChromeStandaloneSetup64.exe /silent /install
+            cd ..
             
             # print version
             (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo
