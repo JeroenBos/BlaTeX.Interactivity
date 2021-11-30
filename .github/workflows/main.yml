@@ -34,6 +34,7 @@ jobs:
             ls
             cd tools
             ls
+            cd ..
             sudo apt install ./tools/google-chrome-stable.deb
 
             # print version
