@@ -43,7 +43,7 @@ jobs:
             
             # install specific version:
             cd tools
-            ChromeStandaloneSetup64.exe /silent /install
+            google-chrome-standalone.exe /silent /install
             cd ..
             
             # print version
