@@ -31,6 +31,9 @@ jobs:
             rm -rf ~/.config/google-chrome
 
             # install specific version:
+            ls
+            cd tools
+            ls
             sudo apt install ./tools/google-chrome-stable.deb
 
             # print version
