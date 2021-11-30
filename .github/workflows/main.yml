@@ -23,7 +23,7 @@ jobs:
       - name: download LayoutEngine and associated chrome version
         run: bash .github/workflows/Download_LayoutEngine.sh
 
-      - name: Ensure latest chrome version is installed (docker image can be out-of-date) (Linux)
+      - name: (Linux) Ensure specific chrome version is installed
         if: ${{ matrix.os == 'ubuntu-latest' }} 
         run: |
             # uninstall chrome:
@@ -35,7 +35,7 @@ jobs:
 
             # print version
             google-chrome --version
-      - name: Ensure latest chrome version is installed (docker image can be out-of-date) (Windows)
+      - name: (Windows) Ensure specific chrome version is installed
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
             # uninstall default version
