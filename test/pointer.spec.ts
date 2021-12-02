@@ -8,9 +8,6 @@ import {
     getDistance,
     getDistance_FOR_TESTING_ONLY,
     getHtmlElementsWithDataloc,
-    HorizontalClosestDistanceType,
-    MinDistances,
-    VerticalClosestDistanceType,
 } from '../src/PointToCursorHandleConverter';
 import fs from 'fs';
 import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
@@ -19,6 +16,7 @@ import { assert, getDataLoc } from '../src/utils';
 import { debug_it, getStyle } from './utils/utils';
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { ManhattenComparerToBoundary } from '../src/ManhattanToBoundaryComparer';
+import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/MinDistances';
 
 describe('Resolve location to parsetree location', () => {
     it('Simple <div> without annotations yields no location', async () => {

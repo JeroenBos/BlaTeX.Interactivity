@@ -12,7 +12,7 @@ More explicitly, consider these cases:
 
 */
 
-import { MinDistances } from './PointToCursorHandleConverter';
+import { MinDistances } from "./MinDistances";
 
 const LHS_IS_SMALLER = -1;
 const RHS_IS_SMALLER = 1;

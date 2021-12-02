@@ -7,7 +7,6 @@
 
 // More info: https://github.com/jaredpalmer/tsdx/issues/1033
 
-src/PointToCursorHandleConverter.ts
 src/ManyPointConverter.ts
 src/polyfills/HashSet{T}.ts
 

@@ -8,12 +8,10 @@ import {
     getCursorIndexByProximity,
     getDistance,
     getHtmlElementsWithDataloc,
-    HorizontalClosestDistanceType,
-    MinDistances,
-    VerticalClosestDistanceType,
 } from '../src/PointToCursorHandleConverter';
 import { ManhattenComparerToBoundary } from '../src/ManhattanToBoundaryComparer';
 import Point from '../src/polyfills/Point';
+import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/MinDistances';
 
 describe('Color HTML based on source locations', () => {
     it('<div>TEXT</div>', async () => {
