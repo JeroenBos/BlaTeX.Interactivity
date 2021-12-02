@@ -46,16 +46,16 @@ class Segment {
         }
     }
 }
-Segment.prototype.toString = function () {
+Segment.prototype.toString = function() {
     return '[' + this.ptA + ',' + this.ptB + ']';
 };
-Segment.prototype.compare = function (other) {
+Segment.prototype.compare = function(other) {
     return (
         (this.ptA.compare(other.ptA) && this.ptB.compare(other.ptB)) ||
         (this.ptA.compare(other.ptB) && this.ptB.compare(other.ptA))
     );
 };
-Segment.prototype.strictIntersection = function (other) {
+Segment.prototype.strictIntersection = function(other) {
     // gets the intersection with the other segment, where the endpoints of the segments cannot intersect
     if (this.ptA.compare(other.ptA)) return false;
     if (this.ptA.compare(other.ptB)) return false;
@@ -89,10 +89,10 @@ class Point {
         return this.x === other.x && this.y === other.y;
     }
 }
-Point.prototype.toString = function () {
+Point.prototype.toString = function() {
     return '{x:' + this.x + ',y:' + this.y + '}';
 };
-Point.prototype.toHashkey = function () {
+Point.prototype.toHashkey = function() {
     // We could use toString(), but I am concerned with
     // the performance of Polygon.merge(). As for now
     // I have no idea if its really that much of an
@@ -104,14 +104,14 @@ Point.prototype.toHashkey = function () {
     //  http://www.softwaresecretweapons.com/jspwiki/javascriptstringconcatenation
     return this.x + '_' + this.y;
 };
-Point.prototype.clone = function () {
+Point.prototype.clone = function() {
     return new Point(this);
 };
-Point.prototype.offset = function (dx, dy) {
+Point.prototype.offset = function(dx, dy) {
     this.x += dx;
     this.y += dy;
 };
-Point.prototype.set = function (a) {
+Point.prototype.set = function(a) {
     this.x = a.x;
     this.y = a.y;
 };
@@ -157,16 +157,16 @@ class Contour {
         return elements.join(' ');
     }
 }
-Contour.prototype.clone = function () {
+Contour.prototype.clone = function() {
     return new Contour(this);
 };
-Contour.prototype.addPoint = function (p) {
+Contour.prototype.addPoint = function(p) {
     this.pts.push(new Point(p));
     delete this.bbox;
     delete this.area;
     delete this.hole;
 };
-Contour.prototype.getBbox = function () {
+Contour.prototype.getBbox = function() {
     if (this.bbox === undefined) {
         this.bbox = new Bbox();
         var pts = this.pts;
@@ -182,7 +182,7 @@ Contour.prototype.getBbox = function () {
     }
     return this.bbox.clone();
 };
-Contour.prototype.offset = function (dx, dy) {
+Contour.prototype.offset = function(dx, dy) {
     var pts = this.pts;
     var nPts = pts.length;
     for (var iPt = 0; iPt < nPts; iPt++) {
@@ -192,7 +192,7 @@ Contour.prototype.offset = function (dx, dy) {
         this.bbox.offset(dx, dy);
     }
 };
-Contour.prototype.isHollow = function () {
+Contour.prototype.isHollow = function() {
     // A hole will have a negative surface area as per:
     // http://local.wasp.uwa.edu.au/~pbourke/geometry/polyarea/ by Paul Bourke
     // Since I started this project before I started to care about areas of polygons,
@@ -204,7 +204,7 @@ Contour.prototype.isHollow = function () {
     }
     return this.hole;
 };
-Contour.prototype.getArea = function () {
+Contour.prototype.getArea = function() {
     // http://local.wasp.uwa.edu.au/~pbourke/geometry/polyarea/ by Paul Bourke
     // Quote: "for this technique to work is that the polygon must not be self intersecting"
     // Fine with us, that will never happen (unless there is a bug)
@@ -232,7 +232,7 @@ Contour.prototype.getArea = function () {
     }
     return this.area;
 };
-Contour.prototype.getSegments = function () {
+Contour.prototype.getSegments = function() {
     const result = [];
     for (let i = 0; i < this.pts.length; i++) {
         const otherP1 = this.pts[i];
@@ -242,7 +242,7 @@ Contour.prototype.getSegments = function () {
     }
     return result;
 };
-Contour.prototype.divideOnIntersections = function (otherContour) {
+Contour.prototype.divideOnIntersections = function(otherContour) {
     if (this.getBbox().doesIntersectNonStrictly(otherContour.getBbox())) {
         const thisSegments = this.getSegments();
         const otherSegments = otherContour.getSegments();
@@ -281,7 +281,7 @@ Contour.prototype.divideOnIntersections = function (otherContour) {
         }
     }
 };
-Contour.prototype.rotate = function (angle, x0, y0) {
+Contour.prototype.rotate = function(angle, x0, y0) {
     if (!angle) {
         return;
     }
@@ -304,7 +304,7 @@ Contour.prototype.rotate = function (angle, x0, y0) {
     }
     delete this.bbox; // no longer valid
 };
-Contour.prototype._simplify = function () {
+Contour.prototype._simplify = function() {
     for (let i = 0; i < this.pts.length; i++) {
         const p = this.pts[i];
         const next = this.pts[(i + 1) % this.pts.length];
@@ -499,10 +499,10 @@ class Polygon {
         delete this.mostlyHollow;
     }
 }
-Polygon.prototype.clone = function () {
+Polygon.prototype.clone = function() {
     return new Polygon(this);
 };
-Polygon.prototype.getBbox = function () {
+Polygon.prototype.getBbox = function() {
     if (!this.bbox) {
         this.bbox = new Bbox();
         var contours = this.contours;
@@ -514,7 +514,7 @@ Polygon.prototype.getBbox = function () {
     return this.bbox.clone();
 };
 
-Polygon.prototype.getArea = function () {
+Polygon.prototype.getArea = function() {
     // We addup the area of all our contours.
     // Contours representing holes will have a negative area.
     if (!this.area) {
@@ -528,7 +528,7 @@ Polygon.prototype.getArea = function () {
     }
     return this.area;
 };
-Polygon.prototype.getCentroid = function () {
+Polygon.prototype.getCentroid = function() {
     if (!this.centroid) {
         var contours = this.contours;
         var nContours = contours.length;
@@ -561,10 +561,10 @@ Polygon.prototype.getCentroid = function () {
     }
     return this.centroid.clone();
 };
-Polygon.prototype.pointIn = function (p) {
+Polygon.prototype.pointIn = function(p) {
     alert('Polygon.prototype.pointIn: No longer supported');
 };
-Polygon.prototype.offset = function (dx, dy) {
+Polygon.prototype.offset = function(dx, dy) {
     var contours = this.contours;
     var nContours = contours.length;
     for (var iContour = 0; iContour < nContours; iContour++) {
@@ -577,13 +577,13 @@ Polygon.prototype.offset = function (dx, dy) {
         this.centroid.offset(dx, dy);
     }
 };
-Polygon.prototype.moveto = function (x, y) {
+Polygon.prototype.moveto = function(x, y) {
     // position is centroid
     var centroid = this.getCentroid();
     var tl = this.getBbox().getTopLeft();
     this.offset(x - tl.x - centroid.x, y - tl.y - centroid.y);
 };
-Polygon.prototype.rotate = function (angle, x0, y0) {
+Polygon.prototype.rotate = function(angle, x0, y0) {
     if (!angle) {
         return;
     }
@@ -596,10 +596,10 @@ Polygon.prototype.rotate = function (angle, x0, y0) {
     delete this.bbox; // no longer valid
     delete this.centroid; // no longer valid (since it's relative to self bbox
 };
-Polygon.prototype.doesIntersect = function (bbox) {
+Polygon.prototype.doesIntersect = function(bbox) {
     return this.getBbox().doesIntersect(bbox);
 };
-Polygon.prototype.isMostlyHollow = function () {
+Polygon.prototype.isMostlyHollow = function() {
     if (this.mostlyHollow === undefined) {
         // we add up all solid and hollow contours and
         // compare the result to determine whether this
@@ -621,7 +621,7 @@ Polygon.prototype.isMostlyHollow = function () {
     }
     return this.mostlyHollow;
 };
-Polygon.prototype.getPoints = function () {
+Polygon.prototype.getPoints = function() {
     var r = [];
     var contours = this.contours;
     var nContours = contours.length;
@@ -664,19 +664,19 @@ function Bbox(a, b, c, d) {
         this.br = new Point();
     }
 }
-Bbox.prototype.toString = function () {
+Bbox.prototype.toString = function() {
     return '{tl:' + this.tl + ',br:' + this.br + '}';
 };
-Bbox.prototype.clone = function () {
+Bbox.prototype.clone = function() {
     return new Bbox(this);
 };
-Bbox.prototype.getTopleft = function () {
+Bbox.prototype.getTopleft = function() {
     return new Point(this.tl);
 };
-Bbox.prototype.getBottomright = function () {
+Bbox.prototype.getBottomright = function() {
     return new Point(this.br);
 };
-Bbox.prototype.unionPoint = function (p) {
+Bbox.prototype.unionPoint = function(p) {
     var mn = Math.min;
     var mx = Math.max;
     this.tl.x = mn(this.tl.x, p.x);
@@ -684,17 +684,17 @@ Bbox.prototype.unionPoint = function (p) {
     this.br.x = mx(this.br.x, p.x);
     this.br.y = mx(this.br.y, p.y);
 };
-Bbox.prototype.width = function () {
+Bbox.prototype.width = function() {
     return this.br.x - this.tl.x;
 };
-Bbox.prototype.height = function () {
+Bbox.prototype.height = function() {
     return this.br.y - this.tl.y;
 };
-Bbox.prototype.offset = function (dx, dy) {
+Bbox.prototype.offset = function(dx, dy) {
     this.tl.offset(dx, dy);
     this.br.offset(dx, dy);
 };
-Bbox.prototype.set = function (a) {
+Bbox.prototype.set = function(a) {
     // array of Points
     var mx = Math.max;
     var mn = Math.min;
@@ -708,20 +708,20 @@ Bbox.prototype.set = function (a) {
         this.br.y = mx(this.br.y, p.y);
     }
 };
-Bbox.prototype.pointIn = function (p) {
+Bbox.prototype.pointIn = function(p) {
     return p.x > this.tl.x && p.x < this.br.x && p.y > this.tl.y && p.y < this.br.y;
 };
-Bbox.prototype.doesIntersect = function (bb) {
+Bbox.prototype.doesIntersect = function(bb) {
     var mn = Math.min;
     var mx = Math.max;
     return mn(bb.br.x, this.br.x) - mx(bb.tl.x, this.tl.x) > 0 && mn(bb.br.y, this.br.y) - mx(bb.tl.y, this.tl.y) > 0;
 };
-Bbox.prototype.doesIntersectNonStrictly = function (bb) {
+Bbox.prototype.doesIntersectNonStrictly = function(bb) {
     var mn = Math.min;
     var mx = Math.max;
     return mn(bb.br.x, this.br.x) - mx(bb.tl.x, this.tl.x) >= 0 && mn(bb.br.y, this.br.y) - mx(bb.tl.y, this.tl.y) >= 0;
 };
-Bbox.prototype.union = function (other) {
+Bbox.prototype.union = function(other) {
     // this bbox is empty
     if (this.isEmpty()) {
         this.tl = new Point(other.tl);
@@ -738,16 +738,16 @@ Bbox.prototype.union = function (other) {
     }
     return this;
 };
-Bbox.prototype.inflate = function (a) {
+Bbox.prototype.inflate = function(a) {
     this.tl.x -= a;
     this.tl.y -= a;
     this.br.x += a;
     this.br.y += a;
 };
-Bbox.prototype.isEmpty = function () {
+Bbox.prototype.isEmpty = function() {
     return this.width() <= 0 || this.height() <= 0;
 };
-Bbox.prototype.toCanvasPath = function (ctx) {
+Bbox.prototype.toCanvasPath = function(ctx) {
     ctx.rect(this.tl.x, this.tl.y, this.width(), this.height());
 };
 
