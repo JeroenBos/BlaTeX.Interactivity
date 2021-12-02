@@ -16,10 +16,10 @@ describe('polygon merging', () => {
         const corners = g.contours[0].pts;
         expect(corners.length).toBe(4);
 
-        expect(corners.findIndex(corner => corner.equals(new Point(0, 0))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(2, 0))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(0, 1))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(2, 1))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(0, 0))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(2, 0))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(0, 1))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(2, 1))) !== -1);
     });
 
     it('', () => {
@@ -36,12 +36,12 @@ describe('polygon merging', () => {
         const corners = g.contours[0].pts;
         expect(corners.length).toBe(6);
 
-        expect(corners.findIndex(corner => corner.equals(new Point(0, 0))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(2, 0))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(0, 2))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(2, 1))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(1, 2))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(1, 1))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(0, 0))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(2, 0))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(0, 2))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(2, 1))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(1, 2))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(1, 1))) !== -1);
     });
 
     it('with hole', () => {
@@ -62,14 +62,14 @@ describe('polygon merging', () => {
         expect(corners.length).toBe(4);
         expect(hole.length).toBe(4);
 
-        expect(corners.findIndex(corner => corner.equals(new Point(0, 0))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(3, 0))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(0, 3))) !== -1);
-        expect(corners.findIndex(corner => corner.equals(new Point(3, 3))) !== -1);
-        expect(hole.findIndex(corner => corner.equals(new Point(1, 1))) !== -1);
-        expect(hole.findIndex(corner => corner.equals(new Point(1, 2))) !== -1);
-        expect(hole.findIndex(corner => corner.equals(new Point(2, 1))) !== -1);
-        expect(hole.findIndex(corner => corner.equals(new Point(2, 2))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(0, 0))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(3, 0))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(0, 3))) !== -1);
+        expect(corners.findIndex((corner) => corner.equals(new Point(3, 3))) !== -1);
+        expect(hole.findIndex((corner) => corner.equals(new Point(1, 1))) !== -1);
+        expect(hole.findIndex((corner) => corner.equals(new Point(1, 2))) !== -1);
+        expect(hole.findIndex((corner) => corner.equals(new Point(2, 1))) !== -1);
+        expect(hole.findIndex((corner) => corner.equals(new Point(2, 2))) !== -1);
     });
 
     it('with hole from original', () => {
@@ -109,13 +109,13 @@ describe('polygon merging', () => {
         expect(corners.length).toBe(4);
         expect(hole.length).toBe(4);
 
-        expect(corners.findIndex(corner => corner.compare(new Point(0, 0))) !== -1);
-        expect(corners.findIndex(corner => corner.compare(new Point(3, 0))) !== -1);
-        expect(corners.findIndex(corner => corner.compare(new Point(0, 3))) !== -1);
-        expect(corners.findIndex(corner => corner.compare(new Point(3, 3))) !== -1);
-        expect(hole.findIndex(corner => corner.compare(new Point(1, 1))) !== -1);
-        expect(hole.findIndex(corner => corner.compare(new Point(1, 2))) !== -1);
-        expect(hole.findIndex(corner => corner.compare(new Point(2, 1))) !== -1);
-        expect(hole.findIndex(corner => corner.compare(new Point(2, 2))) !== -1);
+        expect(corners.findIndex((corner) => corner.compare(new Point(0, 0))) !== -1);
+        expect(corners.findIndex((corner) => corner.compare(new Point(3, 0))) !== -1);
+        expect(corners.findIndex((corner) => corner.compare(new Point(0, 3))) !== -1);
+        expect(corners.findIndex((corner) => corner.compare(new Point(3, 3))) !== -1);
+        expect(hole.findIndex((corner) => corner.compare(new Point(1, 1))) !== -1);
+        expect(hole.findIndex((corner) => corner.compare(new Point(1, 2))) !== -1);
+        expect(hole.findIndex((corner) => corner.compare(new Point(2, 1))) !== -1);
+        expect(hole.findIndex((corner) => corner.compare(new Point(2, 2))) !== -1);
     });
 });

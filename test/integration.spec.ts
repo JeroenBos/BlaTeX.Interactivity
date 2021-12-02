@@ -195,7 +195,7 @@ describe('Color HTML based on source locations', () => {
         );
     });
 
-    debug_it('f(x)', async zoom => {
+    debug_it('f(x)', async (zoom) => {
         const htmlBody = fs.readFileSync('./test/AnnotatedData/f(x).html').toString();
         const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
         const svg = allPointsByIndexToSVGByProximity(element as HTMLElement, getStyle);

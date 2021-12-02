@@ -135,8 +135,8 @@ export async function toHTMLElementWithBoundingRectangles(
         if (rectanges.length === 0 || elements.length === 0)
             throw new Error('At least one element in each sequence must exist');
         if (rectanges.length > elements.length) {
-            const rectangleTags = rectanges.map(r => r.tag);
-            const elementTags = elements.map(r => r[1].tagName);
+            const rectangleTags = rectanges.map((r) => r.tag);
+            const elementTags = elements.map((r) => r[1].tagName);
             const index = sequenceIndexOf(rectangleTags, elementTags);
             if (index === -1) throw new Error("It looks like the rectangles and elements don't match");
             alignedRectangles = rectanges.slice(index);
@@ -234,7 +234,7 @@ function* toLines(stdOut: string[]): Iterable<string> {
         yield* output
             .replace(/\r/g, '')
             .split('\n')
-            .filter(s => s !== '');
+            .filter((s) => s !== '');
     }
 }
 function setClientDimensions(element: HTMLElement, rect: TaggedRectangle): void {
