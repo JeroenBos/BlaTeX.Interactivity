@@ -150,7 +150,7 @@ export async function toHTMLElementWithBoundingRectangles(
 export async function computeLayout(path: string, layoutConfig: LayoutConfig): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
-    const options = { cwd: './tools/', timeout: 20000 };
+    const options = { cwd: './tools/', timeout: 30000 };
 
     const dir = fs.statSync(path).isDirectory();
     const args = [dir ? '--dir' : '--file', path];
