@@ -12,5 +12,6 @@
     "tslint.exclude": [
         "**/xpathutils.ts",
         // "**/src/polyfills/**"
-    ]
+    ],
+    "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
 }

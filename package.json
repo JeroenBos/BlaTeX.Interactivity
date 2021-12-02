@@ -30,6 +30,11 @@
     "trailingComma": "es5",
     "tabWidth": 4
   },
+  "eslint": {
+    "rules": {
+      "prettier/prettier": "off"
+    }
+  },
   "jest": {
     "globals": {
       "ts-jest": {
