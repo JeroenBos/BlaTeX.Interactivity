@@ -11,6 +11,8 @@ jobs:
         os: [windows-latest, ubuntu-latest]
 
     steps:
+      - name: Set git to use LF
+        run: git config --global core.eol lf  # (eslint complains otherwise)
       - name: Checkout repo
         uses: actions/checkout@v2
 
