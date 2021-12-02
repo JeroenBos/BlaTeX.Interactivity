@@ -13,7 +13,7 @@ After that, launching the debug configuration in VSCode should also just work, i
 Btw, currently I have these versions:
 - Windows 10 v20H2
 - yarn v1.22.10
-- node v14.16.0
+- node v14.18.2
 
 
 # TSDX User Guide
