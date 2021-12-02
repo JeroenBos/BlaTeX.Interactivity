@@ -12,7 +12,9 @@ jobs:
 
     steps:
       - name: Set git to use LF
-        run: git config --global core.eol lf  # (eslint complains otherwise)
+        run: | # (eslint complains otherwise)
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - name: Checkout repo
         uses: actions/checkout@v2
 
