@@ -86,12 +86,12 @@ describe('JSDom Understanding tests', () => {
 // if there's a zoom, headless must be false
 type LayoutConfig =
     | {
-          headless?: boolean;
-      }
+        headless?: boolean;
+    }
     | {
-          headless?: false;
-          zoom?: number;
-      };
+        headless?: false;
+        zoom?: number;
+    };
 
 export async function toHTMLElementWithBoundingRectanglesWithKatex(html: string): Promise<HTMLElement> {
     return toHTMLElementWithBoundingRectangles(html, true);
@@ -290,6 +290,12 @@ class PromiseCompletionSource<T> {
 }
 
 describe('JSDom Understanding tests', () => {
+    beforeEach(() => {
+        const jsDomInstance = new JSDOM();
+        global.Node = jsDomInstance.window.Node;
+        global.Document = jsDomInstance.window.Document;
+    });
+
     it('Can override properties with selenium', async () => {
         const element = await toHTMLElementWithBoundingRectangles('<div></div>');
         expect(element.clientLeft).toBe(0);
