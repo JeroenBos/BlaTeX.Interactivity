@@ -1,8 +1,8 @@
-import { getDiscretePolygonsByValue_LatticeEndExclusive } from './ManyPointConverter';
+import { getDiscretePolygonsByValue_LatticeEndExclusive } from './jbsnorro/polygons/ManyPointConverter';
 import { getCursorIndexByProximity, LOCATION_ATTR_NAME } from './PointToCursorHandleConverter';
 import Point from './polyfills/Point';
 import Rectangle from './polyfills/ReadOnlyRectangle';
-import { Polygon } from './polyfills/RectanglesToPolygon';
+import { Polygon } from './jbsnorro/polygons/RectanglesToPolygon';
 
 export const debugPrefix = '<!--DEBUG-->';
 /** Creates an svg with polygons (colored via getStyle(indexOfPolygon)) enclosing same-valued regions (per getValue) on the element. */

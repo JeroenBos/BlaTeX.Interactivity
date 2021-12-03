@@ -15,8 +15,8 @@ import Point from '../src/polyfills/Point';
 import { assert, getDataLoc } from '../src/utils';
 import { debug_it, getStyle } from './utils/utils';
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
-import { ManhattenComparerToBoundary } from '../src/ManhattanToBoundaryComparer';
-import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/MinDistances';
+import { ManhattenComparerToBoundary } from '../src/jbsnorro/polygons/ManhattanToBoundaryComparer';
+import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
 
 describe('Resolve location to parsetree location', () => {
     it('Simple <div> without annotations yields no location', async () => {

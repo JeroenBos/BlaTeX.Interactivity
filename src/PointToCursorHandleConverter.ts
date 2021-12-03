@@ -1,6 +1,6 @@
 import { assert, minByDirectedWalker, getDepth, mapComparer, Comparer, walkAround } from './utils';
-import { ManhattenComparerToBoundary } from './ManhattanToBoundaryComparer';
-import { HorizontalClosestDistanceType, ManhattanOffset, MinDistances } from './MinDistances';
+import { ManhattenComparerToBoundary } from './jbsnorro/polygons/ManhattanToBoundaryComparer';
+import { HorizontalClosestDistanceType, ManhattanOffset, MinDistances } from './jbsnorro/polygons/MinDistances';
 
 export const LOCATION_ATTR_NAME = 'data-loc';
 export type Point = { x: number; y: number };

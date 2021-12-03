@@ -1,32 +1,40 @@
-import { assert } from './utils';
-import Point from './polyfills/Point';
-import Rectangle from './polyfills/Rectangle';
-import HashSet from './polyfills/HashSet{T}';
-import { Polygon } from './polyfills/RectanglesToPolygon';
+import { assert } from '../../utils';
+import Point from '../../polyfills/Point';
+import Rectangle from '../../polyfills/Rectangle';
+import HashSet from '../HashSet{T}';
+import { Polygon } from './RectanglesToPolygon';
 
-/** In this setup, as opposed to getPolygonsByValue where the lattice ends are inclusive,
- * the lattice ends (that is the right and bottom of the bounding box) are excluded.
- * You can think of this are the lattice being represented by the building blocks of many 
- * unit rectangles, each unit rectangle having 4 corners. (That's ends inclusive).
- * The coordinates can be continuous. 
- * Lattice exclusive is more that each rectangle is a single node with a single value.
- * It's also necessarily a discrete lattice. The node has the value of the topleft of its unit.
+// In this setup, as opposed to getPolygonsByValue where the lattice ends are inclusive,
+// the lattice ends (that is the right and bottom of the bounding box) are excluded.
+// You can think of this are the lattice being represented by the building blocks of many 
+// unit rectangles, each unit rectangle having 4 corners. (That's ends inclusive).
+// The coordinates can be continuous. 
+// Lattice exclusive is more that each rectangle is a single node with a single value.
+// It's also necessarily a discrete lattice. The node has the value of the topleft of its unit.
+// 
+// The discrete lattice can be mapped to the problem of continuous lattices, by
+// - reducing the size of the bounding box by 1 on the right and bottom
+// 
+// The problem is that points can have different values now, depending on from which direction you approach the corner 🤔
+
+/** 
+ * Divides the region spanned by the seeds into equal-valued polygons.
  * 
- * The discrete lattice can be mapped to the problem of continuous lattices, by
- * - reducing the size of the bounding box by 1 on the right and bottom
- * 
- * The problem is that points can have different values now, depending on from which direction you approach the corner 🤔
- */
+ * @param seeds The seeds to construct rectangles that will be divided and aggregated into polygons.
+ * (The implementation is such that  rectangles are divided and might skip over fine-grained details. Seeding can remedy this.)
+ * @param getValue The function that determines the value at each point. 
+ * @param out_Rectangles If specified, will be populated with the rectangles that were considered.
+ * @returns a dictionary from values to polygon enclosing the points with the respective value.
+*/
 export function getDiscretePolygonsByValue_LatticeEndExclusive(
     seeds: Point[],
     getValue: (p: Point) => number,
-    out_Rectangles: Rectangle[] | undefined = undefined): Map<number, Polygon> {
-
+    out_Rectangles: Rectangle[] | undefined = undefined
+): Map<number, Polygon> {
     for (const seed of seeds)
         assert(Number.isInteger(seed.x) && Number.isInteger(seed.y), `Point(${seed.x}, ${seed.y}) is not on the integer lattice`);
-        
-    // @ts-ignore
-    const [rectanglesByValue, valuesByPts] = getRectanglesByValue(
+
+    const [rectanglesByValue, _valuesByPts] = getRectanglesByValue(
         seeds,
         p => getValue(p.floor()),
         1,
@@ -339,7 +347,6 @@ function byTopLeftSquarelikeComparer(a: Point, b: Point): number {
 // }
 
 export const TEST_ONLY_divideIntoRectangles = divideIntoRectangles;
-export const TEST_ONLY_getRectanglesByValue = getRectanglesByValue;
 
 function getAllCorners(rects: Rectangle[]): Point[] {
     const all = createPointHashmap<Point>();

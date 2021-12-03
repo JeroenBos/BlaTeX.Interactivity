@@ -1,4 +1,4 @@
-import { Polygon } from '../src/polyfills/RectanglesToPolygon';
+import { Polygon } from '../src/jbsnorro/polygons/RectanglesToPolygon';
 import Rectangle from '../src/polyfills/ReadOnlyRectangle';
 import { assert } from '../src/utils';
 

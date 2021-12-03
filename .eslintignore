@@ -7,8 +7,8 @@
 
 // More info: https://github.com/jaredpalmer/tsdx/issues/1033
 
-src/ManyPointConverter.ts
-src/polyfills/HashSet{T}.ts
+src/jbsnorro/polygons/ManyPointConverter.ts
+src/jbsnorro/polygons/HashSet{T}.ts
 
 
 // This one we ignore because the code is copy/pasted

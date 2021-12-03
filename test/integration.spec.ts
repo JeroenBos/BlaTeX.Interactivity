@@ -9,9 +9,9 @@ import {
     getDistance,
     getHtmlElementsWithDataloc,
 } from '../src/PointToCursorHandleConverter';
-import { ManhattenComparerToBoundary } from '../src/ManhattanToBoundaryComparer';
+import { ManhattenComparerToBoundary } from '../src/jbsnorro/polygons/ManhattanToBoundaryComparer';
 import Point from '../src/polyfills/Point';
-import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/MinDistances';
+import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
 
 describe('Color HTML based on source locations', () => {
     it('<div>TEXT</div>', async () => {
