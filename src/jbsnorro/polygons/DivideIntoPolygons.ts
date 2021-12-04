@@ -18,19 +18,23 @@ import { Polygon } from './RectanglesToPolygon';
 // The problem is that points can have different values now, depending on from which direction you approach the corner 🤔
 
 /** 
- * Divides the region spanned by the seeds into equal-valued polygons.
+ * Divides the region spanned by the seeds into equal-valued discrete polygons.
  * 
  * @param seeds The seeds to construct rectangles that will be divided and aggregated into polygons.
  * (The implementation is such that  rectangles are divided and might skip over fine-grained details. Seeding can remedy this.)
  * @param getValue The function that determines the value at each point. 
+ * @param end_exclusive Determines whether the ends of rectangles, i.e. right and bottom edges, are considered in or out of the rectangle. 
+ * Equivalently, whether you look at the edges of a lattice graph (false) or nodes of a lattice graph (false).
  * @param out_Rectangles If specified, will be populated with the rectangles that were considered.
  * @returns a dictionary from values to polygon enclosing the points with the respective value.
 */
 export function getDiscretePolygonsByValue_LatticeEndExclusive(
     seeds: Point[],
     getValue: (p: Point) => number,
-    out_Rectangles: Rectangle[] | undefined = undefined
+    end_exclusive: boolean = true,
+    out_Rectangles: Rectangle[] | undefined = undefined,
 ): Map<number, Polygon> {
+    assert(end_exclusive === true, "end exclusive not implemented");
     for (const seed of seeds)
         assert(Number.isInteger(seed.x) && Number.isInteger(seed.y), `Point(${seed.x}, ${seed.y}) is not on the integer lattice`);
 
@@ -44,9 +48,7 @@ export function getDiscretePolygonsByValue_LatticeEndExclusive(
 
     if (out_Rectangles !== undefined) {
         for (const [_, rects] of rectanglesByValue) {
-            for (const rect of rects) {
-                out_Rectangles.push(rect);
-            }
+            out_Rectangles.push(...rects);
         }
     }
 
@@ -68,15 +70,7 @@ export function getDiscretePolygonsByValue_LatticeEndExclusive(
     // for now I'll accept being one pixes off on the bottom and right
     return polygons;
 }
-export function getPolygonsByValue(
-    seeds: Point[],
-    getValue: (p: Point) => number,
-    minDistance: number = 1,
-): Map<number, Polygon> {
-    const [rectanglesByValue,] = getRectanglesByValue(seeds, getValue, minDistance);
 
-    return aggregateRectangles(rectanglesByValue);
-}
 function aggregateRectangles(rectanglesByValue: Map<number, Rectangle[]>): Map<number, Polygon> {
     const result = new Map<number, Polygon>();
     for (const [value, rectangles] of rectanglesByValue) {

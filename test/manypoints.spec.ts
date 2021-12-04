@@ -1,7 +1,7 @@
 import {
     TEST_ONLY_divideIntoRectangles,
     getDiscretePolygonsByValue_LatticeEndExclusive,
-} from '../src/jbsnorro/polygons/ManyPointConverter';
+} from '../src/jbsnorro/polygons/DivideIntoPolygons';
 import Point from '../src/polyfills/Point';
 import Rectangle from '../src/polyfills/ReadOnlyRectangle';
 import { assert } from '../src/utils';

@@ -1,5 +1,5 @@
 import { assert, minByDirectedWalker, getDepth, mapComparer, Comparer, walkAround } from './utils';
-import { ManhattenComparerToBoundary } from './jbsnorro/polygons/ManhattanToBoundaryComparer';
+import { ManhattanDistanceComparer } from './jbsnorro/polygons/ManhattanDistanceComparer';
 import { HorizontalClosestDistanceType, ManhattanOffset, MinDistances } from './jbsnorro/polygons/MinDistances';
 
 export const LOCATION_ATTR_NAME = 'data-loc';
@@ -19,7 +19,7 @@ export function getCursorIndexByProximity(element: HTMLElement, point: Point): n
         return { distances, loc, depth: getDepth(e) };
     }
 
-    const comparer: Comparer<MinDistances> = ManhattenComparerToBoundary; // compareByMinHorizontalDistanceWithMaxVerticalDistance(7));
+    const comparer: Comparer<MinDistances> = ManhattanDistanceComparer; // compareByMinHorizontalDistanceWithMaxVerticalDistance(7));
     const bests = minByDirectedWalker<T>(element, select, mapComparerToDistances(comparer));
 
     // @ts-ignore

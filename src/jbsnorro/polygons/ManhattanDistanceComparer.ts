@@ -17,7 +17,8 @@ import { MinDistances } from "./MinDistances";
 const LHS_IS_SMALLER = -1;
 const RHS_IS_SMALLER = 1;
 
-export const ManhattenComparerToBoundary = createComparer();
+/** Compares the distances of MinDistances, i.e. rectangles (default Manhattan distance is to a point). */
+export const ManhattanDistanceComparer = createComparer();
 
 function createComparer() {
     const result = (lhs: MinDistances, rhs: MinDistances) => {

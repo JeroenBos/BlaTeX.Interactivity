@@ -1,4 +1,4 @@
-import { getDiscretePolygonsByValue_LatticeEndExclusive } from './jbsnorro/polygons/ManyPointConverter';
+import { getDiscretePolygonsByValue_LatticeEndExclusive } from './jbsnorro/polygons/DivideIntoPolygons';
 import { getCursorIndexByProximity, LOCATION_ATTR_NAME } from './PointToCursorHandleConverter';
 import Point from './polyfills/Point';
 import Rectangle from './polyfills/ReadOnlyRectangle';
@@ -30,7 +30,7 @@ export function allPointsByIndexToSVG(
         values.push({ p, value });
         return value;
     };
-    const polygons = configuration.getDiscretePolygonsByValue(
+    const polygons = configuration.divideSpaceIntoPolygonsByValue(
         seeds,
         pointsStyle ? newGetValue : getValue,
         prepolygonStyle?.rectangles
@@ -49,15 +49,11 @@ export function allPointsByIndexToSVG(
 
 export class Configuration {
     public constructor(
-        public readonly getDiscretePolygonsByValue: (
-            seeds: Point[],
-            getValue: (p: Point) => number,
-            out_Rectangles?: Rectangle[]
-        ) => Map<number, Polygon> = getDiscretePolygonsByValue_LatticeEndExclusive,
-        public readonly seeder: (boundingRect: DOMRect) => Point[] = createSeeds
-    ) {}
+        public readonly seeder: (boundingRect: DOMRect) => Point[] = createSeeds,
+        public readonly divideSpaceIntoPolygonsByValue = (seeds: Point[], getValue: (p: Point) => number, out_Rectangles?: Rectangle[]): Map<number, Polygon> => getDiscretePolygonsByValue_LatticeEndExclusive(seeds, getValue, true, out_Rectangles),
+    ) { }
     public static createWithExtraSeeds(points: Point[]) {
-        return new Configuration(getDiscretePolygonsByValue_LatticeEndExclusive, (boundingRect: DOMRect) =>
+        return new Configuration((boundingRect: DOMRect) =>
             createSeeds(boundingRect).concat(points)
         );
     }
