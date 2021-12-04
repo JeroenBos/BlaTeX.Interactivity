@@ -76,13 +76,34 @@ export function allPointsByIndexToSVGByProximity(
 
 export class Configuration {
     public constructor(
-        public readonly seeder: (boundingRect: DOMRect) => Point[] = createSeeds,
+        public readonly seeder: (boundingRect: DOMRect) => Point[] = Configuration.createSeeds,
         public readonly divideSpaceIntoPolygonsByValue = (seeds: Point[], getValue: (p: Point) => number, out_Rectangles?: Rectangle[]): Map<number, Polygon> => getDiscretePolygonsByValue_LatticeEndExclusive(seeds, getValue, true, out_Rectangles),
     ) { }
     public static createWithExtraSeeds(points: Point[]) {
         return new Configuration((boundingRect: DOMRect) =>
-            createSeeds(boundingRect).concat(points)
+            Configuration.createSeeds(boundingRect).concat(points)
         );
+    }
+    public static createFullySeeded() {
+        return new Configuration((boundingRect: DOMRect) => {
+            const fill = [];
+            for (let x = Math.floor(boundingRect.left); x <= Math.floor(boundingRect.right); x++) {
+                for (let y = Math.floor(boundingRect.top); y <= Math.floor(boundingRect.bottom); y++) {
+                    fill.push(new Point(x, y));
+                }
+            }
+            return fill;
+        });
+    }
+    static createSeeds(boundingRect: DOMRect): Point[] {
+        const corners = [
+            new Point(Math.floor(boundingRect.left), Math.floor(boundingRect.top)),
+            new Point(Math.floor(boundingRect.left), Math.ceil(boundingRect.bottom)),
+            new Point(Math.ceil(boundingRect.right), Math.ceil(boundingRect.bottom)),
+            new Point(Math.ceil(boundingRect.right), Math.floor(boundingRect.top)),
+        ];
+
+        return corners;
     }
 }
 
@@ -109,22 +130,8 @@ function prepolygonRectsToSVGLines(prepolygonStyle?: { style: string; rectangles
     return svgBuilder;
 }
 
-function createSeeds(boundingRect: DOMRect): Point[] {
-    const corners = [
-        new Point(Math.floor(boundingRect.left), Math.floor(boundingRect.top)),
-        new Point(Math.floor(boundingRect.left), Math.ceil(boundingRect.bottom)),
-        new Point(Math.ceil(boundingRect.right), Math.ceil(boundingRect.bottom)),
-        new Point(Math.ceil(boundingRect.right), Math.floor(boundingRect.top)),
-    ];
 
-    const fill = [];
-    for (let x = Math.floor(boundingRect.left); x <= Math.floor(boundingRect.right); x++) {
-        for (let y = Math.floor(boundingRect.top); y <= Math.floor(boundingRect.bottom); y++) {
-            fill.push(new Point(x, y));
-        }
-    }
-    return corners;
-}
+
 
 function computeDatalocRectangles(element: HTMLElement, datalocStyle?: string): string[] {
     if (datalocStyle === undefined) {
