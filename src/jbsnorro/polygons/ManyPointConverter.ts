@@ -110,7 +110,7 @@ function getRectanglesByValue(
             list.push(rectangle);
     }
     let newRects = rects;
-    while (newRects.length != 0) {
+    while (newRects.length !== 0) {
         const thisRoundRects = newRects;
         for (const corner of getAllCorners(newRects)) {
             if (!valueOnEachCorner.has(corner)) {
@@ -200,7 +200,7 @@ function* _divideIntoRectangles(...seeds: Point[]): Iterable<Rectangle> {
         assert(rightIndex !== -1, "All points on a vertical line? :S");
         const p = pop(rightIndex);
         const topRight = new Point(p.x, topLeft.y);
-        const bottom = topLeft.y == p.y ? undefined : Math.max(topLeft.y, p.y);
+        const bottom = topLeft.y === p.y ? undefined : Math.max(topLeft.y, p.y);
         if (topLeft.x > topRight.x)
             return [topRight, topLeft, bottom];
         return [topLeft, topRight, bottom];

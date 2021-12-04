@@ -1,15 +1,15 @@
 //@ts-nocheck
+
 function getXPath(node: Element): string {
     var comp, comps = [];
-    var parent = null;
     var xpath = '';
     var getPos = function (node) {
         var position = 1, curNode;
-        if (node.nodeType == Node.ATTRIBUTE_NODE) {
+        if (node.nodeType === Node.ATTRIBUTE_NODE) {
             return null;
         }
         for (curNode = node.previousSibling; curNode; curNode = curNode.previousSibling) {
-            if (curNode.nodeName == node.nodeName) {
+            if (curNode.nodeName === node.nodeName) {
                 ++position;
             }
         }
@@ -21,7 +21,7 @@ function getXPath(node: Element): string {
     }
 
     // @ts-ignore
-    for (; node && !(node instanceof Document); node = node.nodeType == Node.ATTRIBUTE_NODE ? node.ownerElement : node.parentNode) {
+    for (; node && !(node instanceof Document); node = node.nodeType === Node.ATTRIBUTE_NODE ? node.ownerElement : node.parentNode) {
         comp = comps[comps.length] = {};
         switch (node.nodeType) {
             case Node.TEXT_NODE:

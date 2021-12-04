@@ -1,4 +1,6 @@
 // @ts-nocheck
+/* eslint-disable */
+
 // Segment object
 class Segment {
     constructor(a, b) {
