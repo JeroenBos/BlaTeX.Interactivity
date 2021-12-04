@@ -47,18 +47,7 @@ export function allPointsByIndexToSVG(
     return svgBuilder.join('\n');
 }
 
-export class Configuration {
-    public constructor(
-        public readonly seeder: (boundingRect: DOMRect) => Point[] = createSeeds,
-        public readonly divideSpaceIntoPolygonsByValue = (seeds: Point[], getValue: (p: Point) => number, out_Rectangles?: Rectangle[]): Map<number, Polygon> => getDiscretePolygonsByValue_LatticeEndExclusive(seeds, getValue, true, out_Rectangles),
-    ) { }
-    public static createWithExtraSeeds(points: Point[]) {
-        return new Configuration((boundingRect: DOMRect) =>
-            createSeeds(boundingRect).concat(points)
-        );
-    }
-}
-/** Creates an svg with polygons (colored via getStyle(indexOfPolygon)) enclosing same-valued regions (per getValue) on the element. */
+/** Creates an svg with polygons (colored via getStyle(indexOfPolygon)) enclosing same-valued regions (per getValue) on the specified element. */
 export function allPointsByIndexToSVGByProximity(
     element: HTMLElement,
     getStyle: (value: number) => string,
@@ -84,6 +73,19 @@ export function allPointsByIndexToSVGByProximity(
     );
 }
 
+
+export class Configuration {
+    public constructor(
+        public readonly seeder: (boundingRect: DOMRect) => Point[] = createSeeds,
+        public readonly divideSpaceIntoPolygonsByValue = (seeds: Point[], getValue: (p: Point) => number, out_Rectangles?: Rectangle[]): Map<number, Polygon> => getDiscretePolygonsByValue_LatticeEndExclusive(seeds, getValue, true, out_Rectangles),
+    ) { }
+    public static createWithExtraSeeds(points: Point[]) {
+        return new Configuration((boundingRect: DOMRect) =>
+            createSeeds(boundingRect).concat(points)
+        );
+    }
+}
+
 function polygonsToSVGLines(polygons: Map<number, Polygon>, getStyle: (value: number) => string): string[] {
     const svgBuilder: string[] = [];
     for (const [value, polygon] of polygons) {
@@ -92,6 +94,7 @@ function polygonsToSVGLines(polygons: Map<number, Polygon>, getStyle: (value: nu
 
     return svgBuilder.sort();
 }
+
 function prepolygonRectsToSVGLines(prepolygonStyle?: { style: string; rectangles: Rectangle[] }): string[] {
     if (prepolygonStyle === undefined) {
         return [];

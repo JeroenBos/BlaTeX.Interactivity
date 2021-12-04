@@ -8,6 +8,12 @@ export type Distance = { dx: number; dy: number };
 
 export type SourceLocation = { start: number; end: number };
 
+/** 
+ * Gets the index in the source that the point represents, where source mapping is communicated through `data-loc` attributes.
+ * @param element The HTML element in which the source location is searched.
+ * @param point The point on screen which is to be mapped the a source location.
+ * @returns The source index to which the point points, or undefined is it points nowhere.
+*/
 export function getCursorIndexByProximity(element: HTMLElement, point: Point): number | undefined {
     type T = { distances: MinDistances; loc: SourceLocation; depth: number };
 
@@ -19,7 +25,7 @@ export function getCursorIndexByProximity(element: HTMLElement, point: Point): n
         return { distances, loc, depth: getDepth(e) };
     }
 
-    const comparer: Comparer<MinDistances> = ManhattanDistanceComparer; // compareByMinHorizontalDistanceWithMaxVerticalDistance(7));
+    const comparer: Comparer<MinDistances> = ManhattanDistanceComparer;
     const bests = minByDirectedWalker<T>(element, select, mapComparerToDistances(comparer));
 
     // @ts-ignore
@@ -40,26 +46,7 @@ export function getCursorIndexByProximity_FOR_TESTING_ONLY(elements: HTMLElement
 function mapComparerToDistances(comparer: Comparer<MinDistances>) {
     return mapComparer(comparer, (element: { distances: MinDistances }) => element.distances);
 }
-function compareByMinHorizontalDistance(a: MinDistances, b: MinDistances) {
-    return b.minHorizontalDistance - a.minHorizontalDistance;
-}
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function compareByMinHorizontalDistanceWithMaxVerticalDistance(maxVerticalDistance: number) {
-    return (a: MinDistances, b: MinDistances) => {
-        const aIsCloseEnough = a.minVerticalDistance < maxVerticalDistance;
-        const bIsCloseEnough = b.minVerticalDistance < maxVerticalDistance;
-        if (aIsCloseEnough && bIsCloseEnough) {
-            return compareByMinHorizontalDistance(a, b);
-        } else if (aIsCloseEnough) {
-            return -1;
-        } else if (bIsCloseEnough) {
-            return 1;
-        } else {
-            return 0;
-        }
-    };
-}
+
 function apply(d: MinDistances, loc: SourceLocation): number {
     if (loc.start === loc.end) return loc.start;
 
@@ -97,7 +84,7 @@ export function getElementsWithSourceLocation(element: HTMLElement, point: Point
     return getDistance(element, point);
 }
 
-/** Returns the source location of the element, if present. */
+/** @returns the source location of the element, if present. */
 function selectLocation(element: HTMLElement): SourceLocation | undefined {
     if (element.hasAttribute(LOCATION_ATTR_NAME)) {
         const s = element.getAttribute(LOCATION_ATTR_NAME);
