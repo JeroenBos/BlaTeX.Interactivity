@@ -46,6 +46,7 @@
   },
   "jest": {
     "globals": {
+      "transformIgnorePatterns": [".*"],
       "ts-jest": {
         "diagnostics": false
       }
