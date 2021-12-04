@@ -1,4 +1,4 @@
-import { TiedList } from './TiedList';
+import { TiedList } from './jbsnorro/TiedList';
 
 export const __DEV__: boolean = true; // Tsdx lied; it's not defined elsewhere; not reachable anyway
 export type Comparer<T> = (a: T, b: T) => number;

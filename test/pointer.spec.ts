@@ -8,9 +8,6 @@ import {
     getDistance,
     getDistance_FOR_TESTING_ONLY,
     getHtmlElementsWithDataloc,
-    HorizontalClosestDistanceType,
-    MinDistances,
-    VerticalClosestDistanceType,
 } from '../src/PointToCursorHandleConverter';
 import fs from 'fs';
 import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
@@ -18,7 +15,8 @@ import Point from '../src/polyfills/Point';
 import { assert, getDataLoc } from '../src/utils';
 import { debug_it, getStyle } from './utils/utils';
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
-import { ManhattenComparerToBoundary } from '../src/ManhattanToBoundaryComparer';
+import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
+import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
 
 describe('Resolve location to parsetree location', () => {
     it('Simple <div> without annotations yields no location', async () => {
@@ -116,7 +114,7 @@ describe('Test point to cursor handler for specific points.', () => {
         assert(distance2.horizontalType === HorizontalClosestDistanceType.LeftIn);
         assert(distance2.verticalType === VerticalClosestDistanceType.BottomOut);
 
-        const comparer = ManhattenComparerToBoundary;
+        const comparer = ManhattanDistanceComparer;
 
         assert(comparer(distance1, distancex) === -1);
         assert(comparer(distance1, distance2) === -1);

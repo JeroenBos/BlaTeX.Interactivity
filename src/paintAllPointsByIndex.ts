@@ -1,8 +1,8 @@
-import { getDiscretePolygonsByValue_LatticeEndExclusive } from './ManyPointConverter';
+import { getDiscretePolygonsByValue_LatticeEndExclusive } from './jbsnorro/polygons/DivideIntoPolygons';
 import { getCursorIndexByProximity, LOCATION_ATTR_NAME } from './PointToCursorHandleConverter';
 import Point from './polyfills/Point';
 import Rectangle from './polyfills/ReadOnlyRectangle';
-import { Polygon } from './polyfills/RectanglesToPolygon';
+import { Polygon } from './jbsnorro/polygons/RectanglesToPolygon';
 
 export const debugPrefix = '<!--DEBUG-->';
 /** Creates an svg with polygons (colored via getStyle(indexOfPolygon)) enclosing same-valued regions (per getValue) on the element. */
@@ -30,7 +30,7 @@ export function allPointsByIndexToSVG(
         values.push({ p, value });
         return value;
     };
-    const polygons = configuration.getDiscretePolygonsByValue(
+    const polygons = configuration.divideSpaceIntoPolygonsByValue(
         seeds,
         pointsStyle ? newGetValue : getValue,
         prepolygonStyle?.rectangles
@@ -47,22 +47,7 @@ export function allPointsByIndexToSVG(
     return svgBuilder.join('\n');
 }
 
-export class Configuration {
-    public constructor(
-        public readonly getDiscretePolygonsByValue: (
-            seeds: Point[],
-            getValue: (p: Point) => number,
-            out_Rectangles?: Rectangle[]
-        ) => Map<number, Polygon> = getDiscretePolygonsByValue_LatticeEndExclusive,
-        public readonly seeder: (boundingRect: DOMRect) => Point[] = createSeeds
-    ) {}
-    public static createWithExtraSeeds(points: Point[]) {
-        return new Configuration(getDiscretePolygonsByValue_LatticeEndExclusive, (boundingRect: DOMRect) =>
-            createSeeds(boundingRect).concat(points)
-        );
-    }
-}
-/** Creates an svg with polygons (colored via getStyle(indexOfPolygon)) enclosing same-valued regions (per getValue) on the element. */
+/** Creates an svg with polygons (colored via getStyle(indexOfPolygon)) enclosing same-valued regions (per getValue) on the specified element. */
 export function allPointsByIndexToSVGByProximity(
     element: HTMLElement,
     getStyle: (value: number) => string,
@@ -88,6 +73,40 @@ export function allPointsByIndexToSVGByProximity(
     );
 }
 
+
+export class Configuration {
+    public constructor(
+        public readonly seeder: (boundingRect: DOMRect) => Point[] = Configuration.createSeeds,
+        public readonly divideSpaceIntoPolygonsByValue = (seeds: Point[], getValue: (p: Point) => number, out_Rectangles?: Rectangle[]): Map<number, Polygon> => getDiscretePolygonsByValue_LatticeEndExclusive(seeds, getValue, true, out_Rectangles),
+    ) { }
+    public static createWithExtraSeeds(points: Point[]) {
+        return new Configuration((boundingRect: DOMRect) =>
+            Configuration.createSeeds(boundingRect).concat(points)
+        );
+    }
+    public static createFullySeeded() {
+        return new Configuration((boundingRect: DOMRect) => {
+            const fill = [];
+            for (let x = Math.floor(boundingRect.left); x <= Math.floor(boundingRect.right); x++) {
+                for (let y = Math.floor(boundingRect.top); y <= Math.floor(boundingRect.bottom); y++) {
+                    fill.push(new Point(x, y));
+                }
+            }
+            return fill;
+        });
+    }
+    static createSeeds(boundingRect: DOMRect): Point[] {
+        const corners = [
+            new Point(Math.floor(boundingRect.left), Math.floor(boundingRect.top)),
+            new Point(Math.floor(boundingRect.left), Math.ceil(boundingRect.bottom)),
+            new Point(Math.ceil(boundingRect.right), Math.ceil(boundingRect.bottom)),
+            new Point(Math.ceil(boundingRect.right), Math.floor(boundingRect.top)),
+        ];
+
+        return corners;
+    }
+}
+
 function polygonsToSVGLines(polygons: Map<number, Polygon>, getStyle: (value: number) => string): string[] {
     const svgBuilder: string[] = [];
     for (const [value, polygon] of polygons) {
@@ -96,6 +115,7 @@ function polygonsToSVGLines(polygons: Map<number, Polygon>, getStyle: (value: nu
 
     return svgBuilder.sort();
 }
+
 function prepolygonRectsToSVGLines(prepolygonStyle?: { style: string; rectangles: Rectangle[] }): string[] {
     if (prepolygonStyle === undefined) {
         return [];
@@ -110,22 +130,8 @@ function prepolygonRectsToSVGLines(prepolygonStyle?: { style: string; rectangles
     return svgBuilder;
 }
 
-function createSeeds(boundingRect: DOMRect): Point[] {
-    const corners = [
-        new Point(Math.floor(boundingRect.left), Math.floor(boundingRect.top)),
-        new Point(Math.floor(boundingRect.left), Math.ceil(boundingRect.bottom)),
-        new Point(Math.ceil(boundingRect.right), Math.ceil(boundingRect.bottom)),
-        new Point(Math.ceil(boundingRect.right), Math.floor(boundingRect.top)),
-    ];
 
-    const fill = [];
-    for (let x = Math.floor(boundingRect.left); x <= Math.floor(boundingRect.right); x++) {
-        for (let y = Math.floor(boundingRect.top); y <= Math.floor(boundingRect.bottom); y++) {
-            fill.push(new Point(x, y));
-        }
-    }
-    return corners;
-}
+
 
 function computeDatalocRectangles(element: HTMLElement, datalocStyle?: string): string[] {
     if (datalocStyle === undefined) {

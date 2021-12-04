@@ -12,27 +12,29 @@ More explicitly, consider these cases:
 
 */
 
-import { MinDistances } from './PointToCursorHandleConverter';
+import { MinDistances } from "./MinDistances";
 
 const LHS_IS_SMALLER = -1;
 const RHS_IS_SMALLER = 1;
 
-export const ManhattenComparerToBoundary = createComparer();
+/** Compares the distances of MinDistances, i.e. rectangles (default Manhattan distance is to a point). */
+export const ManhattanDistanceComparer = createComparer();
 
 function createComparer() {
     const result = (lhs: MinDistances, rhs: MinDistances) => {
         if (MinDistances.contains(lhs) !== MinDistances.contains(rhs)) {
-            if (MinDistances.contains(lhs)) {
+            if (MinDistances.contains(lhs))
                 return LHS_IS_SMALLER;
-            } else {
+            else
                 return RHS_IS_SMALLER;
-            }
         }
 
         const lhsDistance = MinDistances.getManhattanDistance(lhs);
         const rhsDistance = MinDistances.getManhattanDistance(rhs);
-        if (lhsDistance < rhsDistance) return LHS_IS_SMALLER;
-        else if (rhsDistance < lhsDistance) return RHS_IS_SMALLER;
+        if (lhsDistance < rhsDistance)
+            return LHS_IS_SMALLER;
+        else if (rhsDistance < lhsDistance)
+            return RHS_IS_SMALLER;
         return 0;
     };
     return result;

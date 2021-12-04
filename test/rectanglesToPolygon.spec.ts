@@ -1,7 +1,7 @@
 import { assert } from '../src/utils';
 import Point from '../src/polyfills/Point';
 import Rectangle from '../src/polyfills/ReadOnlyRectangle';
-import { Polygon, Segment } from '../src/polyfills/RectanglesToPolygon';
+import { Polygon, Segment } from '../src/jbsnorro/polygons/RectanglesToPolygon';
 
 describe('polygon merging', () => {
     it('', () => {

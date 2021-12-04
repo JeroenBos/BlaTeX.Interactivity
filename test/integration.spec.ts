@@ -8,12 +8,10 @@ import {
     getCursorIndexByProximity,
     getDistance,
     getHtmlElementsWithDataloc,
-    HorizontalClosestDistanceType,
-    MinDistances,
-    VerticalClosestDistanceType,
 } from '../src/PointToCursorHandleConverter';
-import { ManhattenComparerToBoundary } from '../src/ManhattanToBoundaryComparer';
+import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
 import Point from '../src/polyfills/Point';
+import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
 
 describe('Color HTML based on source locations', () => {
     it('<div>TEXT</div>', async () => {
@@ -68,7 +66,7 @@ describe('Color HTML based on source locations', () => {
             HorizontalClosestDistanceType.LeftOut,
             VerticalClosestDistanceType.TopIn
         );
-        assertEqual(ManhattenComparerToBoundary(distance1, distance2), 1);
+        assertEqual(ManhattanDistanceComparer(distance1, distance2), 1);
 
         // Act
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
