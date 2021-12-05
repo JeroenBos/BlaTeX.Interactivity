@@ -78,7 +78,7 @@ describe('Test getDistance internally.', () => {
         expect(distancesToOrigin.offsetFromLeft).toBe(0);
         expect(distancesToOrigin.offsetFromRight).toBe(-1920);
         expect(distancesToOrigin.offsetFromTop).toBe(0);
-        expect(distancesToOrigin.offsetFromBottom).toBe(-23);
+        expect(distancesToOrigin.offsetFromBottom).toBe(-23.21875);
     });
 });
 
