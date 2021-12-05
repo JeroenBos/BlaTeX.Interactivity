@@ -76,9 +76,9 @@ describe('Test getDistance internally.', () => {
 
         // the element's bounding rect is {0, 1, width=13.4375, 21}
         expect(distancesToOrigin.offsetFromLeft).toBe(0);
-        expect(distancesToOrigin.offsetFromRight).toBe(-13.4375);
-        expect(distancesToOrigin.offsetFromTop).toBe(-1);
-        expect(distancesToOrigin.offsetFromBottom).toBe(-22);
+        expect(distancesToOrigin.offsetFromRight).toBe(-1920);
+        expect(distancesToOrigin.offsetFromTop).toBe(0);
+        expect(distancesToOrigin.offsetFromBottom).toBe(-23);
     });
 });
 
