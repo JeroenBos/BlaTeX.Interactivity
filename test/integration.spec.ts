@@ -12,8 +12,11 @@ import {
 import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
 import Point from '../src/polyfills/Point';
 import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
+import { initGlobalTypesFromJSDOM } from '.';
 
 describe('Color HTML based on source locations', () => {
+    beforeEach(initGlobalTypesFromJSDOM);
+
     it('<div>TEXT</div>', async () => {
         const htmlBody = '<div>TEXT</div>';
         const element = await toHTMLElementWithBoundingRectangles(htmlBody);

@@ -1,5 +1,7 @@
 //@ts-nocheck
 
+import { assert } from "./utils";
+
 function getXPath(node: Element): string {
     var comp, comps = [];
     var xpath = '';
@@ -16,6 +18,7 @@ function getXPath(node: Element): string {
         return position;
     }
 
+    assert(typeof Document !== "undefined");
     if (node instanceof Document) {
         return '/';
     }

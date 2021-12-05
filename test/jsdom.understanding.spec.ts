@@ -9,15 +9,12 @@ import { spawnSync, SpawnSyncReturns, execSync } from 'child_process';
 import { getAllElementsByXPath } from '../src/xpathutils';
 import { isDebugging } from './utils/utils';
 import { timer } from './utils/timer';
+import { initGlobalTypesFromJSDOM } from '.';
 
 describe('JSDom Understanding tests', () => {
     // copied from https://stackoverflow.com/a/64027981/308451
     let jsDomInstance: JSDOM;
-
-    beforeEach(() => {
-        jsDomInstance = new JSDOM();
-        global.HTMLElement = jsDomInstance.window.HTMLElement;
-    });
+    beforeEach(() => jsDomInstance = initGlobalTypesFromJSDOM());
 
     it('passes instanceof check', () => {
         expect(jsDomInstance.window.document.createElement('div') instanceof HTMLElement).toBe(true);
@@ -290,11 +287,7 @@ class PromiseCompletionSource<T> {
 }
 
 describe('JSDom Understanding tests', () => {
-    beforeEach(() => {
-        const jsDomInstance = new JSDOM();
-        global.Node = jsDomInstance.window.Node;
-        global.Document = jsDomInstance.window.Document;
-    });
+    beforeEach(initGlobalTypesFromJSDOM);
 
     it('Can override properties with selenium', async () => {
         const element = await toHTMLElementWithBoundingRectangles('<div></div>');
