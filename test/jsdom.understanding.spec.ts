@@ -1,6 +1,6 @@
 import '../src/polyfills';
 import { JSDOM } from 'jsdom';
-import { assert, createRandomString, sequenceIndexOf } from '../src/utils';
+import { assert, assertEqual, createRandomString, sequenceIndexOf } from '../src/utils';
 import { implSymbol } from '../node_modules/jsdom/lib/jsdom/living/generated/utils';
 import os from 'os';
 import fs from 'fs';
@@ -37,20 +37,7 @@ export function toHTML(html: string): HTMLElement {
     assert(headElement instanceof HTMLHeadElement);
     assert(bodyElement instanceof HTMLBodyElement);
 
-    // here I have made a convience to ignore all katex stylesheet links and only pick the only other element as the body
-    const katexLinkCount = countKatexStylesheetLink(bodyElement.children);
-    assert(bodyElement.childElementCount === 1 + katexLinkCount);
-
-    const onlyNonLinkElement = bodyElement.children[bodyElement.children.length - 1];
-    assert(onlyNonLinkElement instanceof HTMLElement);
-    return onlyNonLinkElement;
-}
-function countKatexStylesheetLink(htmlElements: HTMLCollection): number {
-    let result = 0;
-    for (const element of htmlElements) {
-        if (isKatexStylesheetLink(element)) result++;
-    }
-    return result;
+    return bodyElement;
 }
 export function isKatexStylesheetLink(htmlElement: Element): boolean {
     return htmlElement.tagName.toUpperCase() === 'LINK' && (htmlElement as HTMLLinkElement).href.endsWith('/katex.css');
@@ -59,7 +46,8 @@ export function isKatexStylesheetLink(htmlElement: Element): boolean {
 describe('JSDom Understanding tests', () => {
     it('Can create html element from string', () => {
         const element = toHTML('<div></div>');
-        expect(element.hasChildNodes()).toBeFalsy();
+        assertEqual(element.childNodes.length, 1);
+        assertEqual(element.childNodes[0].hasChildNodes(), false);
     });
 });
 
