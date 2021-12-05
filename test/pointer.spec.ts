@@ -17,6 +17,7 @@ import { debug_it, getStyle } from './utils/utils';
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
 import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
+import { initGlobalTypesFromJSDOM } from '.';
 
 describe('Resolve location to parsetree location', () => {
     it('Simple <div> without annotations yields no location', async () => {
@@ -58,6 +59,8 @@ describe('Resolve KaTeX Source Location', () => {
 });
 
 describe('Test getDistance internally.', () => {
+    beforeEach(initGlobalTypesFromJSDOM);
+
     it('<katex>c</katex>', async () => {
         const element = await toHTMLElementWithBoundingRectanglesWithKatex(`
         <span class="katex">
