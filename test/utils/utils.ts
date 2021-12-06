@@ -20,6 +20,14 @@ export const getTestableSvgPart = (svg: string): string => {
         const closingQuote = svg.indexOf('"', styleIndex + pattern.length);
         svg = svg.substr(0, styleIndex) + svg.substr(closingQuote + 1);
     }
+    while (true) {
+        const pattern = ' data-loc-index="';
+        const styleIndex = svg.indexOf(pattern);
+        if (styleIndex < 0) break;
+
+        const closingQuote = svg.indexOf('"', styleIndex + pattern.length);
+        svg = svg.substr(0, styleIndex) + svg.substr(closingQuote + 1);
+    }
     return svg;
 };
 

@@ -138,7 +138,7 @@ describe('Test point to cursor handler for specific points.', () => {
 
             // debugging purposes:
             const svg = `<svg><rect x="${p.x}" y="${p.y}" width="1" height="1" style="fill: red"/></svg>`;
-            dumpOverlayBodyWithKatexCSS(htmlBody + `<div>${result}</div>`, svg, './test/x_1^2_after.html'); // debug purposes only
+            dumpOverlayBodyWithKatexCSS(htmlBody + `<div>${result}</div>`, svg, undefined, './test/x_1^2_after.html'); // debug purposes only
 
             assert(result === index);
             // console.log(`Point (${p.x}, ${p.y}) successful`);

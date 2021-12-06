@@ -36,7 +36,7 @@ export function allPointsByIndexToSVG(
         prepolygonStyle?.rectangles
     );
 
-    const svgBuilder: string[] = [`<svg width="${boundingRect.width}" height="${boundingRect.height}">`];
+    const svgBuilder: string[] = [`<svg width="${boundingRect.width}" height="${boundingRect.height * 2}">`]; // somehow there's still margin above the equation. the *2 is a workaround
     svgBuilder.push(...polygonsToSVGLines(polygons, getStyle));
     svgBuilder.push(...prepolygonRectsToSVGLines(prepolygonStyle));
     svgBuilder.push(...computeDatalocRectangles(element, datalocRectangleStyle));
@@ -85,10 +85,13 @@ export class Configuration {
         );
     }
     public static createFullySeeded() {
+        return Configuration.createLatticeWithSpacing(1);
+    }
+    public static createLatticeWithSpacing(spacing: number) {
         return new Configuration((boundingRect: DOMRect) => {
             const fill = [];
-            for (let x = Math.floor(boundingRect.left); x <= Math.floor(boundingRect.right); x++) {
-                for (let y = Math.floor(boundingRect.top); y <= Math.floor(boundingRect.bottom); y++) {
+            for (let x = Math.floor(boundingRect.left); x <= Math.floor(boundingRect.right); x += spacing) {
+                for (let y = Math.floor(boundingRect.top); y <= Math.floor(boundingRect.bottom); y += spacing) {
                     fill.push(new Point(x, y));
                 }
             }
@@ -110,7 +113,7 @@ export class Configuration {
 function polygonsToSVGLines(polygons: Map<number, Polygon>, getStyle: (value: number) => string): string[] {
     const svgBuilder: string[] = [];
     for (const [value, polygon] of polygons) {
-        svgBuilder.push(`<path d="${polygon.toSvgPathString()}" style="${getStyle(value)}" />`);
+        svgBuilder.push(`<path d="${polygon.toSvgPathString()}" style="${getStyle(value)}" data-loc-index="${value}" />`);
     }
 
     return svgBuilder.sort();
@@ -141,8 +144,9 @@ function computeDatalocRectangles(element: HTMLElement, datalocStyle?: string): 
     const svgBuilder: string[] = [];
     for (const datalocElement of datalocElements) {
         const r = datalocElement.getBoundingClientRect();
+        const dataloc = (datalocElement as any)["data-loc"];
         svgBuilder.push(
-            `${debugPrefix}<rect x="${r.left}" y="${r.top}" width="${r.width}" height="${r.height}" style="${datalocStyle}" />`
+            `${debugPrefix}<rect x="${r.left}" y="${r.top}" width="${r.width}" height="${r.height}" style="${datalocStyle}" id="${dataloc}"/>`
         );
     }
     return svgBuilder;
