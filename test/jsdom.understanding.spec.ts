@@ -12,12 +12,11 @@ import { timer } from './utils/timer';
 import { initGlobalTypesFromJSDOM } from '.';
 
 describe('JSDom Understanding tests', () => {
-    // copied from https://stackoverflow.com/a/64027981/308451
     let jsDomInstance: JSDOM;
     beforeEach(() => jsDomInstance = initGlobalTypesFromJSDOM());
 
     it('passes instanceof check', () => {
-        expect(jsDomInstance.window.document.createElement('div') instanceof HTMLElement).toBe(true);
+        assert(jsDomInstance.window.document.createElement('div') instanceof HTMLElement);
     });
 });
 
