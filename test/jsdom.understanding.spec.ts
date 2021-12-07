@@ -69,13 +69,15 @@ describe('JSDom Understanding tests', () => {
 
 // if there's a zoom, headless must be false
 type LayoutConfig =
-    | {
+    {
+        noCache?: boolean;
+    } & ({
         headless?: boolean;
     }
-    | {
-        headless?: false;
-        zoom?: number;
-    };
+        | {
+            headless?: false;
+            zoom?: number;
+        });
 
 export async function toHTMLElementWithBoundingRectanglesWithKatex(html: string): Promise<HTMLElement> {
     return toHTMLElementWithBoundingRectangles(html, true);
@@ -138,6 +140,8 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig): P
 
     const dir = fs.statSync(path).isDirectory();
     const args = [dir ? '--dir' : '--file', path];
+    if (layoutConfig.noCache === true)
+        args.push('--no-cache');
 
     if ('zoom' in layoutConfig && layoutConfig.zoom !== undefined && layoutConfig.zoom !== 100) {
         assert(isDebugging, "'zoom' cannot be specified in CI");
