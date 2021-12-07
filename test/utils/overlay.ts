@@ -11,7 +11,7 @@ export function dumpOverlayBodyWithKatexCSS(
 ) {
     const bodyStyle = `margin: 0 0; `;
     const jsElement = js === undefined ? "" : isString(js) ? `<script>${js}</script>` : `<script src="${js.src}"></script>`;
-    const html = `<!DOCTYPE html><html>  <head><link href="../node_modules/katex/dist/katex.css" rel="stylesheet" />${jsElement}</head>  <body style="${bodyStyle}">${htmlBody}<div id="hint"></div></body></html>`;
+    const html = `<!DOCTYPE html><html>  <head><link href="../node_modules/katex/dist/katex.css" rel="stylesheet" />${jsElement}</head>  <body style="${bodyStyle}">${htmlBody}<div id="hint"></div><div id="pointer"></div></body></html>`;
     return dumpOverlay(html, htmlToBeOverlayed, new Point(0, 0), path);
 }
 export function dumpOverlay(

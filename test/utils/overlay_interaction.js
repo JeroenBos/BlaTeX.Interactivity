@@ -1,6 +1,11 @@
 /* eslint-disable */
 var annotatedElements = undefined;
 var annotatedValue = -1;
+document.addEventListener("mousemove", function (event) {
+    const { x, y } = { x: event.clientX, y: event.clientY };
+    const pointerElement = document.getElementById("pointer");
+    pointerElement.textContent = `a(${toFixedIfNecessary(x, 5)}, ${toFixedIfNecessary(y, 5)})\n`;
+});
 document.addEventListener("mouseover", function (event) {
     const hintElement = document.getElementById("hint");
     hintElement.textContent = event.target.attributes;
