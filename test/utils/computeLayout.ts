@@ -76,7 +76,7 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig, ta
             return _computeLayout(path, layoutConfig, tag);
         }
         catch (TimedoutException) {
-            console.log(`${tag} timed out (${i}`)
+            writeNoteLine(`${tag} timed out (${i}`);
         }
     }
     return _computeLayout(path, layoutConfig, tag);
@@ -137,8 +137,6 @@ async function _computeLayout(path: string, layoutConfig: LayoutConfig, tag: str
     }
 
     const stdout = await tcs.promise;
-    // console.log(subprocess);
-    // console.log(stdout);
     return parseComputeLayoutOutput([stdout]);
 }
 export function toHTML(html: string): HTMLElement {
