@@ -7,7 +7,7 @@ import fs from 'fs';
 import Path from 'path';
 import { spawnSync, SpawnSyncReturns, execSync } from 'child_process';
 import { getAllElementsByXPath } from '../src/xpathutils';
-import { isDebugging } from './utils/utils';
+import { isDebuggingZoomed } from './utils/utils';
 import { timer } from './utils/timer';
 import { initGlobalTypesFromJSDOM } from '.';
 
@@ -144,7 +144,7 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig): P
         args.push('--no-cache');
 
     if ('zoom' in layoutConfig && layoutConfig.zoom !== undefined && layoutConfig.zoom !== 100) {
-        assert(isDebugging, "'zoom' cannot be specified in CI");
+        assert(isDebuggingZoomed, "'zoom' cannot be specified in CI");
         assert(Number.isInteger(layoutConfig.zoom), "'zoom' must be an integer");
         args.push('--zoom');
         args.push(layoutConfig.zoom.toString());
