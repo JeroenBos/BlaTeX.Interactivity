@@ -74,18 +74,21 @@ export async function toHTMLElementWithBoundingRectangles(
 export async function computeLayout(path: string, layoutConfig: LayoutConfig, tag: string, retries: number = 3): Promise<TaggedRectangle[]> {
     for (let i = 0; i < retries - 1; i++) {
         try {
-            return _computeLayout(path, layoutConfig, tag);
+            return await  _computeLayout(path, layoutConfig, tag);
         }
-        catch (TimedoutException) {
-            writeNoteLine(`${tag} timed out (${i}`);
+        catch (e) {
+            if (e instanceof TimedoutException)
+                writeNoteLine(`${tag} timed out (${i})`);
+            else
+                throw e;
         }
     }
-    return _computeLayout(path, layoutConfig, tag);
+    return await _computeLayout(path, layoutConfig, tag);
 }
 async function _computeLayout(path: string, layoutConfig: LayoutConfig, tag: string): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
-    const options = { cwd: './tools/', timeout: 15000 };
+    const options = { cwd: './tools/', timeout: 10 };
 
     const dir = fs.statSync(path).isDirectory();
     const args = [dir ? '--dir' : '--file', path];
