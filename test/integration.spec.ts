@@ -178,6 +178,7 @@ describe('Color HTML based on source locations', () => {
 
         // Assert
         const testableSvgPart = getTestableSvgPart(svg).replace(/\n<rect.*\/>/g, '');
+        console.log(testableSvgPart);
         assertEqual(
             testableSvgPart,
             zoom
@@ -243,9 +244,8 @@ describe('Color HTML based on source locations', () => {
 
         dumpOverlayBodyWithKatexCSS(htmlBody, svg, { src: "./utils/overlay_interaction.js" }); // debug purposes only
 
-        // I just annotated the html, that's all. below is nonsense
-
         const testableSvgPart = getTestableSvgPart(svg);
+        console.log(testableSvgPart);
         assertEqual(
             testableSvgPart,
             zoom ? `<svg width="381.2" height="98.125008">
@@ -288,6 +288,7 @@ describe('Color HTML based on source locations', () => {
         // I just annotated the html, that's all. below is nonsense
 
         const testableSvgPart = getTestableSvgPart(svg);
+        console.log(testableSvgPart);
         assertEqual(
             testableSvgPart,
             zoom ? `<svg width="381.2" height="92.32917">
