@@ -88,7 +88,7 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig, ta
 async function _computeLayout(path: string, layoutConfig: LayoutConfig, tag: string): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
-    const options = { cwd: './tools/', timeout: 10 };
+    const options = { cwd: './tools/', timeout: 15000 };
 
     const dir = fs.statSync(path).isDirectory();
     const args = [dir ? '--dir' : '--file', path];
