@@ -43,11 +43,16 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
             # uninstall default version
+            echo "$now"
             wmic product where "name like 'Google Chrome'" call uninstall /nointeractive
+            
+            echo "$now"
             
             # install specific version:
             tools\google-chrome-standalone.exe /install
             
+            echo "$now"
+
             # print version
             (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo
 
