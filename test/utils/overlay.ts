@@ -1,6 +1,7 @@
 import fs from 'fs';
 import Point from '../../src/polyfills/Point';
 import { isString } from '../../src/utils';
+import { isDebugging } from './utils';
 
 /** Overlays two HTMLs. */
 export function dumpOverlayBodyWithKatexCSS(
@@ -9,6 +10,9 @@ export function dumpOverlayBodyWithKatexCSS(
     js: string | { src: string } | undefined = undefined,
     path: string | undefined = './test/index.html'
 ) {
+    if (!isDebugging) {
+        return;
+    }
     const bodyStyle = `margin: 0 0; `;
     const jsElement = js === undefined ? "" : isString(js) ? `<script>${js}</script>` : `<script src="${js.src}"></script>`;
     const html = `<!DOCTYPE html><html>  <head><link href="../node_modules/katex/dist/katex.css" rel="stylesheet" />${jsElement}</head>  <body style="${bodyStyle}">${htmlBody}<div id="hint"></div><div id="pointer"></div></body></html>`;
