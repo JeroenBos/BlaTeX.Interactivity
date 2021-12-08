@@ -4,7 +4,7 @@ import { assert, assertEqual, getDataLoc } from '../src/utils';
 import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
 import fs from 'fs';
 import { readAllText } from '../src';
-import { debug_it, getStyle, getTestableSvgPart, isCI } from './utils/utils';
+import { debug_it, getStyle, getTestableSvgPart, isWindowsCI } from './utils/utils';
 import {
     getCursorIndexByProximity,
     getDistance,
@@ -16,7 +16,7 @@ import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceTyp
 import { initGlobalTypesFromJSDOM } from '.';
 
 function readExpectedSvg(name: string, zoom: boolean): string {
-    const contents = readAllText("./test/expected/" + name  + (zoom ? ".zoom" : isCI ? ".ci" : "") + ".svg");
+    const contents = readAllText("./test/expected/" + name  + (zoom ? ".zoom" : isWindowsCI ? ".ci" : "") + ".svg");
     return contents.trim();
 }
 describe('Color HTML based on source locations', () => {

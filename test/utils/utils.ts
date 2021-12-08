@@ -73,6 +73,8 @@ export const getStyle = (value: number): string => {
 export const isDebuggingZoomed = 'ZOOM' in process.env && process.env['ZOOM'].trim().toLowerCase() === "true";
 export const isDebugging = 'DEBUG' in process.env && process.env['DEBUG'].trim().toLowerCase() === "true";
 export const isCI = 'CI' in process.env && process.env['CI'].trim().toLowerCase() === "true";
+export const isWindowsCI = isCI && process.platform === "win32";
+export const isUbuntuCI = isCI && process.platform !== "win32";
 
 /** Like jest.it, but with a debug variable injected. In CI and under yarn test, runs as debug=false; in debugging runs with debug=true. */
 export function debug_it(description: string, f: (debug: boolean) => Promise<void>) {
