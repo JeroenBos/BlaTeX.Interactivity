@@ -2,7 +2,7 @@ import {
     toHTMLElementWithBoundingRectangles,
     toHTMLElementWithBoundingRectanglesWithTag,
     toHTMLElementWithBoundingRectanglesWithKatex,
-} from './jsdom.understanding.spec';
+} from './utils/computeLayout';
 import {
     getCursorIndexByProximity,
     getCursorIndexByProximity_FOR_TESTING_ONLY,
@@ -21,6 +21,7 @@ import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceTyp
 import { initGlobalTypesFromJSDOM } from '.';
 
 describe('Resolve location to parsetree location', () => {
+    beforeEach(initGlobalTypesFromJSDOM);
     it('Simple <div> without annotations yields no location', async () => {
         const element = await toHTMLElementWithBoundingRectanglesWithTag('<div></div>', "simple <div>");
         const result = getCursorIndexByProximity(element, { x: 50, y: 50 });

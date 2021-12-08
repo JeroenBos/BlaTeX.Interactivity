@@ -1,4 +1,4 @@
-import { toHTMLElementWithBoundingRectangles, toHTMLElementWithBoundingRectanglesWithTag } from './jsdom.understanding.spec';
+import { toHTMLElementWithBoundingRectangles, toHTMLElementWithBoundingRectanglesWithTag } from './utils/computeLayout';
 import { allPointsByIndexToSVGByProximity, Configuration } from '../src/paintAllPointsByIndex';
 import { assert, assertEqual, getDataLoc } from '../src/utils';
 import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
