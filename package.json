@@ -51,7 +51,9 @@
         "transformIgnorePatterns": [".*"],
         "diagnostics": false
       }
-    }
+    },
+    "globalTeardown": "<rootDir>/test/utils/jestTeardown.js",
+    "globalSetup": "<rootDir>/test/utils/jestSetup.js"
   },
   "name": "template",
   "author": "Jeroen Bos",

@@ -11,6 +11,10 @@ import { isDebuggingZoomed } from './utils/utils';
 import { timer } from './utils/timer';
 import { initGlobalTypesFromJSDOM } from '.';
 
+function writeNoteLine(s: string) {
+    // these notes are printed at the end of a jest session
+    fs.appendFileSync('../.jestNotes.txt', s + "\n");
+}
 describe('JSDom Understanding tests', () => {
     let jsDomInstance: JSDOM;
     beforeEach(() => jsDomInstance = initGlobalTypesFromJSDOM());
@@ -79,13 +83,17 @@ type LayoutConfig =
             zoom?: number;
         });
 
-export async function toHTMLElementWithBoundingRectanglesWithKatex(html: string): Promise<HTMLElement> {
-    return toHTMLElementWithBoundingRectangles(html, true);
+export async function toHTMLElementWithBoundingRectanglesWithKatex(htmlElement: string, tag: string): Promise<HTMLElement> {
+    return toHTMLElementWithBoundingRectangles(htmlElement, true, {}, tag);
+}
+export async function toHTMLElementWithBoundingRectanglesWithTag(htmlElement: string, tag: string) {
+    return toHTMLElementWithBoundingRectangles(htmlElement, false, {}, tag);
 }
 export async function toHTMLElementWithBoundingRectangles(
     htmlElement: string,
     includeKaTeX: boolean = false,
-    layoutConfig: LayoutConfig = {}
+    layoutConfig: LayoutConfig = {},
+    tag: string
 ): Promise<HTMLElement> {
     const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8)) + '/';
     fs.mkdirSync(dir, { recursive: true });
@@ -110,7 +118,7 @@ export async function toHTMLElementWithBoundingRectangles(
 
     fs.appendFileSync(path, html);
 
-    const rectanges = await computeLayout(path, layoutConfig);
+    const rectanges = await computeLayout(path, layoutConfig, tag);
 
     const element = toHTML(html);
     const elements = getAllElementsByXPath(element.ownerDocument);
@@ -133,7 +141,7 @@ export async function toHTMLElementWithBoundingRectangles(
     }
     return element;
 }
-export async function computeLayout(path: string, layoutConfig: LayoutConfig): Promise<TaggedRectangle[]> {
+export async function computeLayout(path: string, layoutConfig: LayoutConfig, tag: string): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
     const options = { cwd: './tools/', timeout: 30000 };
@@ -171,9 +179,7 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig): P
         subprocess = spawnSync('./layoutengine', args, options);
     }
 
-    if (false) {
-        console.debug(startTime.ms);
-    }
+    writeNoteLine(`${tag}.process = ${startTime.ms}`);
     if (subprocess.error !== undefined) {
         // handle failure to start the process
         tcs.reject(subprocess.error);
@@ -281,7 +287,7 @@ describe('JSDom Understanding tests', () => {
     beforeEach(initGlobalTypesFromJSDOM);
 
     it('Can override properties with selenium', async () => {
-        const element = await toHTMLElementWithBoundingRectangles('<div></div>');
+        const element = await toHTMLElementWithBoundingRectanglesWithTag('<div></div>', "sel");
         expect(element.clientLeft).toBe(0);
         expect(element.clientTop).toBe(0);
         expect(element.clientWidth).toBe(1920);
