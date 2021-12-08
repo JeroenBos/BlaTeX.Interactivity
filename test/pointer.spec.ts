@@ -29,7 +29,7 @@ describe('Resolve location to parsetree location', () => {
         expect(result).toBe(undefined);
     });
     it('Simple <div> clicking near the left', async () => {
-        const element = await toHTMLElementWithBoundingRectanglesWithTag('<div data-loc="0,1"></div>', "<div> right");
+        const element = await toHTMLElementWithBoundingRectanglesWithTag('<div data-loc="0,1"></div>', "<div> left");
 
         const clickToTheLeft = getCursorIndexByProximity(element, { x: 50, y: 50 });
         expect(clickToTheLeft).toBe(0);
