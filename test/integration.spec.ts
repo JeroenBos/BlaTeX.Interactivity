@@ -16,7 +16,7 @@ import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceTyp
 import { initGlobalTypesFromJSDOM } from '.';
 
 function readExpectedSvg(name: string, zoom: boolean): string {
-    const contents = readAllText("./test/expected/" + name  + (zoom ? ".zoom" : isCI ? ".ci" : "") + ".svg");
+    const contents = readAllText("./test/expected/" + name  + (zoom ? ".zoom" : "") + ".svg");
     return contents.trim();
 }
 describe('Color HTML based on source locations', () => {
