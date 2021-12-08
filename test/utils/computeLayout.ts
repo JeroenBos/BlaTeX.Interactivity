@@ -123,7 +123,7 @@ async function _computeLayout(path: string, layoutConfig: LayoutConfig, tag: str
     writeNoteLine(`${tag}.process = ${startTime.ms}`);
     if (subprocess.error !== undefined) {
         // handle failure to start the process
-        if (subprocess.stderr.includes("ETIMEOUT")) {
+        if (subprocess.stderr.includes("ETIMEDOUT")) {
             throw new TimedoutException()
         }
         tcs.reject(subprocess.error);
