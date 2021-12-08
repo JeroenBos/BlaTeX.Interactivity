@@ -6,6 +6,7 @@ import { JSDOM } from 'jsdom';
  * Use like `const jsDomInstance = beforeEach(initGlobalTypesFromJSDOM)` in a `describe` context;
 */
 export function initGlobalTypesFromJSDOM() {
+    // from https://stackoverflow.com/a/64027981/308451
     const jsDomInstance = new JSDOM();
     global.Node = jsDomInstance.window.Node;
     global.Document = jsDomInstance.window.Document;
@@ -13,4 +14,4 @@ export function initGlobalTypesFromJSDOM() {
     return jsDomInstance;
 };
 
-// from https://stackoverflow.com/a/64027981/308451
+

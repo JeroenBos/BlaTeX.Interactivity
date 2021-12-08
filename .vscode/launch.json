@@ -20,7 +20,8 @@
                 "!**/node_modules/**"
             ],
             "env": {
-                "DEBUG": "true"
+                "DEBUG": "true",
+                "ZOOM": "true"
             },
             "outputCapture": "std",
             "justMyCode": true
