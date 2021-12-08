@@ -1,6 +1,7 @@
 import '../../src/polyfills';
 import { JSDOM } from 'jsdom';
 import { PromiseCompletionSource } from '../../src/jbsnorro/PromiseCompletionSource';
+import { TimedoutException } from '../../src/jbsnorro/TimedoutException';
 import { assert, createRandomString, sequenceIndexOf } from '../../src/utils';
 import { implSymbol } from '../../node_modules/jsdom/lib/jsdom/living/generated/utils';
 import os from 'os';
@@ -122,6 +123,9 @@ async function _computeLayout(path: string, layoutConfig: LayoutConfig, tag: str
     writeNoteLine(`${tag}.process = ${startTime.ms}`);
     if (subprocess.error !== undefined) {
         // handle failure to start the process
+        if (subprocess.stderr.includes("ETIMEOUT")) {
+            throw new TimedoutException()
+        }
         tcs.reject(subprocess.error);
         console.log(subprocess.error.stack);
         console.log('stderr: ' + subprocess.stderr);
