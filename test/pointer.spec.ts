@@ -1,7 +1,8 @@
 import {
     toHTMLElementWithBoundingRectangles,
+    toHTMLElementWithBoundingRectanglesWithTag,
     toHTMLElementWithBoundingRectanglesWithKatex,
-} from './jsdom.understanding.spec';
+} from './utils/computeLayout';
 import {
     getCursorIndexByProximity,
     getCursorIndexByProximity_FOR_TESTING_ONLY,
@@ -12,7 +13,7 @@ import {
 import fs from 'fs';
 import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
 import Point from '../src/polyfills/Point';
-import { assert, getDataLoc } from '../src/utils';
+import { assert, assertEqual, getDataLoc } from '../src/utils';
 import { debug_it, getStyle } from './utils/utils';
 import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
 import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
@@ -20,20 +21,21 @@ import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceTyp
 import { initGlobalTypesFromJSDOM } from '.';
 
 describe('Resolve location to parsetree location', () => {
+    beforeEach(initGlobalTypesFromJSDOM);
     it('Simple <div> without annotations yields no location', async () => {
-        const element = await toHTMLElementWithBoundingRectangles('<div></div>');
+        const element = await toHTMLElementWithBoundingRectanglesWithTag('<div></div>', "simple <div>");
         const result = getCursorIndexByProximity(element, { x: 50, y: 50 });
 
         expect(result).toBe(undefined);
     });
     it('Simple <div> clicking near the left', async () => {
-        const element = await toHTMLElementWithBoundingRectangles('<div data-loc="0,1"></div>');
+        const element = await toHTMLElementWithBoundingRectanglesWithTag('<div data-loc="0,1"></div>', "<div> left");
 
         const clickToTheLeft = getCursorIndexByProximity(element, { x: 50, y: 50 });
         expect(clickToTheLeft).toBe(0);
     });
     it('Simple <div> clicking near the right', async () => {
-        const element = await toHTMLElementWithBoundingRectangles('<div data-loc="0,1"></div>');
+        const element = await toHTMLElementWithBoundingRectanglesWithTag('<div data-loc="0,1"></div>', "<div> right");
 
         const clickToTheRight = getCursorIndexByProximity(element, { x: 1900, y: 50 });
         expect(clickToTheRight).toBe(1);
@@ -50,11 +52,12 @@ describe('Resolve KaTeX Source Location', () => {
                     <span class="mord mathnormal" data-loc="0,1">c</span>
                 </span>
             </span>
-        </span>`);
+        </span>`,
+            "simple div katex");
 
         const result = getCursorIndexByProximity(element, { x: 50, y: 50 });
 
-        expect(result).toBe(1);
+        assertEqual(result, 1);
     });
 });
 
@@ -70,7 +73,8 @@ describe('Test getDistance internally.', () => {
                     <span class="mord mathnormal" data-loc="0,1">c</span>
                 </span>
             </span>
-        </span>`);
+        </span>`,
+            "getDistance");
 
         const distancesToOrigin = getDistance_FOR_TESTING_ONLY(element, { x: 0, y: 0 });
 
@@ -85,7 +89,7 @@ describe('Test getDistance internally.', () => {
 describe('Test point to cursor handler for specific points.', () => {
     debug_it('on x_1^2', async (zoom: boolean) => {
         const htmlBody = fs.readFileSync('./test/AnnotatedData/x_1^2.html').toString();
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined, "x_1^2");
 
         dumpOverlayBodyWithKatexCSS(
             htmlBody,
@@ -141,7 +145,6 @@ describe('Test point to cursor handler for specific points.', () => {
             dumpOverlayBodyWithKatexCSS(htmlBody + `<div>${result}</div>`, svg, undefined, './test/x_1^2_after.html'); // debug purposes only
 
             assert(result === index);
-            // console.log(`Point (${p.x}, ${p.y}) successful`);
         }
     });
 });
