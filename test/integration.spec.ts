@@ -256,7 +256,6 @@ describe('Color HTML based on source locations', () => {
 
         const testableSvgPart = getTestableSvgPart(svg);
         const expected = readExpectedSvg("complicated", zoom);
-        console.log(testableSvgPart);
         assertEqual(testableSvgPart, expected);
     });
 });
