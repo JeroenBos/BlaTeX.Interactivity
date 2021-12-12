@@ -110,22 +110,22 @@ export async function toHTMLElementWithBoundingRectangles(
 
     fs.appendFileSync(path, html);
 
-    const rectanges = await computeLayout(path, layoutConfig, tag);
+    const rectangles = await computeLayout(path, layoutConfig, tag);
 
     const element = toHTML(html);
     const elements = getAllElementsByXPath(element.ownerDocument);
     let alignedRectangles;
-    if (rectanges.length === elements.length) {
-        alignedRectangles = rectanges;
+    if (rectangles.length === elements.length) {
+        alignedRectangles = rectangles;
     } else {
-        if (rectanges.length === 0 || elements.length === 0)
+        if (rectangles.length === 0 || elements.length === 0)
             throw new Error('At least one element in each sequence must exist');
-        if (rectanges.length > elements.length) {
-            const rectangleTags = rectanges.map(r => r.tag);
+        if (rectangles.length > elements.length) {
+            const rectangleTags = rectangles.map(r => r.tag);
             const elementTags = elements.map(r => r[1].tagName);
             const index = sequenceIndexOf(rectangleTags, elementTags);
             if (index === -1) throw new Error("It looks like the rectangles and elements don't match");
-            alignedRectangles = rectanges.slice(index);
+            alignedRectangles = rectangles.slice(index);
         } else throw new Error('Fewer rectangles than elements');
     }
     for (let i = 0; i < alignedRectangles.length; i++) {

@@ -5,9 +5,7 @@ import {
 } from './utils/computeLayout';
 import {
     getCursorIndexByProximity,
-    getCursorIndexByProximity_FOR_TESTING_ONLY,
     getDistance,
-    getDistance_FOR_TESTING_ONLY,
     getHtmlElementsWithDataloc,
 } from '../src/PointToCursorHandleConverter';
 import fs from 'fs';
@@ -19,6 +17,14 @@ import { allPointsByIndexToSVGByProximity } from './utils/paintAllPointsByIndex'
 import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
 import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
 import { initGlobalTypesFromJSDOM } from '.';
+
+function getCursorIndexByProximity_FOR_TESTING_ONLY(elements: HTMLElement[], point: Point): MinDistances[] {
+    const distances: MinDistances[] = [];
+    for (const element of elements) {
+        distances.push(MinDistances.fromManhattan(getDistance(element, point)));
+    }
+    return distances;
+}
 
 describe('Resolve location to parsetree location', () => {
     beforeEach(initGlobalTypesFromJSDOM);
@@ -76,7 +82,7 @@ describe('Test getDistance internally.', () => {
         </span>`,
             "getDistance");
 
-        const distancesToOrigin = getDistance_FOR_TESTING_ONLY(element, { x: 0, y: 0 });
+        const distancesToOrigin = getDistance(element, { x: 0, y: 0 });
 
         // the element's bounding rect is {0, 1, width=13.4375, 21}
         expect(distancesToOrigin.offsetFromLeft).toBe(0);
