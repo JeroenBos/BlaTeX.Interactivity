@@ -1,7 +1,7 @@
 // this function cannot be in one of the .spec.ts files,
 // because then it needs to be imported and then that importing module will fail (according to yarn)
 
-import { debugPrefix } from '../../src/paintAllPointsByIndex'; // for the test utils it's okay to depend on non-test things
+import { debugPrefix } from './paintAllPointsByIndex'; // for the test utils it's okay to depend on non-test things
 
 // if the imported module fails. Which is just annoying.
 export const getTestableSvgPart = (svg: string): string => {

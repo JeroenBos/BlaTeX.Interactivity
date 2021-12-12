@@ -15,7 +15,7 @@ import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
 import Point from '../src/polyfills/Point';
 import { assert, assertEqual, getDataLoc } from '../src/utils';
 import { debug_it, getStyle } from './utils/utils';
-import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
+import { allPointsByIndexToSVGByProximity } from './utils/paintAllPointsByIndex';
 import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
 import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
 import { initGlobalTypesFromJSDOM } from '.';

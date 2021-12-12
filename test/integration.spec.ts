@@ -1,5 +1,5 @@
 import { toHTMLElementWithBoundingRectangles, toHTMLElementWithBoundingRectanglesWithTag } from './utils/computeLayout';
-import { allPointsByIndexToSVGByProximity, Configuration } from '../src/paintAllPointsByIndex';
+import { allPointsByIndexToSVGByProximity, Configuration } from './utils/paintAllPointsByIndex';
 import { assert, assertEqual, getDataLoc } from '../src/utils';
 import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
 import fs from 'fs';
