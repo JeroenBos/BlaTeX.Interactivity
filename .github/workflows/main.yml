@@ -42,13 +42,16 @@ jobs:
       - name: (Windows) Ensure specific chrome version is installed
         if: ${{ matrix.os == 'windows-latest' }} 
         run: |
-            # uninstall default version
+            echo "uninstall default version"
+            (get-date).ToString('T')
             wmic product where "name like 'Google Chrome'" call uninstall /nointeractive
             
-            # install specific version:
+            echo "install specific version"
+            (get-date).ToString('T')
             tools\google-chrome-standalone.exe /install
             
-            # print version
+            echo "print version"
+            (get-date).ToString('T')
             (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe").VersionInfo
 
       - name: Install deps and build (with cache)

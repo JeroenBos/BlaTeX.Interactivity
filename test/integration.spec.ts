@@ -1,4 +1,4 @@
-import { toHTMLElementWithBoundingRectangles } from './jsdom.understanding.spec';
+import { toHTMLElementWithBoundingRectangles, toHTMLElementWithBoundingRectanglesWithTag } from './utils/computeLayout';
 import { allPointsByIndexToSVGByProximity, Configuration } from '../src/paintAllPointsByIndex';
 import { assert, assertEqual, getDataLoc } from '../src/utils';
 import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
@@ -24,7 +24,7 @@ describe('Color HTML based on source locations', () => {
 
     it('<div>TEXT</div>', async () => {
         const htmlBody = '<div>TEXT</div>';
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody);
+        const element = await toHTMLElementWithBoundingRectanglesWithTag(htmlBody, "TEXT");
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
@@ -38,7 +38,7 @@ describe('Color HTML based on source locations', () => {
 
     it('<div data-loc="0,1">TEYT</div>', async () => {
         const htmlBody = '<div data-loc="0,1">TEYT</div>';
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody);
+        const element = await toHTMLElementWithBoundingRectanglesWithTag(htmlBody, "TEYT");
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
         const testableSvgPart = getTestableSvgPart(svg);
@@ -54,7 +54,7 @@ describe('Color HTML based on source locations', () => {
     it('<div><div data-loc="0,4">TAXT</div><div data-loc="5,8">TAXT</div></div>', async () => {
         // Arrange
         const htmlBody = '<div><div data-loc="0,4">TAXT</div><div data-loc="5,8">TAXT</div></div>';
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody);
+        const element = await toHTMLElementWithBoundingRectanglesWithTag(htmlBody, "TAXT");
 
         const distance1 = assertParticularPointLocation(
             element,
@@ -136,7 +136,7 @@ describe('Color HTML based on source locations', () => {
 
     it('<div><span data-loc="0,1">TUXT</span><span data-loc="1,2">TUXT</span></div>', async () => {
         const htmlBody = '<div><span data-loc="0,1">TUXT</span><span data-loc="1,2">TUXT</span></div>';
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody);
+        const element = await toHTMLElementWithBoundingRectanglesWithTag(htmlBody, "TUXT");
 
         const point = new Point(80, 15);
         assertParticularPointLocation(
@@ -173,7 +173,7 @@ describe('Color HTML based on source locations', () => {
 
     debug_it('x to the 2 with horizontal offset CODE9', async (zoom: boolean) => {
         const htmlElement = fs.readFileSync('./test/AnnotatedData/x^2 with horizontal offset.html').toString();
-        const element = await toHTMLElementWithBoundingRectangles(htmlElement, true, zoom ? { zoom: 500 } : undefined);
+        const element = await toHTMLElementWithBoundingRectangles(htmlElement, true, zoom ? { zoom: 500 } : undefined, "x^2");
 
         const point = new Point(100, 12);
         assertParticularPointLocation(element, point, 0, htmlElement);
@@ -191,7 +191,7 @@ describe('Color HTML based on source locations', () => {
 
     debug_it('f(x)', async zoom => {
         const htmlBody = fs.readFileSync('./test/AnnotatedData/f(x).html').toString();
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined, "f(x)");
         const svg = allPointsByIndexToSVGByProximity(element as HTMLElement, getStyle);
 
         dumpOverlayBodyWithKatexCSS(htmlBody, svg); // debug purposes only
@@ -223,7 +223,7 @@ describe('Color HTML based on source locations', () => {
     });
     debug_it('Annotated integral expression', async zoom => {
         const htmlBody = fs.readFileSync('./test/AnnotatedData/integralExpression.html').toString();
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined, "integral");
         const svg = allPointsByIndexToSVGByProximity(element, getStyle, Configuration.createLatticeWithSpacing(5));
 
         assertParticularPointLocation(
@@ -243,8 +243,8 @@ describe('Color HTML based on source locations', () => {
 
     debug_it('Annotated complicated expression', async zoom => {
         const htmlBody = fs.readFileSync('./test/AnnotatedData/complicatedExpression.html').toString();
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined);
-        const svg = allPointsByIndexToSVGByProximity(element, getStyle, Configuration.createLatticeWithSpacing(5), undefined, "fill:green; stroke-width: 0.1px; opacity: 30%");
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined, "complicated");
+        const svg = allPointsByIndexToSVGByProximity(element, getStyle, Configuration.createLatticeWithSpacing(5));
 
         dumpOverlayBodyWithKatexCSS(htmlBody, svg, { src: "./utils/overlay_interaction.js" }); // debug purposes only
 
