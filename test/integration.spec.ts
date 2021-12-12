@@ -249,13 +249,14 @@ describe('Color HTML based on source locations', () => {
 
     debug_it('Annotated complicated expression', async zoom => {
         const htmlBody = fs.readFileSync('./test/AnnotatedData/complicatedExpression.html').toString();
-        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined, "complicated", true);
+        const element = await toHTMLElementWithBoundingRectangles(htmlBody, true, zoom ? { zoom: 500 } : undefined, "complicated");
         const svg = allPointsByIndexToSVGByProximity(element, getStyle, Configuration.createLatticeWithSpacing(5));
 
         dumpOverlayBodyWithKatexCSS(htmlBody, svg, { src: "./utils/overlay_interaction.js" }); // debug purposes only
 
         const testableSvgPart = getTestableSvgPart(svg);
         const expected = readExpectedSvg("complicated", zoom);
+        console.log(testableSvgPart);
         assertEqual(testableSvgPart, expected);
     });
 });
