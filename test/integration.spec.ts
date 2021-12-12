@@ -10,7 +10,6 @@ import {
     getDistance,
     getHtmlElementsWithDataloc,
 } from '../src/PointToCursorHandleConverter';
-import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
 import Point from '../src/polyfills/Point';
 import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
 import { initGlobalTypesFromJSDOM } from '.';
@@ -22,8 +21,8 @@ function readExpectedSvg(name: string, zoom: boolean): string {
 describe('Color HTML based on source locations', () => {
     beforeEach(initGlobalTypesFromJSDOM);
 
-    it('<div>TEXT</div>', async () => {
-        const htmlBody = '<div>TEXT</div>';
+    it('<span>TEXT</span>', async () => {
+        const htmlBody = '<span>TEXT</span>';
         const element = await toHTMLElementWithBoundingRectanglesWithTag(htmlBody, "TEXT");
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
 
@@ -36,58 +35,66 @@ describe('Color HTML based on source locations', () => {
         );
     });
 
-    it('<div data-loc="0,1">TEYT</div>', async () => {
-        const htmlBody = '<div data-loc="0,1">TEYT</div>';
+    it('<span data-loc="0,1;4">TEYT</span>', async () => {
+        const htmlBody = '<span data-loc="0,1;4">TEYT</span>';
         const element = await toHTMLElementWithBoundingRectanglesWithTag(htmlBody, "TEYT");
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
+
+        dumpOverlayBodyWithKatexCSS(htmlBody, svg); // debug purposes only
 
         const testableSvgPart = getTestableSvgPart(svg);
         assertEqual(
             testableSvgPart,
             `<svg width="1920" height="36">
-<path d="M1920,0 960,0 960,18 1920,18 1920,0" />
-<path d="M960,0 0,0 0,18 960,18 960,0" />
+<path d="M26,0 16,0 16,18 26,18 26,0" />
+<path d="M26,0 26,18 36,18 36,0 26,0" />
+<path d="M36,18 120,18 120,18 240,18 240,0 36,0 36,18
+ M240,18 480,18 480,0 240,0 240,18
+ M480,18 960,18 960,0 480,0 480,18
+ M960,18 1920,18 1920,0 960,0 960,18" />
+<path d="M6,0 0,0 0,18 6,18 6,0" />
+<path d="M6,18 16,18 16,0 6,0 6,18" />
 </svg>`
         );
     });
 
-    it('<div><div data-loc="0,4">TAXT</div><div data-loc="5,8">TAXT</div></div>', async () => {
+    it('<span><span data-loc="0,4;4">TAXT</span><span data-loc="5,8;4">TAXT</span></span>', async () => {
         // Arrange
-        const htmlBody = '<div><div data-loc="0,4">TAXT</div><div data-loc="5,8">TAXT</div></div>';
+        const htmlBody = '<span><span data-loc="0,4;4">TAXT</span><span data-loc="5,8;4">TAXT</span></span>';
         const element = await toHTMLElementWithBoundingRectanglesWithTag(htmlBody, "TAXT");
 
-        const distance1 = assertParticularPointLocation(
+        assertParticularPointLocation(
             element,
             new Point(-1, 25),
-            5,
+            0,
             htmlBody,
-            '0,4',
+            '0,4;4',
             HorizontalClosestDistanceType.LeftOut,
             VerticalClosestDistanceType.BottomOut
         );
-        const distance2 = assertParticularPointLocation(
-            element,
-            new Point(-1, 25),
-            5,
-            htmlBody,
-            '5,8',
-            HorizontalClosestDistanceType.LeftOut,
-            VerticalClosestDistanceType.TopIn
-        );
-        assertEqual(ManhattanDistanceComparer(distance1, distance2), 1);
+        assertParticularPointLocation(element, new Point(41, 10), 4, htmlBody);
+        assertParticularPointLocation(element, new Point(42, 10), 5, htmlBody);
 
         // Act
         const svg = allPointsByIndexToSVGByProximity(element, getStyle);
+
+        dumpOverlayBodyWithKatexCSS(htmlBody, svg); // debug purposes only
 
         // Assert
         const testableSvgPart = getTestableSvgPart(svg);
         assertEqual(
             testableSvgPart,
-            `<svg width="1920" height="72">
-<path d="M1920,0 960,0 960,19 1920,19 1920,0" />
-<path d="M960,19 0,19 0,36 960,36 960,19" />
-<path d="M960,19 960,0 0,0 0,19 960,19" />
-<path d="M960,19 960,36 1920,36 1920,19 960,19" />
+            `<svg width="1920" height="36">
+<path d="M26,0 16,0 16,18 26,18 26,0" />
+<path d="M37,0 26,0 26,18 37,18 37,0" />
+<path d="M37,18 42,18 42,0 37,0 37,18" />
+<path d="M47,0 42,0 42,18 47,18 47,0" />
+<path d="M47,18 57,18 57,0 47,0 47,18" />
+<path d="M6,0 0,0 0,18 6,18 6,0" />
+<path d="M6,18 16,18 16,0 6,0 6,18" />
+<path d="M68,0 57,0 57,18 68,18 68,0" />
+<path d="M78,0 68,0 68,18 78,18 78,0" />
+<path d="M78,0 78,18 120,18 120,18 240,18 240,18 480,18 480,18 960,18 960,18 1920,18 1920,0 78,0" />
 </svg>`
         );
     });

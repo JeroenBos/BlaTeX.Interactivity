@@ -25,6 +25,22 @@ export function orderBy<T>(
     result.sort((a, b) => comparer(a.value, b.value));
     return result;
 }
+export function orderManyBy<T>(
+    elements: Iterable<HTMLElement>,
+    selector: (element: HTMLElement) => Iterable<T> | undefined,
+    comparer: Comparer<T>
+): { element: HTMLElement; value: T }[] {
+    const result: { element: HTMLElement; value: T }[] = [];
+    for (const element of elements) {
+        const values = selector(element);
+        if (values === undefined) continue;
+
+        for (const value of values)
+            result.push({ element, value });
+    }
+    result.sort((a, b) => comparer(a.value, b.value));
+    return result;
+}
 
 export function orderByDesc<T>(
     elements: Iterable<HTMLElement>,
@@ -32,6 +48,14 @@ export function orderByDesc<T>(
     comparer: Comparer<T>
 ): { element: HTMLElement; value: T }[] {
     return orderBy(elements, selector, (a, b) => comparer(b, a));
+}
+
+export function orderManyByDesc<T>(
+    elements: Iterable<HTMLElement>,
+    selector: (element: HTMLElement) => Iterable<T> | undefined,
+    comparer: Comparer<T>
+): { element: HTMLElement; value: T }[] {
+    return orderManyBy(elements, selector, (a, b) => comparer(b, a));
 }
 
 /** Results can be empty iff elements is empty. */
@@ -60,12 +84,12 @@ export function maxBy<T>(
  */
 export function maxByDirectedWalker<TComparable>(
     node: HTMLElement,
-    comparableSelector: (element: HTMLElement) => TComparable | undefined,
+    comparableSelector: (element: HTMLElement) => Iterable<TComparable> | undefined,
     comparer: Comparer<TComparable>,
     isViableToAscend: (element: HTMLElement) => boolean = _ => true,
     isViableToDescend: (element: HTMLElement) => boolean = _ => true
 ): { element: HTMLElement; value: TComparable }[] {
-    const f = orderByDesc; // should be maxBy for non-debugging (btw, orderByDesc is the one that maps to max, because bests were at the beginning of the array)
+    const f = orderManyByDesc; // should be maxBy for non-debugging (btw, orderByDesc is the one that maps to max, because bests were at the beginning of the array)
     return f<TComparable>(walkAround(node, isViableToAscend, isViableToDescend), comparableSelector, comparer);
 }
 /**
@@ -74,7 +98,7 @@ export function maxByDirectedWalker<TComparable>(
  */
 export function minByDirectedWalker<TComparable>(
     node: HTMLElement,
-    comparableSelector: (element: HTMLElement) => TComparable | undefined,
+    comparableSelector: (element: HTMLElement) => Iterable<TComparable> | undefined,
     comparer: Comparer<TComparable>,
     isViableToAscend: (element: HTMLElement) => boolean = _ => true,
     isViableToDescend: (element: HTMLElement) => boolean = _ => true
