@@ -29,7 +29,7 @@ export class SourceLocationComposition implements SourceLocation {
         if (this.segments === 1)
             return rect;
 
-        const deltaWidth = segmentIndex * rect.width / this.segments;
+        const deltaWidth = rect.width / this.segments;
         return new DOMRect(rect.x + segmentIndex * deltaWidth, rect.y, deltaWidth, rect.height);
     }
 }
