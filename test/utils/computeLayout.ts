@@ -13,17 +13,18 @@ import { isDebuggingZoomed } from '../utils/utils';
 import { timer } from '../utils/timer';
 
 
-export function toHTMLElementWithBoundingRectanglesWithKatex(htmlElement: string, tag: string): Promise<HTMLElement> {
-    return toHTMLElementWithBoundingRectangles(htmlElement, true, {}, tag);
+export function toHTMLElementWithBoundingRectanglesWithKatex(htmlElement: string, tag: string, printStdOut = false): Promise<HTMLElement> {
+    return toHTMLElementWithBoundingRectangles(htmlElement, true, {}, tag, printStdOut);
 }
-export function toHTMLElementWithBoundingRectanglesWithTag(htmlElement: string, tag: string) {
-    return toHTMLElementWithBoundingRectangles(htmlElement, false, {}, tag);
+export function toHTMLElementWithBoundingRectanglesWithTag(htmlElement: string, tag: string, printStdOut = false) {
+    return toHTMLElementWithBoundingRectangles(htmlElement, false, {}, tag, printStdOut);
 }
 export async function toHTMLElementWithBoundingRectangles(
     htmlElement: string,
     includeKaTeX: boolean = false,
     layoutConfig: LayoutConfig = {},
-    tag: string
+    tag: string,
+    printStdOut = false,
 ): Promise<HTMLElement> {
     const dir = Path.join(os.tmpdir(), 'blatex.interactivity.jsdom', createRandomString(8)) + '/';
     fs.mkdirSync(dir, { recursive: true });
@@ -110,7 +111,7 @@ export async function toHTMLElementWithBoundingRectangles(
 
     fs.appendFileSync(path, html);
 
-    const rectangles = await computeLayout(path, layoutConfig, tag);
+    const rectangles = await computeLayout(path, layoutConfig, tag, printStdOut);
 
     const element = toHTML(html);
     const elements = getAllElementsByXPath(element.ownerDocument);
@@ -133,10 +134,10 @@ export async function toHTMLElementWithBoundingRectangles(
     }
     return element;
 }
-export async function computeLayout(path: string, layoutConfig: LayoutConfig, tag: string, retries: number = 3): Promise<TaggedRectangle[]> {
+export async function computeLayout(path: string, layoutConfig: LayoutConfig, tag: string, printStdOut: boolean = false, retries: number = 3,): Promise<TaggedRectangle[]> {
     for (let i = 0; i < retries - 1; i++) {
         try {
-            return await  _computeLayout(path, layoutConfig, tag);
+            return await _computeLayout(path, layoutConfig, tag, printStdOut);
         }
         catch (e) {
             if (e instanceof TimedoutException)
@@ -145,9 +146,9 @@ export async function computeLayout(path: string, layoutConfig: LayoutConfig, ta
                 throw e;
         }
     }
-    return await _computeLayout(path, layoutConfig, tag);
+    return await _computeLayout(path, layoutConfig, tag, printStdOut);
 }
-async function _computeLayout(path: string, layoutConfig: LayoutConfig, tag: string): Promise<TaggedRectangle[]> {
+async function _computeLayout(path: string, layoutConfig: LayoutConfig, tag: string, printStdOut: boolean): Promise<TaggedRectangle[]> {
     const tcs = new PromiseCompletionSource<string>();
     let subprocess: SpawnSyncReturns<Buffer>;
     const options = { cwd: './tools/', timeout: 15000 };
@@ -206,6 +207,8 @@ async function _computeLayout(path: string, layoutConfig: LayoutConfig, tag: str
     }
 
     const stdout = await tcs.promise;
+    if (printStdOut)
+        console.log(stdout);
     return parseComputeLayoutOutput([stdout]);
 }
 export function toHTML(html: string): HTMLElement {
