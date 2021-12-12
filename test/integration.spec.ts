@@ -183,7 +183,6 @@ describe('Color HTML based on source locations', () => {
 
         // Assert
         const testableSvgPart = getTestableSvgPart(svg).replace(/\n<rect.*\/>/g, '');
-        console.log(svg);
 
         const expected = readExpectedSvg("offsetx^2", zoom);
         assertEqual(testableSvgPart, expected);
