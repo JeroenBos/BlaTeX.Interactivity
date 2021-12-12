@@ -1,7 +1,7 @@
 // this function cannot be in one of the .spec.ts files,
 // because then it needs to be imported and then that importing module will fail (according to yarn)
 
-import { debugPrefix } from '../../src/paintAllPointsByIndex'; // for the test utils it's okay to depend on non-test things
+import { debugPrefix } from './paintAllPointsByIndex'; // for the test utils it's okay to depend on non-test things
 
 // if the imported module fails. Which is just annoying.
 export const getTestableSvgPart = (svg: string): string => {
@@ -72,6 +72,9 @@ export const getStyle = (value: number): string => {
 
 export const isDebuggingZoomed = 'ZOOM' in process.env && process.env['ZOOM'].trim().toLowerCase() === "true";
 export const isDebugging = 'DEBUG' in process.env && process.env['DEBUG'].trim().toLowerCase() === "true";
+export const isCI = 'CI' in process.env && process.env['CI'].trim().toLowerCase() === "true";
+export const isWindowsCI = isCI && process.platform === "win32";
+export const isUbuntuCI = isCI && process.platform !== "win32";
 
 /** Like jest.it, but with a debug variable injected. In CI and under yarn test, runs as debug=false; in debugging runs with debug=true. */
 export function debug_it(description: string, f: (debug: boolean) => Promise<void>) {

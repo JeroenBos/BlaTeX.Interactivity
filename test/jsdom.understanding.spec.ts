@@ -43,9 +43,6 @@ describe('JSDom Understanding tests', () => {
 
 
 
-
-
-
 describe('JSDom Understanding tests', () => {
     beforeEach(initGlobalTypesFromJSDOM);
 

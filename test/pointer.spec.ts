@@ -15,7 +15,7 @@ import { dumpOverlayBodyWithKatexCSS } from './utils/overlay';
 import Point from '../src/polyfills/Point';
 import { assert, assertEqual, getDataLoc } from '../src/utils';
 import { debug_it, getStyle } from './utils/utils';
-import { allPointsByIndexToSVGByProximity } from '../src/paintAllPointsByIndex';
+import { allPointsByIndexToSVGByProximity } from './utils/paintAllPointsByIndex';
 import { ManhattanDistanceComparer } from '../src/jbsnorro/polygons/ManhattanDistanceComparer';
 import { HorizontalClosestDistanceType, MinDistances, VerticalClosestDistanceType } from '../src/jbsnorro/polygons/MinDistances';
 import { initGlobalTypesFromJSDOM } from '.';
@@ -142,7 +142,7 @@ describe('Test point to cursor handler for specific points.', () => {
 
             // debugging purposes:
             const svg = `<svg><rect x="${p.x}" y="${p.y}" width="1" height="1" style="fill: red"/></svg>`;
-            dumpOverlayBodyWithKatexCSS(htmlBody + `<div>${result}</div>`, svg, undefined, './test/x_1^2_after.html'); // debug purposes only
+            dumpOverlayBodyWithKatexCSS(htmlBody + `<div>${result}</div>`, svg); // debug purposes only
 
             assert(result === index);
         }
