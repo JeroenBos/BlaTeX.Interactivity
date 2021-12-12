@@ -173,7 +173,7 @@ describe('Color HTML based on source locations', () => {
 
     debug_it('x to the 2 with horizontal offset CODE9', async (zoom: boolean) => {
         const htmlElement = fs.readFileSync('./test/AnnotatedData/x^2 with horizontal offset.html').toString();
-        const element = await toHTMLElementWithBoundingRectangles(htmlElement, true, zoom ? { zoom: 500 } : undefined, "x^2");
+        const element = await toHTMLElementWithBoundingRectangles(htmlElement, true, zoom ? { zoom: 500 } : undefined, "x^2", true);
 
         const point = new Point(100, 12);
         assertParticularPointLocation(element, point, 0, htmlElement);
