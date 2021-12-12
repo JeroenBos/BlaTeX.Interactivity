@@ -29,20 +29,14 @@ export function getCursorIndexByProximity(element: HTMLElement, point: Point): n
     const bests = minByDirectedWalker<T>(element, select, mapComparerToDistances(comparer));
 
     // @ts-ignore
-    const datalocsDebug = bests.map(b => b.element.attributes['data-loc'].value); // eslint-disable-line @typescript-eslint/no-unused-vars
+    const datalocsDebug = bests.map(b => b.element.attributes[LOCATION_ATTR_NAME].value); // eslint-disable-line @typescript-eslint/no-unused-vars
 
     if (bests.length === 0) return undefined;
     const best = bests[0];
     const result = apply(best.value.distances, best.value.loc);
     return result;
 }
-export function getCursorIndexByProximity_FOR_TESTING_ONLY(elements: HTMLElement[], point: Point): MinDistances[] {
-    const distances: MinDistances[] = [];
-    for (const element of elements) {
-        distances.push(MinDistances.fromManhattan(getDistance(element, point)));
-    }
-    return distances;
-}
+
 function mapComparerToDistances(comparer: Comparer<MinDistances>) {
     return mapComparer(comparer, (element: { distances: MinDistances }) => element.distances);
 }
@@ -75,13 +69,6 @@ export function getDistance(element: HTMLElement, point: Point): ManhattanOffset
         offsetFromTop: distanceToTop,
         offsetFromBottom: distanceToBottom,
     };
-}
-export function getDistance_FOR_TESTING_ONLY(element: HTMLElement, point: Point): ManhattanOffset {
-    return getDistance(element, point);
-}
-
-export function getElementsWithSourceLocation(element: HTMLElement, point: Point): ManhattanOffset {
-    return getDistance(element, point);
 }
 
 /** @returns the source location of the element, if present. */

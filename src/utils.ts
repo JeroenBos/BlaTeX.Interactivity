@@ -1,4 +1,5 @@
 import { TiedList } from './jbsnorro/TiedList';
+import { LOCATION_ATTR_NAME } from './PointToCursorHandleConverter';
 
 export const __DEV__: boolean = true; // Tsdx lied; it's not defined elsewhere; not reachable anyway
 export type Comparer<T> = (a: T, b: T) => number;
@@ -131,7 +132,7 @@ export function assertEqual(actual: any, expected: any, msg?: string) {
 
 export function getDataLoc(dataloc: string, htmlElements: HTMLElement[]): HTMLElement {
     for (const element of htmlElements) {
-        if (element.attributes['data-loc' as any].value === dataloc) return element;
+        if (element.attributes[LOCATION_ATTR_NAME as any].value === dataloc) return element;
     }
     assert(false, `No element with data-loc '${dataloc}' found`);
 }
